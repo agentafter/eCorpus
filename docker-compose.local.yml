@@ -1,0 +1,52 @@
+# Instancia LOCAL desechable para revisar el branding con sesión iniciada.
+#
+#   docker compose -f docker-compose.local.yml up -d     # levantar
+#   sh scripts/local-seed.sh                              # cuenta admin de prueba + escenas de ejemplo
+#   http://127.0.0.1:8080                                 # abrir
+#   docker compose -f docker-compose.local.yml down -v    # destruir TODO (datos y cuenta incluidos)
+#
+# - Solo publica en 127.0.0.1: nada queda expuesto a la red.
+# - Postgres no publica ningún puerto; su contraseña es un literal local sin valor
+#   fuera de este contenedor. No es ni debe ser una contraseña real.
+# - Misma imagen y mismo overlay que staging (ASSETS_DIR + branding.env), así lo
+#   que se ve aquí es lo que verá staging. Para probar la imagen propia (con el
+#   parche de Voyager): ECORPUS_IMAGE=<tag> docker compose -f docker-compose.local.yml up -d
+# - Proyecto y volúmenes con nombre propio ("ecorpus-local"): no toca el
+#   docker-compose.yml de upstream ni sus volúmenes.
+name: ecorpus-local
+
+services:
+  postgres:
+    image: postgres:17
+    shm_size: 128mb
+    environment:
+      POSTGRES_USER: ecorpus
+      POSTGRES_DB: ecorpus
+      POSTGRES_PASSWORD: local-only-not-a-secret
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 1s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - local_postgres:/var/lib/postgresql/data/
+
+  app:
+    image: ${ECORPUS_IMAGE:-ghcr.io/holusion/e-corpus:main}
+    ports:
+      - "127.0.0.1:${LOCAL_PORT:-8080}:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - ./branding/branding.env
+    environment:
+      DATABASE_URI: postgres://ecorpus:local-only-not-a-secret@postgres:5432/ecorpus
+      ASSETS_DIR: /app/branding
+    volumes:
+      - local_files:/app/files
+      - ./branding:/app/branding:ro
+
+volumes:
+  local_postgres:
+  local_files:
