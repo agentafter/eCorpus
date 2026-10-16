@@ -288,3 +288,11 @@ h3 { font-weight: 500; }
 :root main a:not(.btn, .nav-link):hover {
   color: var(--color-secondary);
 }
+
+/* Logo Huaka (images/logo-full.svg, viewBox recortado al dibujo): la barra
+   mide 44px con 3px de borde inferior y el logo ocupaba los 44px, pegado a
+   los bordes y sobre la línea; 4px de aire arriba y abajo. */
+:root .navbar-nav .logo {
+  box-sizing: border-box;
+  padding-block: 4px;
+}
