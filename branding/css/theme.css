@@ -115,7 +115,14 @@
 
   --color-hover: color-mix(in oklch, var(--color-primary), black 20%);
   --color-highlight: var(--color-surface);  /* inputs, hover de botones neutros */
-  --color-highlight2: #E7E9EB;              /* botones neutros, separadores */
+  /* Upstream usa --color-highlight2 sobre todo como texto atenuado, borde y
+     separador (y además como fondo de botón neutro, ver abajo). */
+  --color-highlight2: #5F6B7A;              /* 4.8:1 sobre #F2F3F4 */
+
+  /* Acento estructural: líneas, barras y formas geométricas en carmesí,
+     como en huaka.digital. El teal queda para hover de bordes. */
+  --color-decoration: var(--color-secondary);
+  --color-decoration-soft: var(--color-accent);
 
   /* Estados: oscurecidos respecto a upstream para >=4.5:1 sobre fondo claro */
   --color-info: #1565C0;
@@ -152,4 +159,106 @@ h3 { font-weight: 500; }
 
 :focus-visible {
   outline-color: var(--color-focus);
+}
+
+/* Botones neutros: --color-highlight2 ahora es un gris de texto, así que se
+   les devuelve un fondo claro. (0,1,1) > .btn (0,1,0); las variantes de
+   color (.btn.btn-x, 0,2,0) siguen ganando. */
+:root .btn {
+  --btn-color: #E7E9EB;
+}
+:root .btn:is([disabled], .disabled) {
+  background-color: var(--color-element);
+  color: var(--color-highlight2);
+}
+
+/* ------------------------------------------------------------------------
+ * Acentos estructurales — lenguaje visual de huaka.digital:
+ * carmesí en barras, líneas y formas; teal en el hover de bordes.
+ * Solo color/decoración: no cambia tamaños ni posiciones (el layout queda
+ * igual). Prefijo :root para superar en especificidad a corpus.css, que
+ * carga después, sin !important.
+ * --------------------------------------------------------------------- */
+
+/* Esquinas en "L" de las secciones */
+:root section::before, :root section::after,
+:root .section::before, :root .section::after {
+  border-color: var(--color-decoration);
+}
+:root section, :root .section {
+  box-shadow: 0 4px 20px rgba(29, 53, 87, 0.06);
+}
+
+/* h1: en vez del subrayado grueso a todo el ancho, la barra corta centrada
+   de huaka.digital (48×4 px). El borde queda transparente para conservar
+   el mismo espacio. Los títulos con color de estado conservan el original. */
+:root h1:not(.text-info, .text-success, .text-warning, .text-error, .text-primary) {
+  border-bottom-color: transparent;
+}
+:root h1:not(.text-info, .text-success, .text-warning, .text-error, .text-primary)::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -0.6rem;
+  width: 3rem;
+  height: 4px;
+  transform: translateX(-50%);
+  background: var(--color-decoration);
+}
+
+/* h2: barra lateral */
+:root h2:not(:empty):not(.text-info, .text-success, .text-warning, .text-error, .text-primary) {
+  border-left-color: var(--color-decoration);
+  border-right-color: var(--color-decoration);
+}
+
+/* Tablas: línea bajo los encabezados */
+:root table.list-table th {
+  border-bottom-color: var(--color-decoration);
+}
+
+/* Navegación: indicador de la pestaña activa */
+:root .nav-link.active,
+:root .nav-link.active:hover {
+  border-color: var(--color-decoration);
+}
+
+/* Bloques de ayuda: barra lateral + icono (como los "eyebrow" de huaka.digital) */
+:root .help-block {
+  border-left-color: var(--color-decoration);
+}
+:root .help-block > ui-icon {
+  color: var(--color-decoration);
+}
+
+/* Onboarding: círculos numerados (como las cifras en carmesí de huaka.digital) */
+:root .onboarding-block .step-number {
+  border-color: var(--color-decoration);
+  color: var(--color-decoration);
+}
+
+/* Tarjetas de escena: blancas; al pasar el mouse, barra superior carmesí
+   y borde teal (patrón de las tarjetas de servicios de huaka.digital).
+   inset box-shadow: no ocupa espacio. */
+:root .scene-card {
+  background-color: var(--color-surface);
+}
+:root .scene-card:hover {
+  background-color: var(--color-surface);
+  border-color: var(--color-decoration-soft);
+  box-shadow: inset 0 3px 0 var(--color-decoration), 0 4px 20px rgba(29, 53, 87, 0.08);
+}
+/* Seleccionada: upstream usa fondo carmesí con el texto forzado a
+   --color-text (!important) → azul sobre carmesí, 2.1:1. Se cambia el fondo
+   (no el texto, así no hace falta !important): teal suave + barra carmesí. */
+:root .scene-card:has(> .scene-card-select > input[type="checkbox"]:checked),
+:root .scene-card:has(> .scene-card-select > input[type="checkbox"]:checked):hover {
+  background-color: color-mix(in srgb, var(--color-accent) 30%, white);
+  border-color: var(--color-decoration-soft);
+  box-shadow: inset 4px 0 0 var(--color-decoration);
+}
+
+/* Links del contenido: azul → carmesí al pasar el mouse */
+:root main a:not(.btn, .nav-link):hover {
+  color: var(--color-secondary);
 }
