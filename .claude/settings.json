@@ -22,6 +22,7 @@
       "Bash(ssh huaka-agent staging up)",
       "Bash(ssh huaka-agent staging restart)",
       "Bash(ssh huaka-agent staging put-branding)",
+      "Bash(ssh huaka-agent staging clear-branding)",
       "Bash(ssh huaka-agent prod ps)",
       "Bash(ssh huaka-agent prod validate)",
       "Bash(ssh huaka-agent prod health)",
@@ -70,6 +71,7 @@
       "Bash(ssh huaka-agent prod up *)",
       "Bash(ssh huaka-agent prod restart *)",
       "Bash(ssh huaka-agent prod put-branding *)",
+      "Bash(ssh huaka-agent prod clear-branding*)",
       "Read(.env)",
       "Read(.env.*)",
       "Read(*.pem)",
@@ -88,7 +90,8 @@
       "PowerShell(ssh huaka-agent prod pull *)",
       "PowerShell(ssh huaka-agent prod up *)",
       "PowerShell(ssh huaka-agent prod restart *)",
-      "PowerShell(ssh huaka-agent prod put-branding *)"
+      "PowerShell(ssh huaka-agent prod put-branding *)",
+      "PowerShell(ssh huaka-agent prod clear-branding*)"
     ]
   }
 }

@@ -20,7 +20,16 @@ Si el pedido no aclara cuál de las dos superficies, preguntar o inspeccionar d�
 
 ### 1a. Nombre, colores, contacto — variables de entorno o `/admin`
 
-En el `docker-compose.yml` **del servidor** (servicio `app`; el agente no lo edita: propone el bloque exacto y la persona lo aplica):
+**Staging:** el compose de staging lee `branding/branding.env` (`env_file`). El agente edita ese archivo en su `branding/` local, con valores entre comillas dobles (el `#` de un color sin comillas puede leerse como comentario), sin espacios alrededor del `=` y solo con estas claves:
+```
+BRAND="Nombre del despliegue"
+COLOR_PRIMARY="#1D3557"
+COLOR_SECONDARY="#99193A"
+CONTACT_EMAIL="correo@dominio"
+```
+Lo sube con `put-branding` y aplica con `ssh huaka-agent staging up`. El archivo se sirve públicamente en `/dist/branding.env`: nunca poner secretos. Las mismas variables **no** deben repetirse en `environment:` del compose (tendrían prioridad).
+
+**Producción:** el compose de producción no lee ese archivo. El agente entrega a la persona, en el paquete de promoción, el bloque exacto para su `environment:`:
 ```yaml
 environment:
   BRAND: "Nombre del despliegue"
@@ -52,7 +61,7 @@ mkdir -p branding/images branding/css
 ```bash
 tar -C branding -czf - . | ssh huaka-agent staging put-branding
 ```
-`put-branding` solo agrega o reemplaza archivos dentro de `branding/` de staging: rechaza symlinks, rutas absolutas o con `..` y subidas de más de 50 MB, y **no borra** nada (para quitar un archivo, pedírselo a la persona). Los archivos se sirven sin reiniciar el contenedor.
+`put-branding` solo agrega o reemplaza archivos dentro de `branding/` de staging: rechaza symlinks, rutas absolutas o con `..` y subidas de más de 50 MB, y **no borra** nada. Para quitar archivos: `ssh huaka-agent staging clear-branding` (vacía `branding/`) y volver a subir el árbol completo, incluido `branding.env`. Los archivos se sirven sin reiniciar el contenedor.
 
 **Cuidado con la caché:** staging está detrás de Cloudflare, que cachea estáticos (css, svg, png). Antes de concluir que un cambio no funcionó, abrir el recurso con `?v=<timestamp>` o pedir a la persona que purgue la caché / active Development Mode en Cloudflare.
 

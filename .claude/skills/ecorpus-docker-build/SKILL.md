@@ -85,7 +85,7 @@ Validar en `https://staging-patrimoniovirtual.huaka.digital`: login, dashboard, 
 
 ## Paso 6 — Producción: la aplica una persona (el agente prepara y verifica)
 
-La llave SSH del agente es de **solo lectura** sobre producción (`prod ps|logs|health|validate`); `pull`, `up`, `restart` y `put-branding` están bloqueados en el servidor. Es deliberado: el mismo host aloja otras apps y producción nunca se despliega como continuación automática de un build.
+La llave SSH del agente es de **solo lectura** sobre producción (`prod ps|logs|health|validate`); `pull`, `up`, `restart`, `put-branding` y `clear-branding` están bloqueados en el servidor. Es deliberado: el mismo host aloja otras apps y producción nunca se despliega como continuación automática de un build.
 
 Cuando staging esté validado, el agente entrega un **paquete de promoción**:
 1. Imagen y tag inmutable validados (`ghcr.io/agentafter/e-corpus:<hash>`), con el hash del commit.
@@ -94,7 +94,7 @@ Cuando staging esté validado, el agente entrega un **paquete de promoción**:
    services:
      app:
        image: ghcr.io/agentafter/e-corpus:<hash>   # antes: ghcr.io/holusion/e-corpus:main
-       # ...resto sin cambios (ASSETS_DIR, BRAND, COLOR_PRIMARY, etc. se mantienen)
+       # ...resto sin cambios (ASSETS_DIR, BRAND, COLOR_PRIMARY, etc. se mantienen; si cambiaron en branding/branding.env de staging, incluye los valores nuevos aquí)
    ```
 3. Si hay branding: la carpeta `branding/` commiteada y el comando para que la persona la sincronice con su propia llave:
    `rsync -av branding/ USUARIO@SERVIDOR:ecorpus/branding/`
