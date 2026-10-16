@@ -4,3 +4,7 @@
 **/node_modules/
 **/.git/
 *.tar.gz
+# Huaka: herramientas de la instancia local, nunca dentro de la imagen
+/docker-compose.local.yml
+/scripts/local-seed.sh
+/.local/

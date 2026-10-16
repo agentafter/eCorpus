@@ -35,6 +35,12 @@ Voyager fija sus colores en Sass compilado dentro del Shadow DOM (sin custom pro
 - Se ejecuta en el `Dockerfile` (antes de `build-ui`, con una verificación posterior de que `#99193a` está en `voyager-explorer.js`) y en `.github/workflows/build.yml` (job UI). Si una actualización de Voyager rompe el parche, **el build/CI falla**: el parche no se pierde en silencio.
 
 Mapeo: selección/activo `#99193A` · fondos de paneles navy (`#1D3557` y derivados) · foco `#97BDC6` · links de anotaciones `#C2E9F3`.
+
+- `patches/voyager/0002-huaka-default-colors.patch` — colores por defecto en TypeScript (no Sass): anotaciones **nuevas** y plano de corte en teal `#97BDC6` = `[0.5922, 0.7412, 0.7765]` (antes azul SI `[0, 0.61, 0.87]`; 4 decimales porque Voyager trunca al pasar a hex y con 3 sale `#96bcc5`).
+  - El `Dockerfile` verifica que ese valor llegue a `voyager-story.js`.
+  - `voyager-*.js` se sirven sin parámetro de versión: tras desplegar una imagen nueva, purgar la caché de Cloudflare o los navegadores pueden seguir usando el bundle viejo.
+  - `source/client/models/Annotation.ts`: solo el valor inicial de una anotación nueva. **No** se toca `Annotation.defaultColor` ni la comparación de `toJSON`: Voyager omite el color al guardar cuando es el azul SI y lo rellena con `defaultColor` al cargar; cambiarlos recolorearía las anotaciones existentes. Así, las anotaciones viejas siguen azules y las nuevas se guardan con el teal explícito (se ven teal incluso en un Voyager sin parche).
+  - `source/client/components/CVSlicer.ts`: preset y valor de respaldo del color del corte. Las escenas que ya guardaron un color de corte lo conservan.
 No cubierto: `story/editor_css/content.min.css` (CSS interno del editor de artículos TinyMCE, links `#0089bf`).
 
 ### Regenerar el parche tras actualizar Voyager

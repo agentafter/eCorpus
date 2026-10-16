@@ -17,3 +17,5 @@ secrets.env
 .env.*
 *.pem
 *.key
+# Instancia local desechable (scripts/local-seed.sh): credenciales de prueba y cookies
+.local/

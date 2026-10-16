@@ -157,8 +157,12 @@
 h2 { font-weight: 600; }
 h3 { font-weight: 500; }
 
-:focus-visible {
-  outline-color: var(--color-focus);
+/* Foco de teclado: upstream deja el contorno por defecto del navegador
+   (~1px, pegado al borde), casi invisible sobre botones carmesí/azules.
+   (0,2,0) supera a los `x:focus { outline: none }` de upstream (0,1,1). */
+:root :focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
 }
 
 /* Botones neutros: --color-highlight2 ahora es un gris de texto, así que se
@@ -256,6 +260,28 @@ h3 { font-weight: 500; }
   background-color: color-mix(in srgb, var(--color-accent) 30%, white);
   border-color: var(--color-decoration-soft);
   box-shadow: inset 4px 0 0 var(--color-decoration);
+}
+
+/* Enlaces "View"/"Edit" de las tarjetas: upstream los fija en #eee
+   (card.scss, pensado para fondo oscuro) → invisibles sobre blanco. */
+:root .scene-card .tools a {
+  color: var(--color-text);
+}
+:root .scene-card .tools a:hover {
+  color: var(--color-secondary);
+}
+
+/* Pantallas angostas: Poppins/Inter son más anchas que las fuentes de
+   upstream. Sin esto el h1 ocupa una línea más y "Download selected scenes"
+   se sale de la sección. Solo tamaño/peso de texto, no layout. */
+@media (max-width: 576px) {
+  :root h1 {
+    font-size: 1.5em;
+  }
+  :root #main-actions .btn {
+    font-weight: 400;
+    white-space: normal;
+  }
 }
 
 /* Links del contenido: azul → carmesí al pasar el mouse */
