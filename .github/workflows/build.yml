@@ -59,6 +59,8 @@ jobs:
         run: (cd source/voyager && npm ci --legacy-peer-deps)
       - name: install ui dependencies
         run: npm ci && (cd source/ui && npm ci)
+      - name: apply Huaka patches to voyager
+        run: sh scripts/apply-voyager-patches.sh
       - name: build UI
         run: npm run build-ui
       - uses: actions/upload-artifact@v6
