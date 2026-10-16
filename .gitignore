@@ -11,3 +11,9 @@ test/
 *.log
 .DS_Store
 secrets.env
+# --- Claude Code / secretos (agregar al .gitignore del fork) ---
+.claude/settings.local.json
+.env
+.env.*
+*.pem
+*.key
