@@ -1,0 +1,6 @@
+# --- Claude Code: mantener LF en los archivos de esta capa (agregar a .gitattributes del fork) ---
+# Solo nuestros archivos: no normalizamos nada de upstream para no generar diffs espurios.
+CLAUDE.md text eol=lf
+AGENTS.md text eol=lf
+.claude/** text eol=lf
+branding/** -text
