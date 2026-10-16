@@ -1,14 +1,14 @@
 name: Publish
+# Huaka: publica la imagen del fork en ghcr.io/agentafter/e-corpus, solo al
+# hacer merge a main. No despliega nada: staging y producción se actualizan
+# aparte (ver AGENTS.md §14). Upstream publicaba en holusion/e-corpus.
 on:
   push:
     branches:
       - "main"
-    tags:
-      - 'v*.*.*'
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: holusion/e-corpus
-  DEPLOY_HOST: ecorpus.holusion.com
+  IMAGE_NAME: agentafter/e-corpus
 
 concurrency: 
   group: publish-${{ github.ref }}
@@ -19,8 +19,9 @@ permissions:
 jobs:
   docker-publish:
     name: Docker Image
+    if: github.repository == 'agentafter/eCorpus'
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 30
     outputs:
       digest: ${{ steps.push.outputs.digest }}
     steps:
@@ -47,6 +48,17 @@ jobs:
         uses: docker/metadata-action@v6
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          # sha-<commit>: tag inmutable para staging/producción y rollback
+          tags: |
+            type=ref,event=branch
+            type=sha,format=short
+            type=raw,value=latest
+          # El Dockerfile de upstream declara vendor "Holusion SAS"; esta imagen
+          # no la publica Holusion (AGENTS.md §1.6). source/licenses los pone
+          # metadata-action a partir de este repo.
+          labels: |
+            org.opencontainers.image.vendor=Huaka Digital
+            org.opencontainers.image.description=eCorpus (Holusion, Apache-2.0) con personalización de Huaka Digital
       - name: Build and push
         id: push
         uses: docker/build-push-action@v7
@@ -60,6 +72,8 @@ jobs:
             BUILD_REF=${{ steps.ref.outputs.id }}
   clean:
     name: Clean package
+    if: github.repository == 'agentafter/eCorpus'
+    needs: docker-publish
     runs-on: ubuntu-latest
     timeout-minutes: 2
     steps:
