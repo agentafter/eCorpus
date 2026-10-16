@@ -337,12 +337,12 @@ Existe un entorno de staging en el **mismo servidor Hetzner** que producción, p
 
 | | Producción | Staging |
 |---|---|---|
-| Dominio | `patrimoniovirtual.huaka.digital` | `staging.patrimoniovirtual.huaka.digital` |
+| Dominio | `patrimoniovirtual.huaka.digital` | `staging-patrimoniovirtual.huaka.digital` |
 | Carpeta en el servidor | `~/ecorpus/` | `~/ecorpus-staging/` |
 | Nombre de proyecto Docker Compose | `eCorpus` | `eCorpus-staging` |
 | Puerto interno (`127.0.0.1:PUERTO:8000`) | `8000` | `8001` |
 | Base de datos | `ecorpus` | `ecorpus_staging` (credenciales propias) |
-| Sitio en CloudPanel | Propio, con su cert Let's Encrypt | Propio, con su propio cert Let's Encrypt |
+| Sitio en CloudPanel | Propio, con certificado de origen de Cloudflare | Propio, con certificado de origen de Cloudflare (hostname de un solo nivel) |
 
 Regla: cualquier imagen nueva construida en la skill `ecorpus-docker-build` se despliega primero en staging (el agente, por SSH — ver 14.2), se valida ahí (login, dashboard, idioma español, visor 3D), y **solo después** de esa validación una persona actualiza `~/ecorpus/docker-compose.yml` de producción. Nunca saltar directo a producción con una imagen que no pasó por staging.
 
@@ -374,7 +374,7 @@ Reglas:
 - El agente **no edita** el `docker-compose.yml` ni el `.env` del servidor (no existe verbo para eso). Para cambiar la
   imagen, variables (`BRAND`, colores…) o puertos, entrega a la persona el bloque exacto a aplicar y espera confirmación.
 - Flujo de promoción: (1) imagen publicada con tag inmutable; (2) el agente corre `staging pull` → `staging up` →
-  `staging health` → `staging logs 100`; (3) validación visual en `staging.patrimoniovirtual.huaka.digital`;
+  `staging health` → `staging logs 100`; (3) validación visual en `staging-patrimoniovirtual.huaka.digital`;
   (4) el agente entrega el **paquete de promoción** (tag/hash, líneas exactas del compose, branding, rollback);
   (5) la persona aplica en producción; (6) el agente verifica en solo lectura con `prod health` y `prod logs`.
 - Si el gate o una regla de permisos rechaza un comando, es a propósito: informar el rechazo, no rodearlo

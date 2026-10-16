@@ -68,18 +68,18 @@ Existe un entorno de staging dedicado en el mismo servidor Hetzner, **completame
 - Proyecto Docker Compose: `name: eCorpus-staging` (evita colisión de volúmenes/contenedores con el de producción, `eCorpus`).
 - Puerto interno: `127.0.0.1:8001:8000` (producción usa `8000`).
 - Base de datos propia (`ecorpus_staging`), nunca compartida con producción.
-- Dominio: `https://staging.patrimoniovirtual.huaka.digital`, sitio propio en CloudPanel (Reverse Proxy → `http://127.0.0.1:8001`), certificado Let's Encrypt propio.
+- Dominio: `https://staging-patrimoniovirtual.huaka.digital`, sitio propio en CloudPanel (Reverse Proxy → `http://127.0.0.1:8001`), certificado Let's Encrypt propio.
 
 Flujo (el agente opera por SSH con la llave restringida `huaka-agent`; ver sección 14.2 de AGENTS.md):
 ```bash
-ssh huaka-agent staging pull       # staging usa ghcr.io/agentafter/e-corpus:latest
+ssh huaka-agent staging pull       # la imagen la define el compose de staging (hoy la oficial ghcr.io/holusion/e-corpus:main; la propia cuando exista)
 ssh huaka-agent staging up
-ssh huaka-agent staging health     # debe responder "http 200"
+ssh huaka-agent staging health     # 2xx o 3xx (302 es normal); http 000 o 5xx = problema
 ssh huaka-agent staging logs 100   # revisar que arrancó sin errores
 ```
 Si hay que cambiar la línea `image:` (por ejemplo, para probar un tag concreto) o variables de entorno, el agente **no puede** editar el compose del servidor: entrega a la persona el bloque exacto a pegar y espera confirmación.
 
-Validar en `https://staging.patrimoniovirtual.huaka.digital`: login, dashboard, selector de idioma mostrando español, visor 3D cargando una escena de prueba, y cualquier cambio de branding/tipografía relevante a la tarea actual.
+Validar en `https://staging-patrimoniovirtual.huaka.digital`: login, dashboard, selector de idioma mostrando español, visor 3D cargando una escena de prueba, y cualquier cambio de branding/tipografía relevante a la tarea actual.
 
 **No pasar al Paso 6 (producción) hasta que la validación en staging sea satisfactoria.** Si algo falla en staging, corregir y repetir este paso — es exactamente para eso que existe, y es gratis fallar acá.
 
