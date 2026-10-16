@@ -8,3 +8,5 @@ branding/** -text
 scripts/*.sh text eol=lf
 patches/** text eol=lf
 docs/** text eol=lf
+# Se copia tal cual al servidor (rsync): con CRLF, el valor del env_file arrastraría un \r.
+deploy/** -text

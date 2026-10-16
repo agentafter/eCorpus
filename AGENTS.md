@@ -378,7 +378,10 @@ Reglas:
   `branding/branding.env` (`CLAVE="valor"`, comillas dobles), que el compose de staging lee con `env_file: ./branding/branding.env`. Se sube con
   `put-branding` y se aplica con `staging up`. Ese archivo se sirve públicamente (`/dist/branding.env`): jamás secretos.
   Las variables de marca **no** se repiten en `environment:` del compose (ahí tendrían prioridad y taparían al archivo).
-  Producción no lee ese archivo: para promover, entrega a la persona las líneas exactas a poner en su compose.
+  Producción usa el mismo mecanismo con su propio archivo, versionado en `deploy/prod/branding.env` (el de `branding/`
+  es el de staging): la persona lo copia a `~/ecorpus/branding/branding.env` con rsync y su compose lo lee con
+  `env_file: ./branding/branding.env`. Para cambiar nombre, colores o contacto en producción, el agente edita
+  `deploy/prod/branding.env` y lo incluye en el paquete de promoción.
 - Flujo de promoción: (1) imagen publicada con tag inmutable; (2) el agente corre `staging pull` → `staging up` →
   `staging health` → `staging logs 100`; (3) validación visual en `staging-patrimoniovirtual.huaka.digital`;
   (4) el agente entrega el **paquete de promoción** (tag/hash, líneas exactas del compose, branding, rollback);

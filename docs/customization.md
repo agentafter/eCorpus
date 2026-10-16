@@ -12,12 +12,14 @@ Carpeta `branding/` → montada como `/app/branding` (`ASSETS_DIR`) y servida en
 | `branding/fonts/fonts.css` | `/dist/fonts/fonts.css` (`source/voyager/assets/fonts/fonts.css`) | Redirige las familias de Voyager `"Amiri"`→Poppins y `"Hind Siliguri"`→Inter |
 | `branding/fonts/*.woff2`, `*-OFL.txt` | — (nuevos) | Fuentes autoalojadas; ver `branding/FONTS.md` |
 
-Variables de entorno del servicio `app` (las aplica una persona en el compose):
+Nombre, colores y contacto (`BRAND`, `COLOR_PRIMARY`, `COLOR_SECONDARY`, `CONTACT_EMAIL`) los lee el compose de cada entorno con `env_file: ./branding/branding.env`, sin repetirlos en `environment:` (tendría prioridad):
 
-```yaml
-COLOR_PRIMARY: "#1D3557"
-COLOR_SECONDARY: "#99193A"
-```
+| Entorno | Archivo en el repo | Cómo llega al servidor |
+|---|---|---|
+| Staging | `branding/branding.env` | `put-branding` (agente) |
+| Producción | `deploy/prod/branding.env` | rsync a `~/ecorpus/branding/branding.env` (persona) |
+
+Ambos se sirven públicamente en `/dist/branding.env`: solo valores públicos, nunca secretos.
 
 `theme.css` **no** define `--color-primary`/`--color-secondary`: vienen de esas variables vía `templates/partials/head.hbs`.
 
