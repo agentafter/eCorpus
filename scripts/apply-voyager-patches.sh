@@ -19,23 +19,39 @@ patch_dir="$root/patches/voyager"
 
 [ -d "$voyager_dir/source" ] || { echo "ERROR: $voyager_dir no parece un checkout de Voyager (¿submódulo sin inicializar?)" >&2; exit 1; }
 
+tmp=$(mktemp -d)
+trap 'rm -rf "$tmp"' EXIT
+
+# --binary: sin conversión de finales de línea, igual en GNU patch de Linux y de Git Bash.
+opts="-p1 -d $voyager_dir --fuzz=0 --binary --no-backup-if-mismatch -s -f"
+
 status=0
 for p in "$patch_dir"/*.patch; do
   [ -e "$p" ] || continue
   name=$(basename "$p")
-  # -l: tolera CRLF de un checkout de Windows (core.autocrlf) frente a un parche LF.
-  opts="-p1 -d $voyager_dir --fuzz=0 -l --no-backup-if-mismatch -s"
-  if patch $opts --dry-run -f < "$p" >/dev/null 2>&1; then
-    if [ "$mode" = check ]; then
-      echo "OK      $name aplica limpio"
-    else
-      patch $opts -f < "$p"
-      echo "APLICADO $name"
+  # Los parches se guardan en LF. Un checkout de Windows (core.autocrlf=true)
+  # deja Voyager en CRLF, y GNU patch en Linux rechaza la mezcla
+  # ("different line endings"): se prueba también una copia CRLF del parche.
+  sed 's/$/\r/' "$p" > "$tmp/$name.crlf"
+  applied=""
+  for variant in "$p" "$tmp/$name.crlf"; do
+    if patch $opts --dry-run < "$variant" >/dev/null 2>&1; then
+      if [ "$mode" = check ]; then
+        echo "OK      $name aplica limpio"
+      else
+        patch $opts < "$variant"
+        echo "APLICADO $name"
+      fi
+      applied=1; break
+    elif patch $opts --dry-run -R < "$variant" >/dev/null 2>&1; then
+      echo "YA ESTÁ $name"
+      applied=1; break
     fi
-  elif patch $opts --dry-run -R -f < "$p" >/dev/null 2>&1; then
-    echo "YA ESTÁ $name"
-  else
+  done
+  if [ -z "$applied" ]; then
     echo "ERROR   $name no aplica sobre Voyager: upstream cambió esas líneas; regenerarlo (ver docs/customization.md)" >&2
+    echo "        detalle (dry-run):" >&2
+    patch $opts --dry-run < "$p" >&2 || true
     status=1
   fi
 done
