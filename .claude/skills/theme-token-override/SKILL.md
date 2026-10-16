@@ -59,11 +59,7 @@ tar -C branding -czf - . | ssh huaka-agent staging put-branding
 
 **Cuidado con la caché:** staging está detrás de Cloudflare, que cachea estáticos (css, svg, png). Antes de concluir que un cambio no funcionó, abrir el recurso con `?v=<timestamp>` o pedir a la persona que purgue la caché / active Development Mode en Cloudflare.
 
-**Producción:** el agente deja `branding/` listo y commiteado; la persona lo sincroniza a `~/ecorpus/branding/` con su propia llave después de validar en staging, sin el `branding.env` de staging y con el de producción:
-```bash
-rsync -av --exclude branding.env branding/ USUARIO@SERVIDOR:ecorpus/branding/
-rsync -av deploy/prod/branding.env USUARIO@SERVIDOR:ecorpus/branding/branding.env
-```
+**Producción:** el agente deja `branding/` listo y commiteado; la persona lo sincroniza a `~/ecorpus/branding/` después de validar en staging, descargando ese commit desde GitHub en el propio servidor y poniendo encima el `branding.env` de producción. El bloque exacto está en `docs/customization.md` ("Producción: sincronizar `branding/`"); el agente lo entrega con el hash del commit.
 
 El servidor ya monta esa carpeta (lo configura la persona; el agente no edita el compose):
 ```yaml

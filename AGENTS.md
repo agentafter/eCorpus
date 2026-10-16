@@ -303,25 +303,24 @@ Mientras los cambios sean solo branding vía `ASSETS_DIR`/env vars, **seguir usa
   ```yaml
   services:
     app:
-      # image: ghcr.io/holusion/e-corpus:main        # mientras solo haya branding vía ASSETS_DIR
-      image: ghcr.io/agentafter/e-corpus:latest        # una vez exista la traducción/build propio
+      image: ghcr.io/agentafter/e-corpus:sha-<commit>   # tag inmutable validado en staging (no :latest)
       restart: always
       ports:
         - "127.0.0.1:8000:8000"
       depends_on:
         postgres:
           condition: service_healthy
+      env_file: ./branding/branding.env                 # BRAND, COLOR_*, CONTACT_EMAIL (deploy/prod/branding.env)
       environment:
         DATABASE_URI: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
-        ASSETS_DIR: /app/branding
-        BRAND: "Patrimonio Virtual Huaka"
-        COLOR_PRIMARY: "#REEMPLAZAR"
-        COLOR_SECONDARY: "#REEMPLAZAR"
-        CONTACT_EMAIL: "contacto@huaka.digital"
+        ASSETS_DIR: /app/branding                       # sin esto y el volumen, theme.css/fuentes no se sirven
       volumes:
         - app_data:/app/files
-        - ./branding:/app/branding
+        - ./branding:/app/branding:ro
   ```
+  `env_file` lo lee Compose en el host, así que el título y los colores pueden funcionar aunque falten `ASSETS_DIR` o el
+  volumen: verificar ambos (ver `docs/customization.md`, "Producción"). Tras editar el compose, `docker compose up -d`
+  recrea el contenedor; uno ya creado no toma los cambios.
 - Aplicar en el servidor **lo hace una persona**, no el agente (la llave SSH del agente es de solo lectura sobre producción, ver 14.2). Con usuario no-root del grupo docker, nunca root:
   ```bash
   cd ~/ecorpus
@@ -379,7 +378,8 @@ Reglas:
   `put-branding` y se aplica con `staging up`. Ese archivo se sirve públicamente (`/dist/branding.env`): jamás secretos.
   Las variables de marca **no** se repiten en `environment:` del compose (ahí tendrían prioridad y taparían al archivo).
   Producción usa el mismo mecanismo con su propio archivo, versionado en `deploy/prod/branding.env` (el de `branding/`
-  es el de staging): la persona lo copia a `~/ecorpus/branding/branding.env` con rsync y su compose lo lee con
+  es el de staging): la persona lo copia a `~/ecorpus/branding/branding.env` (procedimiento en `docs/customization.md`,
+  "Producción": descarga del commit desde GitHub en el propio servidor) y su compose lo lee con
   `env_file: ./branding/branding.env`. Para cambiar nombre, colores o contacto en producción, el agente edita
   `deploy/prod/branding.env` y lo incluye en el paquete de promoción.
 - Flujo de promoción: (1) imagen publicada con tag inmutable; (2) el agente corre `staging pull` → `staging up` →
