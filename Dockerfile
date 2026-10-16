@@ -34,6 +34,8 @@ RUN npm run build-ui
 # Huaka: guard against the patch applying but no longer reaching the bundle
 RUN grep -qi "99193a" /app/dist/js/voyager-explorer.js \
   || { echo "ERROR: Huaka colors missing from voyager-explorer.js" >&2; exit 1; }
+RUN grep -qF ".5922,.7412,.7765" /app/dist/js/voyager-story.js \
+  || { echo "ERROR: Huaka default annotation color missing from voyager-story.js" >&2; exit 1; }
 
 FROM node:22-slim AS utilities
 # Fetch utilities that needs to be included
