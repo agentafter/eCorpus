@@ -29,14 +29,8 @@ CONTACT_EMAIL="correo@dominio"
 ```
 Lo sube con `put-branding` y aplica con `ssh huaka-agent staging up`. El archivo se sirve públicamente en `/dist/branding.env`: nunca poner secretos. Las mismas variables **no** deben repetirse en `environment:` del compose (tendrían prioridad).
 
-**Producción:** el compose de producción no lee ese archivo. El agente entrega a la persona, en el paquete de promoción, el bloque exacto para su `environment:`:
-```yaml
-environment:
-  BRAND: "Nombre del despliegue"
-  COLOR_PRIMARY: "#hex"
-  COLOR_SECONDARY: "#hex"
-  CONTACT_EMAIL: "correo@dominio"
-```
+**Producción:** mismo mecanismo, con su propio archivo versionado en `deploy/prod/branding.env` (mismo formato; el de `branding/` es el de staging y diría "(Staging)"). El agente lo edita y lo incluye en el paquete de promoción; la persona lo copia a `~/ecorpus/branding/branding.env` y el compose de producción lo lee con `env_file: ./branding/branding.env`, sin repetir esas variables en `environment:`.
+
 Si se prefiere poder cambiarlos sin redeploy, **no** definirlas por variable de entorno — configurarlas en cambio desde el panel `/admin` (quedan bloqueadas en la UI si vienen de una env var).
 
 Estos valores se inyectan como variables CSS (`--color-primary`, `--color-secondary`) en `templates/partials/head.hbs` — no hay que tocar ese archivo para que el cambio de color surta efecto.
@@ -65,7 +59,11 @@ tar -C branding -czf - . | ssh huaka-agent staging put-branding
 
 **Cuidado con la caché:** staging está detrás de Cloudflare, que cachea estáticos (css, svg, png). Antes de concluir que un cambio no funcionó, abrir el recurso con `?v=<timestamp>` o pedir a la persona que purgue la caché / active Development Mode en Cloudflare.
 
-**Producción:** el agente deja `branding/` listo y commiteado; la persona lo sincroniza a `~/ecorpus/branding/` con su propia llave (`rsync -av branding/ USUARIO@SERVIDOR:ecorpus/branding/`) después de validar en staging.
+**Producción:** el agente deja `branding/` listo y commiteado; la persona lo sincroniza a `~/ecorpus/branding/` con su propia llave después de validar en staging, sin el `branding.env` de staging y con el de producción:
+```bash
+rsync -av --exclude branding.env branding/ USUARIO@SERVIDOR:ecorpus/branding/
+rsync -av deploy/prod/branding.env USUARIO@SERVIDOR:ecorpus/branding/branding.env
+```
 
 El servidor ya monta esa carpeta (lo configura la persona; el agente no edita el compose):
 ```yaml
