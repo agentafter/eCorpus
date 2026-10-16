@@ -1,5 +1,8 @@
 FROM node:22-slim AS build
 # Build artifacts from sources
+# Huaka: `patch` applies patches/voyager/*.patch (see scripts/apply-voyager-patches.sh)
+RUN apt-get -qqy update && apt-get -qqy install --no-install-recommends patch \
+  && rm -rf /var/lib/apt/lists/* /var/tmp/*
 RUN mkdir -p /app/dist /app/source
 WORKDIR /app
 
@@ -21,9 +24,16 @@ RUN npm run build-server
 # outputs files in /app/source/server/dist
 
 COPY source/voyager /app/source/voyager
+# Huaka: fails the build if a Voyager update no longer accepts the patch
+COPY patches /app/patches
+COPY scripts/apply-voyager-patches.sh /app/scripts/
+RUN sh scripts/apply-voyager-patches.sh
 COPY source/ui /app/source/ui
 RUN npm run build-ui
 # outputs files in /app/dist
+# Huaka: guard against the patch applying but no longer reaching the bundle
+RUN grep -qi "99193a" /app/dist/js/voyager-explorer.js \
+  || { echo "ERROR: Huaka colors missing from voyager-explorer.js" >&2; exit 1; }
 
 FROM node:22-slim AS utilities
 # Fetch utilities that needs to be included

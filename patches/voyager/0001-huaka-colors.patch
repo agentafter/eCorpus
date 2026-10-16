@@ -1,0 +1,49 @@
+diff --git a/source/client/ui/explorer/styles.scss b/source/client/ui/explorer/styles.scss
+index 3398368e..56ce2192 100644
+--- a/source/client/ui/explorer/styles.scss
++++ b/source/client/ui/explorer/styles.scss
+@@ -20,19 +20,19 @@
+ 
+ @use "sass:color";
+ 
+-$color-primary: #0089bf; // Smithsonian primary blue
++$color-primary: #99193A; // Huaka secondary crimson (was #0089bf Smithsonian primary blue)
+  // Smithsonian secondary yellow
+-$color-tertiary: #1b2226; // Smithsonian dark blue
++$color-tertiary: #1D3557; // Huaka primary navy (was #1b2226 Smithsonian dark blue)
+ 
+ $menu-color-text: #f0f0f0;
+ $menu-color-text-dim: #a0a0a0;
+-$menu-color-background: color.adjust(#363d40, $alpha: -0.4);
+-$menu-color-background-dark: color.adjust(#1f2426, $alpha: -0.2);
+-$menu-color-background-darker: color.adjust(#050708, $alpha: -0.15);
+-$menu-color-background-hover: color.adjust(#4a5257, $alpha: -0.5);
++$menu-color-background: color.adjust(#24395A, $alpha: -0.4); // Huaka (was #363d40)
++$menu-color-background-dark: color.adjust(#16294A, $alpha: -0.2); // Huaka (was #1f2426)
++$menu-color-background-darker: color.adjust(#0B1526, $alpha: -0.15); // Huaka (was #050708)
++$menu-color-background-hover: color.adjust(#2C4A73, $alpha: -0.5); // Huaka (was #4a5257)
+ 
+ $color-paragraph-background: color.adjust($color-tertiary, $alpha: -0.5);
+-$color-paragraph-hover: color.adjust(#333b40, $alpha: -0.5);
++$color-paragraph-hover: color.adjust(#253F63, $alpha: -0.5); // Huaka (was #333b40)
+ 
+ $section-border: 1px solid color.adjust($color-primary, $alpha: -0.5);
+ 
+@@ -46,7 +46,7 @@ $main-menu-button-size: 38px;
+ 
+ @use "../styles" as common with (
+   $color-primary: $color-primary,
+-  $color-secondary: #ffcd00
++  $color-secondary: #97BDC6 // Huaka teal accent, drives $color-focus (was #ffcd00)
+ );
+ 
+ * {
+@@ -261,7 +261,7 @@ $pad: $canvas-border-width + $main-menu-button-size + 8px;
+   z-index: 1;
+ 
+   a:link, a:visited, a:hover, a:active {
+-    color: common.$color-primary;
++    color: #C2E9F3; // Huaka light teal: crimson links are unreadable on dark annotations (was common.$color-primary)
+   }
+ 
+   img {

@@ -368,11 +368,17 @@ Sintaxis: `ssh huaka-agent <entorno> <verbo> [arg]`
 | `up` | sí | **no** | `docker compose up -d` |
 | `restart` | sí | **no** | reinicia solo el servicio `app` |
 | `put-branding` | sí | **no** | extrae un `.tar.gz` recibido por stdin en `branding/` (sin symlinks ni rutas inseguras, máx. 50 MB, no borra nada) |
+| `clear-branding` | sí | **no** | vacía el contenido de `branding/` (conserva la carpeta; no sigue symlinks); luego se sube el árbol completo con `put-branding` |
 
 Reglas:
 - **Producción es de solo lectura para el agente.** Los cambios en producción los aplica una persona con su propio acceso.
 - El agente **no edita** el `docker-compose.yml` ni el `.env` del servidor (no existe verbo para eso). Para cambiar la
-  imagen, variables (`BRAND`, colores…) o puertos, entrega a la persona el bloque exacto a aplicar y espera confirmación.
+  imagen o los puertos, entrega a la persona el bloque exacto a aplicar y espera confirmación.
+- **Variables de marca en staging** (`BRAND`, `COLOR_PRIMARY`, `COLOR_SECONDARY`, `CONTACT_EMAIL`, solo esas): van en
+  `branding/branding.env` (`CLAVE="valor"`, comillas dobles), que el compose de staging lee con `env_file: ./branding/branding.env`. Se sube con
+  `put-branding` y se aplica con `staging up`. Ese archivo se sirve públicamente (`/dist/branding.env`): jamás secretos.
+  Las variables de marca **no** se repiten en `environment:` del compose (ahí tendrían prioridad y taparían al archivo).
+  Producción no lee ese archivo: para promover, entrega a la persona las líneas exactas a poner en su compose.
 - Flujo de promoción: (1) imagen publicada con tag inmutable; (2) el agente corre `staging pull` → `staging up` →
   `staging health` → `staging logs 100`; (3) validación visual en `staging-patrimoniovirtual.huaka.digital`;
   (4) el agente entrega el **paquete de promoción** (tag/hash, líneas exactas del compose, branding, rollback);
@@ -392,7 +398,7 @@ Reglas:
 | `git` + credencial de push al fork | Ramas, commits, PRs, rebase con `upstream`, manejo de submódulo Voyager | Deploy key/PAT solo sobre `agentafter/eCorpus`, nunca sobre `Holusion/eCorpus` |
 | Node/npm | `build-ui`, `build-server`, tests | Local al entorno del agente, sin acceso a producción |
 | Docker build/push | Construir y publicar la imagen custom (con submódulos inicializados) | Token de registry con scope de solo escritura de paquetes |
-| SSH al servidor Hetzner | Operar **staging** (`pull`, `up`, `restart`, `put-branding`) y **leer** producción (`ps`, `logs`, `health`, `validate`) | Llave dedicada `huaka-agent` con comando forzado (`agent-gate.sh`): sin shell, sin `scp`/`rsync`, sin escritura en producción. Ver 14.2 |
+| SSH al servidor Hetzner | Operar **staging** (`pull`, `up`, `restart`, `put-branding`, `clear-branding`) y **leer** producción (`ps`, `logs`, `health`, `validate`) | Llave dedicada `huaka-agent` con comando forzado (`agent-gate.sh`): sin shell, sin `scp`/`rsync`, sin escritura en producción. Ver 14.2 |
 | Cloudflare (si hace falta purgar caché tras un cambio de branding) | Verificar que el sitio público refleje los cambios | Preferir que Aaron purgue manualmente desde el dashboard antes que generar un token nuevo solo para esto |
 
 Comandos libres sin pedir confirmación: `git status`, `git diff`, `git log`, `git fetch`, `git submodule status`, builds/tests locales, `docker compose config --quiet`, y los verbos de `ssh huaka-agent staging …` (staging está aislado de producción, es exactamente para eso).

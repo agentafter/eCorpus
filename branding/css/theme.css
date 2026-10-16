@@ -1,0 +1,264 @@
+/*
+ * Huaka Digital — tema del shell de eCorpus (overlay vía ASSETS_DIR).
+ *
+ * Reemplaza /dist/css/theme.css, que upstream compila desde
+ * source/ui/styles/theme.scss. Se parte de esos mismos tokens y solo cambian
+ * valores; no hay reglas de layout. Si upstream agrega tokens nuevos a
+ * theme.scss, hay que copiarlos aquí (ver docs/customization.md).
+ *
+ * --color-primary / --color-secondary NO se definen aquí: llegan de
+ * COLOR_PRIMARY / COLOR_SECONDARY (o /admin) vía templates/partials/head.hbs.
+ * Valores esperados: #1D3557 / #99193A.
+ *
+ * Fuentes: Poppins (títulos) e Inter (cuerpo), SIL OFL 1.1, autoalojadas en
+ * /dist/fonts. Ver branding/FONTS.md.
+ */
+
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("/dist/fonts/Inter-Variable-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("/dist/fonts/Inter-Variable-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/dist/fonts/Poppins-Medium-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/dist/fonts/Poppins-Medium-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("/dist/fonts/Poppins-SemiBold-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("/dist/fonts/Poppins-SemiBold-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/dist/fonts/Poppins-Bold-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/dist/fonts/Poppins-Bold-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+:root {
+  color-scheme: light;
+
+  /* --- Geometría: idéntica a upstream --- */
+  --nav-height: 44px;
+  --col-width: 992px;
+  --toolbars-width: 300px;
+  --content-width: calc(var(--col-width) + 2 * var(--toolbars-width));
+  --grid-gap: 0 3rem;
+
+  /* --- Paleta de marca (fuente de verdad: huaka.digital) --- */
+  --color-accent: #97BDC6;      /* teal: solo bordes/fondos/decoración, nunca texto (1.8:1 sobre blanco) */
+  --color-surface: #FFFFFF;
+  --color-border: #D1D5DB;
+  --color-text-muted: #44474E;  /* 9.4:1 sobre #F2F3F4 */
+  --color-focus: #1D3557;       /* el teal no llega a 3:1 como indicador de foco */
+
+  /* Variantes de primario/secundario. En tema claro, la variante usada como
+     hover/texto debe ser más oscura o apenas aclarada (contraste sobre blanco). */
+  --color-primary-light: color-mix(in srgb, var(--color-primary), white 20%);   /* ~#4A5D79, 6:1 sobre fondo */
+  --color-primary-lighter: color-mix(in srgb, var(--color-primary), white 50%);
+  --color-secondary-light: color-mix(in srgb, var(--color-secondary), black 16%); /* ~#801430, hover de huaka.digital */
+
+  /* Upstream usa --color-dark como superficie del navbar y texto sobre
+     botones primarios, y --color-light como texto del navbar. En tema claro
+     se invierten: navbar blanca (como huaka.digital) con texto azul. */
+  --color-dark: var(--color-surface);
+  --color-light: #1D3557;
+
+  --color-text: #1D3557;               /* 11:1 sobre #F2F3F4 */
+  --color-background: #F2F3F4;
+  --color-section: var(--color-surface);
+  --color-element: #E1E3E4;
+
+  --color-hover: color-mix(in oklch, var(--color-primary), black 20%);
+  --color-highlight: var(--color-surface);  /* inputs, hover de botones neutros */
+  /* Upstream usa --color-highlight2 sobre todo como texto atenuado, borde y
+     separador (y además como fondo de botón neutro, ver abajo). */
+  --color-highlight2: #5F6B7A;              /* 4.8:1 sobre #F2F3F4 */
+
+  /* Acento estructural: líneas, barras y formas geométricas en carmesí,
+     como en huaka.digital. El teal queda para hover de bordes. */
+  --color-decoration: var(--color-secondary);
+  --color-decoration-soft: var(--color-accent);
+
+  /* Estados: oscurecidos respecto a upstream para >=4.5:1 sobre fondo claro */
+  --color-info: #1565C0;
+  --color-success: #2E7D32;
+  --color-warning: #8A5300;
+  --color-error: #B3261E;
+
+  /* --- Tipografía --- */
+  --font-body: "Inter", "Liberation Sans", "Roboto", sans-serif;
+  --font-heading: "Poppins", "Inter", sans-serif;
+  --font-ui: var(--font-body);
+  --font-mono: ui-monospace, "SFMono-Regular", "Liberation Mono", monospace;
+}
+
+/*
+ * Únicas reglas fuera de tokens. Upstream da a todos los botones de color
+ * el texto --color-text (claro en el tema oscuro); en tema claro eso deja
+ * azul sobre azul/carmesí. Especificidad .btn.btn-x (0,2,0) > .btn (0,1,0)
+ * de corpus.css, sin !important.
+ */
+.btn.btn-main,
+.btn.btn-primary,
+.btn.btn-secondary,
+.btn.btn-danger,
+.btn.btn-success,
+.btn.btn-info {
+  --btn-text-color: #FFFFFF;
+  font-weight: 600;
+}
+
+/* Jerarquía de pesos de huaka.digital: h1 700, h2 600, h3 500 */
+h2 { font-weight: 600; }
+h3 { font-weight: 500; }
+
+:focus-visible {
+  outline-color: var(--color-focus);
+}
+
+/* Botones neutros: --color-highlight2 ahora es un gris de texto, así que se
+   les devuelve un fondo claro. (0,1,1) > .btn (0,1,0); las variantes de
+   color (.btn.btn-x, 0,2,0) siguen ganando. */
+:root .btn {
+  --btn-color: #E7E9EB;
+}
+:root .btn:is([disabled], .disabled) {
+  background-color: var(--color-element);
+  color: var(--color-highlight2);
+}
+
+/* ------------------------------------------------------------------------
+ * Acentos estructurales — lenguaje visual de huaka.digital:
+ * carmesí en barras, líneas y formas; teal en el hover de bordes.
+ * Solo color/decoración: no cambia tamaños ni posiciones (el layout queda
+ * igual). Prefijo :root para superar en especificidad a corpus.css, que
+ * carga después, sin !important.
+ * --------------------------------------------------------------------- */
+
+/* Esquinas en "L" de las secciones */
+:root section::before, :root section::after,
+:root .section::before, :root .section::after {
+  border-color: var(--color-decoration);
+}
+:root section, :root .section {
+  box-shadow: 0 4px 20px rgba(29, 53, 87, 0.06);
+}
+
+/* h1: en vez del subrayado grueso a todo el ancho, la barra corta centrada
+   de huaka.digital (48×4 px). El borde queda transparente para conservar
+   el mismo espacio. Los títulos con color de estado conservan el original. */
+:root h1:not(.text-info, .text-success, .text-warning, .text-error, .text-primary) {
+  border-bottom-color: transparent;
+}
+:root h1:not(.text-info, .text-success, .text-warning, .text-error, .text-primary)::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -0.6rem;
+  width: 3rem;
+  height: 4px;
+  transform: translateX(-50%);
+  background: var(--color-decoration);
+}
+
+/* h2: barra lateral */
+:root h2:not(:empty):not(.text-info, .text-success, .text-warning, .text-error, .text-primary) {
+  border-left-color: var(--color-decoration);
+  border-right-color: var(--color-decoration);
+}
+
+/* Tablas: línea bajo los encabezados */
+:root table.list-table th {
+  border-bottom-color: var(--color-decoration);
+}
+
+/* Navegación: indicador de la pestaña activa */
+:root .nav-link.active,
+:root .nav-link.active:hover {
+  border-color: var(--color-decoration);
+}
+
+/* Bloques de ayuda: barra lateral + icono (como los "eyebrow" de huaka.digital) */
+:root .help-block {
+  border-left-color: var(--color-decoration);
+}
+:root .help-block > ui-icon {
+  color: var(--color-decoration);
+}
+
+/* Onboarding: círculos numerados (como las cifras en carmesí de huaka.digital) */
+:root .onboarding-block .step-number {
+  border-color: var(--color-decoration);
+  color: var(--color-decoration);
+}
+
+/* Tarjetas de escena: blancas; al pasar el mouse, barra superior carmesí
+   y borde teal (patrón de las tarjetas de servicios de huaka.digital).
+   inset box-shadow: no ocupa espacio. */
+:root .scene-card {
+  background-color: var(--color-surface);
+}
+:root .scene-card:hover {
+  background-color: var(--color-surface);
+  border-color: var(--color-decoration-soft);
+  box-shadow: inset 0 3px 0 var(--color-decoration), 0 4px 20px rgba(29, 53, 87, 0.08);
+}
+/* Seleccionada: upstream usa fondo carmesí con el texto forzado a
+   --color-text (!important) → azul sobre carmesí, 2.1:1. Se cambia el fondo
+   (no el texto, así no hace falta !important): teal suave + barra carmesí. */
+:root .scene-card:has(> .scene-card-select > input[type="checkbox"]:checked),
+:root .scene-card:has(> .scene-card-select > input[type="checkbox"]:checked):hover {
+  background-color: color-mix(in srgb, var(--color-accent) 30%, white);
+  border-color: var(--color-decoration-soft);
+  box-shadow: inset 4px 0 0 var(--color-decoration);
+}
+
+/* Links del contenido: azul → carmesí al pasar el mouse */
+:root main a:not(.btn, .nav-link):hover {
+  color: var(--color-secondary);
+}
