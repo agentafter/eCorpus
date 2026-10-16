@@ -54,9 +54,12 @@ jobs:
             type=sha,format=short
             type=raw,value=latest
           # El Dockerfile de upstream declara vendor "Holusion SAS"; esta imagen
-          # no la publica Holusion (AGENTS.md §1.6). source/licenses los pone
-          # metadata-action a partir de este repo.
+          # no la publica Holusion (AGENTS.md §1.6). La licencia va explícita:
+          # metadata-action la toma de la detección de GitHub, que en este repo
+          # (sin LICENSE en la raíz, igual que upstream) queda vacía y pisa el
+          # Apache-2.0 del Dockerfile.
           labels: |
+            org.opencontainers.image.licenses=Apache-2.0
             org.opencontainers.image.vendor=Huaka Digital
             org.opencontainers.image.description=eCorpus (Holusion, Apache-2.0) con personalización de Huaka Digital
       - name: Build and push

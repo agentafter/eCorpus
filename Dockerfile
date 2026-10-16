@@ -36,6 +36,13 @@ RUN grep -qi "99193a" /app/dist/js/voyager-explorer.js \
   || { echo "ERROR: Huaka colors missing from voyager-explorer.js" >&2; exit 1; }
 RUN grep -qF ".5922,.7412,.7765" /app/dist/js/voyager-story.js \
   || { echo "ERROR: Huaka default annotation color missing from voyager-story.js" >&2; exit 1; }
+# Huaka: ship license texts and attribution with the redistributed image
+# (Apache-2.0 §4; ff-* libs inside Voyager are MIT). Fails if one goes missing.
+COPY NOTICE.md /app/licenses/
+RUN mkdir -p /app/licenses/voyager/libs \
+  && cp source/server/LICENSE.md /app/licenses/LICENSE.md \
+  && cp source/voyager/LICENSE.md source/voyager/3RD_PARTY_LICENSES.txt source/voyager/ATTRIBUTIONS.md /app/licenses/voyager/ \
+  && for d in source/voyager/libs/*/; do cp "$d/LICENSE.md" "/app/licenses/voyager/libs/$(basename "$d")-LICENSE.md" || exit 1; done
 
 FROM node:22-slim AS utilities
 # Fetch utilities that needs to be included
@@ -92,6 +99,7 @@ COPY ./source/server/templates /app/templates
 
 COPY --from=build /app/dist /app/dist
 COPY --from=build /app/source/server/dist /app/server
+COPY --from=build /app/licenses /app/licenses
 
 VOLUME [ "/app/files" ]
 EXPOSE ${PORT}

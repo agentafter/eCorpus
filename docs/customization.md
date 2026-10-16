@@ -57,3 +57,9 @@ cd ../.. && sh scripts/apply-voyager-patches.sh --check
 Actualizar aquí el hash de Voyager sobre el que se generó.
 
 Build local: `sh scripts/apply-voyager-patches.sh && npm run build-ui` deja el submódulo modificado; revertir con `git -C source/voyager checkout -- .` antes de commitear.
+
+## 3. Licencias en la imagen publicada
+
+La imagen `ghcr.io/agentafter/e-corpus` redistribuye eCorpus y Voyager, así que lleva los textos de licencia (Apache-2.0 §4) en `/app/licenses/`: `NOTICE.md` (procedencia, ver §1.5 de AGENTS.md), la licencia de eCorpus, `LICENSE.md`/`3RD_PARTY_LICENSES.txt`/`ATTRIBUTIONS.md` de Voyager y las licencias MIT de sus bibliotecas `ff-*`. Los copia el `Dockerfile`; si falta alguno, el build falla.
+
+`publish.yml` fija la etiqueta `org.opencontainers.image.licenses=Apache-2.0`: sin ella `metadata-action` la deja vacía (el repo no tiene `LICENSE` en la raíz, igual que upstream) y pisa la del `Dockerfile`.
