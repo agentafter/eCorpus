@@ -36,6 +36,8 @@ RUN grep -qi "99193a" /app/dist/js/voyager-explorer.js \
   || { echo "ERROR: Huaka colors missing from voyager-explorer.js" >&2; exit 1; }
 RUN grep -qF ".5922,.7412,.7765" /app/dist/js/voyager-story.js \
   || { echo "ERROR: Huaka default annotation color missing from voyager-story.js" >&2; exit 1; }
+RUN grep -qF "logo-full-white.svg" /app/dist/js/voyager-explorer.js \
+  || { echo "ERROR: Huaka white viewer logo missing from voyager-explorer.js" >&2; exit 1; }
 # Huaka: ship license texts and attribution with the redistributed image
 # (Apache-2.0 §4; ff-* libs inside Voyager are MIT). Fails if one goes missing.
 COPY NOTICE.md /app/licenses/
