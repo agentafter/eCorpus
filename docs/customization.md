@@ -17,9 +17,33 @@ Nombre, colores y contacto (`BRAND`, `COLOR_PRIMARY`, `COLOR_SECONDARY`, `CONTAC
 | Entorno | Archivo en el repo | Cómo llega al servidor |
 |---|---|---|
 | Staging | `branding/branding.env` | `put-branding` (agente) |
-| Producción | `deploy/prod/branding.env` | rsync a `~/ecorpus/branding/branding.env` (persona) |
+| Producción | `deploy/prod/branding.env` | copia a `~/ecorpus/branding/branding.env` (persona, ver abajo) |
 
 Ambos se sirven públicamente en `/dist/branding.env`: solo valores públicos, nunca secretos.
+
+### Producción: sincronizar `branding/`
+
+Lo hace la persona en el servidor, como `agentafter` (no root), descargando del repo público el commit ya validado en staging. No hace falta llave ni copiar desde un PC:
+
+```bash
+cd ~/ecorpus
+cp -a branding branding.bak-$(date +%F)                    # respaldo para rollback
+tmp=$(mktemp -d)
+curl -fsSL https://github.com/agentafter/eCorpus/archive/<commit>.tar.gz | tar -xz -C "$tmp" --strip-components=1
+cp -a "$tmp/branding/." branding/                          # theme.css, fuentes, FONTS.md
+cp "$tmp/deploy/prod/branding.env" branding/branding.env   # después: pisa el de staging
+rm -rf "$tmp"
+docker compose up -d                                       # solo si cambió branding.env o el compose
+```
+
+`cp` no borra archivos que ya no estén en el repo; para quitarlos, borrarlos a mano. Los CSS y fuentes se sirven sin reiniciar; los valores de `branding.env` requieren `up -d`. Después, purgar la caché de Cloudflare.
+
+Requisitos del compose de producción (servicio `app`): `env_file: ./branding/branding.env`, `ASSETS_DIR: /app/branding` y el volumen `./branding:/app/branding:ro`. Verificación:
+
+```bash
+docker compose exec app sh -c 'echo "ASSETS_DIR=$ASSETS_DIR"; ls /app/branding'
+```
+Desde fuera, `/dist/css/theme.css` debe medir lo mismo que `branding/css/theme.css` y `/dist/branding.env` debe responder 200. Si el título y los colores cambian pero `theme.css` no, falta `ASSETS_DIR` o el volumen: `env_file` lo lee Compose en el host, así que funciona aunque la carpeta no esté montada.
 
 `theme.css` **no** define `--color-primary`/`--color-secondary`: vienen de esas variables vía `templates/partials/head.hbs`.
 

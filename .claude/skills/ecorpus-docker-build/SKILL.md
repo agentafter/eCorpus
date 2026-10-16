@@ -96,11 +96,7 @@ Cuando staging esté validado, el agente entrega un **paquete de promoción**:
        image: ghcr.io/agentafter/e-corpus:<hash>   # antes: ghcr.io/holusion/e-corpus:main
        # ...resto sin cambios; BRAND/COLOR_*/CONTACT_EMAIL vienen de env_file: ./branding/branding.env
    ```
-3. Si hay branding: la carpeta `branding/` y `deploy/prod/branding.env` commiteados, y los comandos para que la persona los sincronice con su propia llave (el `branding.env` de `branding/` es el de staging):
-   ```bash
-   rsync -av --exclude branding.env branding/ USUARIO@SERVIDOR:ecorpus/branding/
-   rsync -av deploy/prod/branding.env USUARIO@SERVIDOR:ecorpus/branding/branding.env
-   ```
+3. Si hay branding: la carpeta `branding/` y `deploy/prod/branding.env` commiteados y fusionados a `main`, y el bloque de `docs/customization.md` ("Producción: sincronizar `branding/`") con `<commit>` reemplazado por el hash concreto. La persona lo corre en el servidor (descarga del repo público; no usa rsync ni llave desde su PC).
 4. El plan de rollback (el tag anterior) y qué verificar después.
 
 La persona lo aplica con su propio acceso (usuario no-root del grupo `docker`, nunca root):
