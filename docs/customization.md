@@ -11,6 +11,11 @@ Carpeta `branding/` → montada como `/app/branding` (`ASSETS_DIR`) y servida en
 | `branding/css/theme.css` | `/dist/css/theme.css` (compilado de `source/ui/styles/theme.scss`) | Tokens de color/tipografía del tema claro Huaka + `@font-face` Poppins/Inter |
 | `branding/fonts/fonts.css` | `/dist/fonts/fonts.css` (`source/voyager/assets/fonts/fonts.css`) | Redirige las familias de Voyager `"Amiri"`→Poppins y `"Hind Siliguri"`→Inter |
 | `branding/fonts/*.woff2`, `*-OFL.txt` | — (nuevos) | Fuentes autoalojadas; ver `branding/FONTS.md` |
+| `branding/images/logo-full.svg`, `logo-sm.svg` | `/dist/images/logo-*.svg` | Logo Huaka a color en la barra (fondo claro); ver `branding/IMAGES.md` |
+| `branding/images/logo-full-white.svg`, `logo-sm-white.svg` | — (nuevos) | Variante blanca para el visor Voyager (fondo oscuro); la pide el parche `0003` |
+| `branding/favicon.svg`, `favicon.png` | `/dist/favicon.*` | Favicon Huaka (isotipo) |
+
+Los SVG salen de los originales de `branding-src/huaka/` cambiando solo el `viewBox` (recorte del margen vacío). Pendiente: los dibujos de fondo (`/dist/images/muse.webp` y `scroll.webp`, de Holusion, Apache-2.0) se reemplazarán igual, con la misma ruta en `branding/images/`.
 
 Nombre, colores y contacto (`BRAND`, `COLOR_PRIMARY`, `COLOR_SECONDARY`, `CONTACT_EMAIL`) los lee el compose de cada entorno con `env_file: ./branding/branding.env`, sin repetirlos en `environment:` (tendría prioridad):
 
@@ -67,6 +72,7 @@ Mapeo: selección/activo `#99193A` · fondos de paneles navy (`#1D3557` y deriva
   - `voyager-*.js` se sirven sin parámetro de versión: tras desplegar una imagen nueva, purgar la caché de Cloudflare o los navegadores pueden seguir usando el bundle viejo.
   - `source/client/models/Annotation.ts`: solo el valor inicial de una anotación nueva. **No** se toca `Annotation.defaultColor` ni la comparación de `toJSON`: Voyager omite el color al guardar cuando es el azul SI y lo rellena con `defaultColor` al cargar; cambiarlos recolorearía las anotaciones existentes. Así, las anotaciones viejas siguen azules y las nuevas se guardan con el teal explícito (se ven teal incluso en un Voyager sin parche).
   - `source/client/components/CVSlicer.ts`: preset y valor de respaldo del color del corte. Las escenas que ya guardaron un color de corte lo conservan.
+- `patches/voyager/0003-huaka-white-logo.patch` — `source/client/ui/Logo.ts`: la marca del visor pide `images/logo-{full,sm}-white.svg` en vez de `logo-{full,sm}.svg`. eCorpus usa esa misma ruta para la barra (clara) y Voyager la pinta sobre el visor (oscuro); con un solo archivo, uno de los dos queda sin contraste. Si falta el archivo blanco, `<object>` muestra el logo por defecto de Voyager. El `Dockerfile` verifica que `logo-full-white.svg` llegue a `voyager-explorer.js`.
 No cubierto: `story/editor_css/content.min.css` (CSS interno del editor de artículos TinyMCE, links `#0089bf`).
 
 ### Regenerar el parche tras actualizar Voyager
