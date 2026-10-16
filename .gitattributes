@@ -4,3 +4,7 @@ CLAUDE.md text eol=lf
 AGENTS.md text eol=lf
 .claude/** text eol=lf
 branding/** -text
+# El .sh y el .patch corren dentro de Docker/Linux: con CRLF se rompen.
+scripts/*.sh text eol=lf
+patches/** text eol=lf
+docs/** text eol=lf
