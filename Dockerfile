@@ -1,6 +1,6 @@
 FROM node:22-slim AS build
 # Build artifacts from sources
-# Huaka: `patch` applies patches/voyager/*.patch (see scripts/apply-voyager-patches.sh)
+# Huaka: `patch` applies patches/{ecorpus,voyager}/*.patch (see scripts/apply-patches.sh)
 RUN apt-get -qqy update && apt-get -qqy install --no-install-recommends patch \
   && rm -rf /var/lib/apt/lists/* /var/tmp/*
 RUN mkdir -p /app/dist /app/source
@@ -20,14 +20,18 @@ RUN npm ci --no-fund --no-audit
 
 
 COPY source/server /app/source/server
+# Huaka: fails the build if an eCorpus update no longer accepts a patch
+COPY patches /app/patches
+COPY scripts/apply-patches.sh /app/scripts/
+RUN sh scripts/apply-patches.sh ecorpus
 RUN npm run build-server
+RUN grep -qF '"ES"' /app/source/server/dist/utils/languages.js \
+  || { echo "ERROR: Huaka Spanish UI language missing from server build" >&2; exit 1; }
 # outputs files in /app/source/server/dist
 
 COPY source/voyager /app/source/voyager
 # Huaka: fails the build if a Voyager update no longer accepts the patch
-COPY patches /app/patches
-COPY scripts/apply-voyager-patches.sh /app/scripts/
-RUN sh scripts/apply-voyager-patches.sh
+RUN sh scripts/apply-patches.sh voyager
 COPY source/ui /app/source/ui
 RUN npm run build-ui
 # outputs files in /app/dist
@@ -96,7 +100,8 @@ COPY source/server/package*.json /app/
 RUN npm ci --omit=dev --no-fund --no-audit 
 
 COPY ./source/server/migrations /app/migrations
-COPY ./source/server/templates /app/templates
+# Huaka: templates from the build stage, where patches/ecorpus was applied
+COPY --from=build /app/source/server/templates /app/templates
 
 
 COPY --from=build /app/dist /app/dist

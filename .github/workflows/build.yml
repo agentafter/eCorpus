@@ -60,7 +60,7 @@ jobs:
       - name: install ui dependencies
         run: npm ci && (cd source/ui && npm ci)
       - name: apply Huaka patches to voyager
-        run: sh scripts/apply-voyager-patches.sh
+        run: sh scripts/apply-patches.sh voyager
       - name: build UI
         run: npm run build-ui
       - uses: actions/upload-artifact@v6
@@ -124,6 +124,10 @@ jobs:
           cache: 'npm'
       - name: install
         run: npm ci && (cd source/server && npm ci)
+      # Huaka: --strict fails if source/ was committed already patched;
+      # the uploaded templates/ (used by pack and e2e) carry the patch.
+      - name: apply Huaka patches to eCorpus
+        run: sh scripts/apply-patches.sh --strict ecorpus
       - name: test
         run: (cd source/server && npm test)
       - name: build
