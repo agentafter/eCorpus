@@ -120,7 +120,7 @@ buttons:
   delete: Eliminar
   editTags: Editar etiquetas
   showTags: Cancelar edición
-  history: Historial de la escena
+  history: Historial
   download: Descargar esta escena
   downloadSelection: Descargar las escenas seleccionadas
   rename: Renombrar
@@ -369,7 +369,7 @@ leads:
   annotations_many: "{{count}} anotaciones"
   annotations_other: "{{count}} anotaciones"
   sceneCounts: >
-    Esta escena tiene $t(leads.tours, {"count": {{tours}} }), $t(leads.articles, {"count": {{articles}} }) y $t(leads.annotations, {"count": {{annotations}}})
+    En esta escena: $t(leads.tours, {"count": {{tours}} }), $t(leads.articles, {"count": {{articles}} }) y $t(leads.annotations, {"count": {{annotations}}})
   noMetaAvailable: >
     No se pudieron extraer metadatos de esta escena.
   historyEdition: |
