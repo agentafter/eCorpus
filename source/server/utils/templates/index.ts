@@ -6,7 +6,7 @@ import i18next, { i18n, TFunction } from "i18next";
 import Backend from "i18next-fs-backend";
 import { staticHelpers } from "./helpers/index.js";
 
-export const dicts = ["fr", "en"] as const;
+export const dicts = ["fr", "en", "es"] as const;
 export const locales = [...dicts, "cimode"];
 export type AcceptedLocales = typeof dicts[number] | "cimode";
 

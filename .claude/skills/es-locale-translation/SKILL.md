@@ -5,7 +5,9 @@ description: Usar esta skill SIEMPRE que haya que traducir, agregar, revisar o c
 
 # Traducción de la interfaz de eCorpus a español
 
-La interfaz (shell) de eCorpus usa i18next con diccionarios YAML en `source/server/templates/locales/`. Hoy solo existen `en.yml` y `fr.yml`. `uiLanguages` está hardcodeado en `source/server/utils/languages.ts` como `["EN", "FR"]` — agregar español **requiere tocar código y reconstruir la imagen** (no es una variable de entorno). Ver skill `ecorpus-docker-build` para el paso de build una vez que la traducción esté lista.
+La interfaz (shell) de eCorpus usa i18next con diccionarios YAML en `source/server/templates/locales/`. **El español ya está activado** (rama `feature/i18n-es`): `es.yml` existe y `es` figura en todos los puntos donde upstream fija la lista de idiomas. La tabla de esos puntos, el overlay de Voyager y el procedimiento al sincronizar están en `docs/customization.md` §3 — leerla antes de tocar nada. Cualquier cambio en `es.yml` o en el código **requiere reconstruir la imagen** (skill `ecorpus-docker-build`); el JSON de Voyager en `branding/language/` no (se sube con `put-branding`).
+
+Validación rápida tras cualquier cambio: `node scripts/check-es-locales.cjs` (claves y placeholders de `es.yml` frente a `en.yml`, y claves del overlay de Voyager frente a su `en.json`/`fr.json`). Plurales en `es.yml`: i18next v24 con sufijos `_one`/`_many`/`_other` (el español necesita `_many`), `_zero` opcional.
 
 No confundir con `sceneLanguages` (también en `languages.ts`): ese arreglo **ya incluye "ES"** y controla el idioma del *contenido* de cada escena 3D, no el idioma de la interfaz. No hace falta tocarlo.
 
@@ -14,7 +16,7 @@ No confundir con `sceneLanguages` (también en `languages.ts`): ese arreglo **ya
 Inspeccionar la arquitectura de localización real del commit actual — puede haber cambiado desde que se escribió esta skill:
 - ¿siguen siendo `en.yml`/`fr.yml` los únicos locales del shell?
 - ¿el selector de idioma valida contra `uiLanguages` en el server, en el cliente, o en ambos?
-- ¿Voyager (el visor/editor 3D, submódulo aparte) tiene su **propio** sistema de i18n independiente? Si sí, traducir el shell de eCorpus no traduce automáticamente el visor — es un trabajo aparte, posiblemente sobre el submódulo (ver skill `voyager-submodule-sync` antes de tocar nada ahí).
+- Voyager (el visor/editor 3D, submódulo aparte) tiene su **propio** i18n: `source/voyager/assets/language/string.resources.<idioma>.json`, con el texto inglés como clave. Se traduce con el overlay `branding/language/string.resources.es.json`, **sin tocar el submódulo**. Los textos de Voyager escritos directo en el código (sin pasar por `getUILocalizedString`) no se pueden traducir así: anotarlos en `docs/localization/es-untranslated.md`.
 
 No crear un mecanismo de localización paralelo si ya existe uno — usar el existente.
 
@@ -28,7 +30,7 @@ Reglas de traducción, sin excepción:
   - Ejemplo correcto: `Delete {name}?` → `¿Eliminar {name}?`
   - Ejemplo incorrecto: `Delete {name}?` → `¿Eliminar {nombre}?` (nunca renombrar la variable dentro del placeholder salvo que el motor de i18n lo soporte explícitamente — verificarlo antes).
 - Español neutro: técnicamente preciso, apto para patrimonio cultural/museos/arqueología, entendible tanto en LatAm como en España. Evitar regionalismos innecesarios (ej. preferir "computadora" o reformular antes que un término marcadamente local).
-- Agregar la entrada `es: Español` en el bloque `lang:` de `es.yml`, y agregar también `es: Spanish` / `es: Espagnol` (según corresponda) en `en.yml` y `fr.yml` — **esa es la única línea que se debe tocar en esos dos archivos**. No hacer ningún otro cambio ahí: mantener el diff mínimo sobre archivos que Holusion sigue actualizando reduce los conflictos futuros.
+- **No tocar `en.yml` ni `fr.yml`**: upstream ya trae `lang.es` en ambos. Mantener el diff mínimo sobre archivos que Holusion sigue actualizando reduce los conflictos futuros.
 
 ## Paso 2 — Glosario de terminología
 
@@ -46,13 +48,9 @@ Mantener (crear si no existe) `docs/localization/es-terminology.md` como fuente 
 
 Antes de traducir un término nuevo, revisar primero si ya está en el glosario — no reinventar la traducción de algo ya decidido.
 
-## Paso 3 — Activar el idioma en código
+## Paso 3 — Activar el idioma en código (ya hecho)
 
-En `source/server/utils/languages.ts`:
-```ts
-export const uiLanguages = ["EN", "FR", "ES"] as const;
-```
-Revisar si hay otra lista `["EN","FR"]` hardcodeada del lado del cliente/UI (no asumir que el server es el único lugar) — buscar todas las referencias a `uiLanguages` en el repo antes de dar el cambio por completo.
+`es` ya está en los 6 puntos fijos de upstream (tabla en `docs/customization.md` §3): `uiLanguages`, `dicts`, `?lang=` en `routes/index.ts`, selector del pie, asunto del correo de alta y vista previa de correos, más `templates/emails/onboarding_es.hbs`. Tras sincronizar con upstream, buscar listas nuevas de idiomas fijas (`grep -rn '"fr"' source/server --include=*.ts --include=*.hbs`) y plantillas de correo nuevas por idioma (`templates/emails/*_fr.hbs` sin su `_es`).
 
 ## Paso 4 — Revisar inglés residual
 

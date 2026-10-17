@@ -2,7 +2,7 @@
 export const sceneLanguages = ["EN", "ES", "DE", "NL", "JA", "FR", "HAW"] as const;
 export type SceneLanguage = typeof sceneLanguages[number];
 
-export const uiLanguages = ["EN", "FR"] as const;
+export const uiLanguages = ["EN", "FR", "ES"] as const;
 export type UILanguage = typeof uiLanguages[number];
 
 

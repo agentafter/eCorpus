@@ -496,7 +496,7 @@ routes.get("/design/embeds", wrap(async (req, res)=>{
 }));
 
 routes.get("/design/emails", wrap(async (req, res)=>{
-  const allowedLangs = ["en", "fr"] as const;
+  const allowedLangs = ["en", "fr", "es"] as const;
   // Use a dedicated query param (not `lang`) — `lang` is the UI locale
   // controlled by the footer language switcher, and conflating the two
   // means changing the previewed template language also flips the

@@ -1,0 +1,441 @@
+---
+lang:
+  fr: Francés
+  en: Inglés
+  es: Español
+labels:
+  authorize: Autorizar
+  deny: Rechazar
+  revoke: Revocar
+  personalTokens: Tokens personales
+  oauthTokens: Tokens OAuth
+  noAccess: sin acceso
+  unavailable: no disponible para esta familia
+  scope: alcance
+  optional: opcional
+  scene: Escena
+  sceneTitle: título de la escena
+  selectFile: seleccionar un archivo
+  selectFile_s: seleccionar uno o varios archivos
+  signin: Iniciar sesión
+  save: Guardar
+  username: Nombre de usuario
+  group: Grupo
+  groupMembers: Miembros del grupo
+  newGroup: Nuevo grupo
+  deletingAGroupIsPermanent: Eliminar un grupo es definitivo
+  email: Correo electrónico
+  password: Contraseña
+  showPassword: Mostrar contraseña
+  newPassword: Nueva contraseña
+  forgottenPassword: ¿Olvidó su contraseña?
+  pagination: paginación
+  searchPlaceholder: buscar una escena
+  searchUserPlaceholder: buscar por nombre o correo
+  ignoredIfMultipleScenes: se ignora si se crean varias escenas a la vez
+  sortBy: Ordenar por
+  loginLink: Copiar enlace de acceso directo
+  sendLoginLink: Enviar un enlace de acceso
+  sendOnboardingEmail: Enviar correo de bienvenida
+  view: Ver
+  edit: Editar
+  editDefault: Editar (valor predeterminado sin cambios)
+  editModified: Editar (valor modificado respecto al predeterminado)
+  properties: Propiedades
+  localization_one: Idioma de la escena
+  localization_other: Idiomas de la escena
+  setupLocalization: Idioma predeterminado
+  rights: Derechos de acceso
+  permission: Autorizaciones
+  defaultUser: Acceso público
+  anyUser: Acceso autenticado
+  language: Idioma de la interfaz
+  delete: Eliminar
+  restore: Restaurar
+  publicAccess: Acceso público
+  defaultAccess: Acceso predeterminado
+  copyright: "Copyright:"
+  role: Rol
+  close: Cerrar
+  createUser: Crear un usuario
+  createClient: Registrar un cliente
+  clientName: Nombre de la aplicación
+  clientId: ID de cliente
+  clientSecret: Secreto del cliente
+  redirectUris: URI de redirección (una por línea)
+  confidential: Cliente confidencial (emite un secreto)
+  confidentialClient: Confidencial
+  publicClient: Público (PKCE)
+  clientRegistered: Cliente registrado
+  clientSecretWarning: Copie el secreto del cliente ahora — el servidor solo guarda un hash y no se volverá a mostrar.
+  copy: Copiar
+  copied: Copiado
+  deletingAClientIsPermanent: Eliminar un cliente revoca todos los tokens que emitió
+  noClients: Aún no hay clientes OAuth registrados
+  lastModified: "Última modificación"
+  totalScenesCount: Total de escenas
+  totalFilesCount: Total de archivos
+  totalDiskUsage: Espacio en disco total
+  buildId: ID de compilación
+  databaseSchema: Versión del esquema de la base de datos
+  show: ver
+  sceneType: Tipo de escena
+  advancedSearch: Búsqueda avanzada
+  batchTags: Cambiar las etiquetas de la selección
+  batchAddTag: Agregar esta etiqueta a las escenas seleccionadas
+  batchRmTag: Quitar esta etiqueta de las escenas seleccionadas
+  addTag: Agregar una etiqueta
+  sceneName: Nombre de la escena
+  mine: Mías
+  all: Todas
+  success: Éxito
+  error: Error
+  taskTypes: Tipos de tarea
+  allTasks: Todas las tareas
+  rootOnly: Tareas raíz
+  noTasks: No se encontraron tareas.
+  noLogs: Sin registros.
+  warnings: Advertencias
+  optimizeModel: Optimizar modelos
+  childOf: Depende de
+  showStatic: Mostrar parámetros bloqueados
+  showChangedOnly: Mostrar solo parámetros modificados
+  public: Pública
+  private: Privada
+  size_one: "{{count}} escena"
+  size_many: "{{count}} escenas"
+  size_other: "{{count}} escenas"
+  addUser: Agregar usuario
+  addGroup: Agregar grupo
+
+buttons:
+  searchScene: buscar escenas
+  uploadScene: crear una escena
+  uploadArchive: extraer
+  useStandalone: usar el modo independiente
+  logout: Cerrar sesión
+  next: "Página siguiente"
+  previous: "Página anterior"
+  archive: Archivar
+  delete: Eliminar
+  editTags: Editar etiquetas
+  showTags: Cancelar edición
+  history: Historial
+  download: Descargar esta escena
+  downloadSelection: Descargar las escenas seleccionadas
+  rename: Renombrar
+  cancel: Cancelar
+  selectAll: Seleccionar todo
+  deselectAll: Deseleccionar todo
+  submit: Enviar
+  create: Crear
+  showActions: Mostrar acciones
+  getTaskArtifacts: Descargar el espacio de trabajo de la tarea
+
+fields:
+  name: nombre
+  author: autor
+  mtime: última modificación
+  ctime: fecha de creación
+  rank: relevancia
+  access: derechos de acceso
+  none: ninguno
+  read: lectura
+  write: escritura
+  admin: administración
+  limit: Resultados por página
+  ascendingOrder: orden ascendente
+  descendingOrder: orden descendente
+  tag: nombre de la etiqueta
+  removeSpecificAccess: quitar acceso específico
+  showOnlyMyScenes: Solo mis escenas
+  myAccess: "Derechos de acceso:"
+  userRoles:
+    use: Usuario
+    create: Creador
+    manage: Editor
+    admin: Administrador
+  owner: Propietario
+  parent: Padre
+  scene: Escena
+  type: Tipo
+  status: Estado
+  minLevel: Nivel mínimo
+nav:
+  tokens: tokens de API
+  tags: colecciones
+  login: iniciar sesión
+  administration: administración
+  summary: resumen
+  adminUsers: usuarios
+  adminClients: clientes OAuth
+  adminGroups: grupos
+  adminStats: estadísticas
+  adminArchives: archivadas
+  reportBug: reportar un error
+  documentation: documentación del proyecto
+  license: Licencia Apache
+  settings: Configuración
+  userGroups: Grupos
+  userArchives: Archivadas
+  tasks: tareas
+  overview: Resumen
+  upload: crear
+
+onboarding:
+  import:
+    title: "Importe sus modelos"
+    lead: "Suba un archivo de modelo 3D"
+    link: "Tutorial: crear una escena"
+  annotate:
+    title: "Anote y enriquezca"
+    lead: "Abra Voyager-Story y agregue artículos, medios y anotaciones"
+    link: "Tutorial: agregar contenido"
+  publish:
+    title: "Publique y comparta"
+    lead: "Administre los permisos de acceso e inserte el visor en su sitio web"
+    link: "Tutorial de publicación"
+  upload:
+    title: "¿Necesita ayuda?"
+    lead: >
+      Arrastre sus archivos al área de arriba o haga clic para buscarlos.
+    types: Tipos de archivo aceptados
+    glb:
+      title: "Modelo 3D individual"
+      lead: >
+        Un archivo <code>.glb</code> (o <code>.gltf</code>) crea una escena nueva con
+        metadatos predeterminados.
+    optimize:
+      title: "Conversión y optimización"
+      lead: >
+        Active <i>Optimizar modelos</i> para comprimir la geometría y las texturas. Se recomienda para archivos de más de unos pocos megabytes: la subida se ejecuta como una
+        tarea en segundo plano y la escena resultante carga mucho más rápido en los visores.
+    zip:
+      title: "Subida de un archivo ZIP"
+      lead: >
+        Un archivo <code>.zip</code> puede contener una o varias escenas completas de eCorpus
+        (modelos, artículos, anotaciones y miniaturas). Los nombres de las escenas se toman
+        del archivo, así que el campo de nombre de arriba se ignora.
+  group:
+    title: "Cómo funcionan los grupos"
+    lead: >
+      Los grupos reúnen <b>usuarios</b> y <b>escenas</b> y les otorgan un nivel de acceso compartido
+      (<i>lectura</i>, <i>escritura</i> o <i>administración</i>). Agregue miembros a la izquierda y luego vincule escenas
+      con el permiso deseado a la derecha. Los derechos efectivos de un usuario son los más
+      amplios entre sus derechos públicos, predeterminados, de grupo e individuales.
+    link: "Leer la documentación de permisos"
+  scenePermissions:
+    lead: >
+      Todavía no se ha otorgado ningún permiso específico sobre esta escena. Cualquiera que cumpla
+      las reglas de acceso <i>público</i> o <i>predeterminado</i> de arriba puede acceder a ella. Agregue un grupo o un usuario abajo
+      para otorgar derechos adicionales.
+  sceneTags:
+    lead: >
+      Las etiquetas ayudan a otras personas a descubrir esta escena. También sirven para armar las colecciones de
+      la página de inicio. Agregue una etiqueta abajo; elija una de las sugerencias existentes para sumarla a una colección.
+  userGroups:
+    lead: >
+      Los grupos permiten a un administrador otorgar el mismo acceso a varios usuarios a la vez.
+      Los administran los administradores de la instancia: pida a uno que lo agregue al grupo
+      correspondiente si necesita colaborar en escenas que no le pertenecen.
+  archives:
+    lead: >
+      Archivar una escena la quita de los resultados de búsqueda y de su lista de escenas, pero
+      conserva sus datos en el servidor. Las escenas archivadas se pueden restaurar en cualquier momento desde
+      esta página. El botón «Archivar» está en la configuración de cada escena.
+  tags:
+    lead: >
+      Todavía no se ha creado ninguna etiqueta en esta instancia. Las etiquetas agrupan escenas en <i>colecciones</i>:
+      se agregan desde la página de configuración de cada escena y aquí se convierten en páginas de colección.
+    link: "Tutorial de etiquetas y colecciones"
+  tagEmpty:
+    lead: >
+      Esta colección no tiene, por ahora, ninguna escena visible para usted. Puede que la etiqueta se haya
+      quitado de todas las escenas o que usted no tenga acceso de lectura a las escenas correspondientes.
+    link: "Ver todas las colecciones"
+  tasks:
+    lead: >
+      Las tareas son trabajos en segundo plano que el servidor ejecuta en su nombre; por lo general, subidas
+      de escenas, extracciones de archivos ZIP u optimizaciones de modelos. Cada tarea guarda sus registros
+      y un espacio de trabajo descargable que sirve para diagnosticar fallos.
+    link: "Acerca de las tareas en segundo plano"
+
+titles:
+  userTokens: Tokens de API
+  tokenCreated: Token creado
+  authorizedApps: Aplicaciones autorizadas
+  authorize: Solicitud de autorización
+  myScenesSection: mis escenas
+  gettingStarted: Primeros pasos
+  myGroups: Mis grupos
+  onboarding: "Cómo funciona"
+  homeHeader: Sistema de gestión de escenas 3D
+  mtimeScenesSection: Escenas modificadas recientemente
+  ctimeScenesSection: Escenas agregadas recientemente
+  upload: subida
+  createScene: crear una escena nueva
+  createOrUpdateScene: Crear o actualizar una escena
+  tools: Herramientas
+  search: Búsqueda
+  recoverPassword: Acceso sin contraseña
+  userSettings: Configuración de usuario
+  userProfile: Perfil de usuario
+  changePassword: Cambiar contraseña
+  sceneThumb: Imagen de vista previa de {{what}}
+  history: Historial de ediciones
+  sceneData: Metadatos de la escena
+  permissions: Derechos de acceso
+  archives: Escenas archivadas
+  rename: Renombrar esta escena
+  testEmail: "Prueba del sistema de correo de {{what}}"
+  testEmailVerify: Verificaciones adicionales
+  userManager: Gestión de usuarios
+  oauthClients: Clientes OAuth
+  createOAuthClient: Registrar un cliente OAuth
+  groupManager: Gestión de grupos
+  adminHome: Interfaz de administración
+  serverStatistics: Estadísticas de la instancia
+  filesStatistics: Estadísticas de datos
+  modifiedToday: Escenas modificadas hoy
+  buildRef: Versión actual
+  uiGuidelines: Guía de interfaz
+  createdScenes: Escenas creadas
+  myTasks: Mis tareas
+  taskTree: Árbol de tareas
+  logs: Registros
+  config: Configuración
+  advancedConfiguration: Configuración avanzada
+  taskData: Datos de entrada
+  taskOutput: Datos de salida
+
+tooltips:
+  showPassword: Mostrar el texto de la contraseña
+  permissions: >
+    El acceso predeterminado para los usuarios conectados no puede ser más restrictivo que el acceso público.
+    Se aplican los derechos más amplios entre el acceso predeterminado y los derechos específicos del usuario.
+  sortBy: >
+    <b>Relevancia</b> ordena los resultados según su coincidencia con la búsqueda; solo tiene sentido
+    cuando hay un término de búsqueda. Los demás criterios se basan en la fecha o el nombre e ignoran la búsqueda.
+  myAccess: >
+    Limita los resultados a las escenas sobre las que tiene al menos este nivel de derechos.
+    Los administradores pueden dejarlo vacío para ver todas las escenas de la instancia.
+leads:
+  userTokens: >
+    Los tokens de API permiten que servicios y scripts de terceros hagan solicitudes autenticadas en su nombre, sin su contraseña. Se pueden revocar en cualquier momento
+  scopeLadder: >
+    Cada familia de alcances es una escala: un nivel incluye todos los niveles inferiores (read < write < admin), por lo que solo se guarda el nivel más alto seleccionado
+  scopeHint: ○ = sin acceso · relleno = otorgado · haga clic en el nivel seleccionado para quitarlo
+  noTokens: No hay tokens de API
+  authorize: solicita acceso a su cuenta de eCorpus, como
+  authorizedApps: >
+    Aplicaciones a las que permitió acceder a su cuenta. Mientras mantenga la sesión iniciada, renuevan su acceso automáticamente sin volver a preguntar. Revocar una aplicación detiene esa renovación e invalida los tokens que tiene
+  noAuthorizedApps: No hay aplicaciones autorizadas
+  revokeGrant: Revocar el acceso de esta aplicación y sus tokens
+  tokenCreated: >
+    Este es su nuevo token. Cópielo ahora: no se volverá a mostrar
+  appLead: >
+    eCorpus es una base de datos de escenas 3D que usa un editor de escenas enriquecido
+    compartido con la Digitization Program Office de la Smithsonian Institution
+  passwordRecovery: >
+    Complete el formulario para recibir un correo con un enlace de acceso directo
+  linkSent: >
+    Se envió un enlace de acceso a la dirección de correo de esta cuenta
+  noScenes: >
+    Parece que todavía no tiene escenas. Busque escenas públicas creadas por otras personas en esta instancia o cree la suya.
+  editScene: >
+    Modificar esta escena con Voyager-Story
+  showScene: >
+    Ver esta escena con Voyager-Explorer
+  showSceneProps: >
+    Ver las propiedades de la escena
+  noResults: >
+    No hay resultados. ¿Probamos con otra búsqueda?
+  archiveDelete: >
+    Al archivar esta escena deja de estar accesible, pero el administrador de la instancia aún puede restaurarla.
+  archiveRestore: >
+    Puede restaurar esta escena con el botón «Restaurar». Esto cambiará el nombre de la escena.
+  thumbnailFor: >
+    Miniatura de {{what}}
+  tours_zero: "ninguna visita guiada"
+  tours_one: "una visita guiada"
+  tours_many: "{{count}} visitas guiadas"
+  tours_other: "{{count}} visitas guiadas"
+  articles_zero: "ningún artículo"
+  articles_one: "un artículo"
+  articles_many: "{{count}} artículos"
+  articles_other: "{{count}} artículos"
+  annotations_zero: "ninguna anotación"
+  annotations_one: "una anotación"
+  annotations_many: "{{count}} anotaciones"
+  annotations_other: "{{count}} anotaciones"
+  sceneCounts: >
+    En esta escena: $t(leads.tours, {"count": {{tours}} }), $t(leads.articles, {"count": {{articles}} }) y $t(leads.annotations, {"count": {{annotations}}})
+  noMetaAvailable: >
+    No se pudieron extraer metadatos de esta escena.
+  historyEdition: |
+    Este es el historial de cambios de la escena, agrupado por día. Despliegue los grupos con los íconos <span class="text-primary">+</span> para ver más detalles.
+    Haga clic en <code class="text-primary">restaurar a</code> para agregar un conjunto de cambios que devuelva el contenido de la escena a como estaba en ese momento.
+    Esta operación no elimina ninguna entrada del historial: los cambios solo se agregan.
+  canNotChangeSelfAccess: >
+    No puede cambiar sus propios derechos de acceso a esta escena. Pídaselo a un administrador de la instancia o a otro usuario.
+  rename: >
+    Cambiar el nombre de una escena rompe todos los enlaces existentes que apuntan a ella.
+    ¡Proceda con cuidado!
+  testEmail: >
+    Este es un mensaje de prueba de <a href="https://{{hostname}}/ui/">{{hostname}}</a>.
+    Si llega a su bandeja de entrada, su configuración de correo probablemente está bien.
+  testEmailDKIM: >
+    Para mayor seguridad y evitar que (la mayoría de) los correos se marquen como SPAM, verifique la firma DKIM con herramientas como
+    <a href="https://postmaster.google.com">Postmaster Tools</a> de Google.
+  sendTestEmail: Enviar un correo de prueba
+  uiGuidelines: Abrir la página de referencia de componentes de la interfaz
+  usersList: Usuarios {{start}}-{{end}}/{{total}}
+  groupsList: Grupos {{start}}-{{end}}/{{total}}
+  noArchives: No hay escenas archivadas
+  noGroups: Este usuario no pertenece a ningún grupo
+  poweredByECorpus: Desarrollado con <a target="_blank" href="https://ecorpus.eu">eCorpus</a> bajo la licencia <a href="https://github.com/Holusion/eCorpus/blob/main/LICENSE.md">Apache-2.0</a>
+  uploadFiles: Suelte sus archivos aquí
+  uploadMixedContent: >
+    Los archivos subidos mezclan archivos ZIP de escenas y archivos sueltos. No se puede procesar contenido mixto en una sola operación.
+  uploadName: >
+    Este será el nombre de la escena en la URL.
+    No depende del idioma.
+  uploadLanguage: El idioma predeterminado de la escena
+  uploadOptimize: Optimizar los modelos 3D para un mejor rendimiento. Puede tardar un poco más.
+  uploadErrors: >
+    Se produjeron errores al procesar los archivos subidos. Revise los errores de arriba.
+  envLocked: "{{what}} no se puede cambiar porque su valor proviene de una variable de entorno"
+  motd: |
+    <p>
+      Siga el desarrollo de eCorpus y reporte problemas en <b><a href="https://github.com/Holusion/eCorpus">GitHub</a></b>.
+    </p>
+  anonymousGreeting: |
+    <p>Bienvenido a <a href="https://ecorpus.eu/en/doc/">eCorpus</a>.</p>
+  anonymousGreeting_branded: |
+    <p>Bienvenido a <a href="https://ecorpus.eu/en/doc/">Corpus</a> — {{brand}}.</p>
+  howToAddCopyright: |
+    Esta escena no tiene copyright. Agréguelo en la interfaz de edición
+  useStandalone: >
+    Pruebe el modo «independiente» (standalone) de <b>Voyager</b> para descubrir sus funciones a su propio ritmo.
+ui:
+  by: por
+  created: Creada
+  modified: Modificada
+  deleted: Eliminada
+info:
+  changeDay: "Cambios del {{date}}"
+  restoreTo: "Restaurar a {{point}}"
+  viewAtThisPoint: Ver la escena en este punto
+  showDetails: ver detalles
+  hideDetails: ocultar detalles
+  etAl_one: "y {{count}} más"
+  etAl_many: "y {{count}} más"
+  etAl_other: "y {{count}} más"
+errors:
+  generic: Error desconocido
+  "Username not provided": No se indicó el nombre de usuario
+  "Password not provided": No se indicó la contraseña
+  "Bad password": Contraseña incorrecta
+  "Username not found": Nombre de usuario incorrecto
+  "requireCreate": "{{what}} requiere derechos de \"creación\""
+  "requireUser": "Se requiere autenticación para {{what}}"
