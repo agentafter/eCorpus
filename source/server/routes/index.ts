@@ -67,7 +67,7 @@ export default async function createServer(locals:AppParameters) :Promise<expres
   }));
 
   app.use("/", (req, res, next)=>{
-    if(req.query.lang && (req.query.lang === "fr" || req.query.lang === "en")){
+    if(typeof req.query.lang === "string" && (dicts as readonly string[]).includes(req.query.lang)){
       req.session!.lang = req.query.lang;
     }
     next();
