@@ -98,9 +98,7 @@ async function dispatchOnboardingEmail(req: Request, user: User, lang: AcceptedL
     hostname: config.get("hostname"),
   });
 
-  const subject = lang === "fr" ? `Bienvenue sur ${brand}`
-    : lang === "es" ? `Bienvenido a ${brand}`
-    : `Welcome to ${brand}`;
+  const subject = lang === "fr" ? `Bienvenue sur ${brand}` : `Welcome to ${brand}`;
 
   // Commit the task row first so it is observable as soon as the user
   // creation request returns, then dispatch the run without awaiting.

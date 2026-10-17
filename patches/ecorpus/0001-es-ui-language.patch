@@ -1,0 +1,88 @@
+Huaka: activa el español ("es") como idioma de la interfaz del shell de eCorpus.
+
+Upstream fija la lista de idiomas en varios puntos (solo en/fr). Este parche
+agrega "es" en cada uno; los archivos nuevos (templates/locales/es.yml,
+templates/emails/*_es.hbs) viven en el fork como archivos normales.
+Detalle por archivo: docs/customization.md §3.
+
+Generado sobre eCorpus upstream d5fca779d6db75a4bdb766c7e8ce6848f6346955 (2026-10-15).
+
+diff --git a/source/server/routes/index.ts b/source/server/routes/index.ts
+index 23ee6ad7..e19ab6b4 100644
+--- a/source/server/routes/index.ts
++++ b/source/server/routes/index.ts
+@@ -67,7 +67,7 @@ export default async function createServer(locals:AppParameters) :Promise<expres
+   }));
+ 
+   app.use("/", (req, res, next)=>{
+-    if(req.query.lang && (req.query.lang === "fr" || req.query.lang === "en")){
++    if(typeof req.query.lang === "string" && (dicts as readonly string[]).includes(req.query.lang)){
+       req.session!.lang = req.query.lang;
+     }
+     next();
+diff --git a/source/server/routes/users/post.ts b/source/server/routes/users/post.ts
+index 31d23631..4d417218 100644
+--- a/source/server/routes/users/post.ts
++++ b/source/server/routes/users/post.ts
+@@ -98,7 +98,9 @@ async function dispatchOnboardingEmail(req: Request, user: User, lang: AcceptedL
+     hostname: config.get("hostname"),
+   });
+ 
+-  const subject = lang === "fr" ? `Bienvenue sur ${brand}` : `Welcome to ${brand}`;
++  const subject = lang === "fr" ? `Bienvenue sur ${brand}`
++    : lang === "es" ? `Bienvenido a ${brand}`
++    : `Welcome to ${brand}`;
+ 
+   // Commit the task row first so it is observable as soon as the user
+   // creation request returns, then dispatch the run without awaiting.
+diff --git a/source/server/routes/views/index.ts b/source/server/routes/views/index.ts
+index 48b85170..1af0b489 100644
+--- a/source/server/routes/views/index.ts
++++ b/source/server/routes/views/index.ts
+@@ -496,7 +496,7 @@ routes.get("/design/embeds", wrap(async (req, res)=>{
+ }));
+ 
+ routes.get("/design/emails", wrap(async (req, res)=>{
+-  const allowedLangs = ["en", "fr"] as const;
++  const allowedLangs = ["en", "fr", "es"] as const;
+   // Use a dedicated query param (not `lang`) — `lang` is the UI locale
+   // controlled by the footer language switcher, and conflating the two
+   // means changing the previewed template language also flips the
+diff --git a/source/server/templates/partials/footer.hbs b/source/server/templates/partials/footer.hbs
+index 6bebef8f..3ebda6b3 100644
+--- a/source/server/templates/partials/footer.hbs
++++ b/source/server/templates/partials/footer.hbs
+@@ -14,6 +14,7 @@
+         <select aria-label="{{i18n "labels.language"}}" name="lang" onchange="this.form.submit()" style="width: auto;">
+           {{>inputs/option selected=(test lang "==" "en") value="en" text=(i18n "lang.en")}}
+           {{>inputs/option selected=(test lang "==" "fr") value="fr" text=(i18n "lang.fr")}}
++          {{>inputs/option selected=(test lang "==" "es") value="es" text=(i18n "lang.es")}}
+         </select>
+       </div>
+     </form>
+diff --git a/source/server/utils/languages.ts b/source/server/utils/languages.ts
+index 8f917d72..a66f381a 100644
+--- a/source/server/utils/languages.ts
++++ b/source/server/utils/languages.ts
+@@ -2,7 +2,7 @@
+ export const sceneLanguages = ["EN", "ES", "DE", "NL", "JA", "FR", "HAW"] as const;
+ export type SceneLanguage = typeof sceneLanguages[number];
+ 
+-export const uiLanguages = ["EN", "FR"] as const;
++export const uiLanguages = ["EN", "FR", "ES"] as const;
+ export type UILanguage = typeof uiLanguages[number];
+ 
+ 
+diff --git a/source/server/utils/templates/index.ts b/source/server/utils/templates/index.ts
+index 21b17f5b..7c3aea87 100644
+--- a/source/server/utils/templates/index.ts
++++ b/source/server/utils/templates/index.ts
+@@ -6,7 +6,7 @@ import i18next, { i18n, TFunction } from "i18next";
+ import Backend from "i18next-fs-backend";
+ import { staticHelpers } from "./helpers/index.js";
+ 
+-export const dicts = ["fr", "en"] as const;
++export const dicts = ["fr", "en", "es"] as const;
+ export const locales = [...dicts, "cimode"];
+ export type AcceptedLocales = typeof dicts[number] | "cimode";
+ 

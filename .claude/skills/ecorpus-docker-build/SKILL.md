@@ -21,11 +21,14 @@ git submodule status   # ningún "-" al inicio de cada línea
 
 ## Paso 1 — Build local antes de tocar Docker
 
-Verificar los scripts reales en `package.json` (pueden diferir de lo documentado acá):
+Verificar los scripts reales en `package.json` (pueden diferir de lo documentado acá). Los cambios a archivos de
+upstream viven en `patches/` (skill `upstream-patches`): aplicarlos antes y revertirlos después.
 ```bash
+sh scripts/apply-patches.sh ecorpus && sh scripts/apply-patches.sh voyager
 npm run build-ui
 npm run build-server
-npm test
+npm test        # en Windows, ver la nota de tests de la skill upstream-sync (Paso 5)
+sh scripts/apply-patches.sh --revert ecorpus && git -C source/voyager checkout -- .
 ```
 No continuar al build de Docker si esto falla localmente.
 

@@ -55,16 +55,19 @@ No continuar si `git status` no está limpio — hacer commit o stash primero.
 
 ## Paso 4 — Actualizar y evaluar impacto
 
+La sincronización completa (informe, merge en una rama `sync/…`, parches, overlays, build, staging) es la skill
+`upstream-sync`. **Nunca** `git rebase upstream/main` sobre `main`: está compartida y el push forzado está prohibido.
+Tras el merge:
+
 ```bash
-git rebase upstream/main    # o merge, según lo que el equipo prefiera para esa rama
 git submodule update --init --recursive
 git diff --submodule        # muestra si el puntero de Voyager cambió y a qué commit
 ```
 
 Si el puntero de Voyager cambió:
 1. Revisar el changelog/commits de Voyager entre el commit viejo y el nuevo (si están disponibles en el repo upstream).
-2. Evaluar si alguna personalización local (theming del visor, parches sobre Voyager) sigue siendo compatible.
-3. Correr los builds/tests relevantes (`npm run build-ui`, `npm run build-server`, `npm test`) antes de dar la sincronización por terminada.
+2. `sh scripts/apply-patches.sh --check voyager`; regenerar los que fallen con la skill `upstream-patches`.
+3. Correr los builds/tests relevantes (`npm run build-ui`, `npm run build-server`, `npm test`) con los parches aplicados antes de dar la sincronización por terminada.
 
 ## Reglas de oro (no negociables)
 
@@ -72,7 +75,7 @@ Si el puntero de Voyager cambió:
 - **Nunca** reescribir la historia git del submódulo.
 - **Nunca** cambiar la URL del remoto de Voyager en silencio.
 - Antes de modificar cualquier archivo dentro de `source/voyager`, preguntar: *¿esto se puede lograr desde la capa de eCorpus (theme/config/localización) en vez de tocar Voyager?* Si la respuesta es sí, hacer eso en su lugar — ver skill `theme-token-override`.
-- Si de verdad hace falta un parche sobre Voyager: mantenerlo lo más pequeño posible, preservar sus headers de licencia/atribución, documentar el commit de Voyager exacto sobre el que se aplicó, y dejarlo fácil de reaplicar sobre un commit más nuevo.
+- Si de verdad hace falta un parche sobre Voyager: va en `patches/voyager/` siguiendo la skill `upstream-patches` (lo más pequeño posible, headers de licencia/atribución intactos, commit base de Voyager en el encabezado).
 
 ## Al terminar cualquier sincronización
 

@@ -64,7 +64,7 @@ Desde fuera, `/dist/css/theme.css` debe medir lo mismo que `branding/css/theme.c
 Voyager fija sus colores en Sass compilado dentro del Shadow DOM (sin custom properties ni `::part`), así que no hay punto de extensión desde eCorpus. El submódulo `source/voyager` **queda intacto en git**; el cambio vive en el fork como parche:
 
 - `patches/voyager/0001-huaka-colors.patch` — solo `source/client/ui/explorer/styles.scss` (lo importa también el editor). Generado sobre Voyager `f7a70e6fe13502410dfa0da50d87b43f91d7d9f7` (2026-10-16).
-- `scripts/apply-voyager-patches.sh` — aplica con `--fuzz=0`; **falla** si el parche no aplica limpio, salta si ya está aplicado; `--check` solo verifica.
+- `scripts/apply-patches.sh voyager` — aplica con `--fuzz=0`; **falla** si el parche no aplica limpio, salta si ya está aplicado; `--check` solo verifica (ver §5).
 - Se ejecuta en el `Dockerfile` (antes de `build-ui`, con una verificación posterior de que `#99193a` está en `voyager-explorer.js`) y en `.github/workflows/build.yml` (job UI). Si una actualización de Voyager rompe el parche, **el build/CI falla**: el parche no se pierde en silencio.
 
 Mapeo: selección/activo `#99193A` · fondos de paneles navy (`#1D3557` y derivados) · foco `#97BDC6` · links de anotaciones `#C2E9F3`.
@@ -77,26 +77,18 @@ Mapeo: selección/activo `#99193A` · fondos de paneles navy (`#1D3557` y deriva
 - `patches/voyager/0003-huaka-white-logo.patch` — `source/client/ui/Logo.ts`: la marca del visor pide `images/logo-{full,sm}-white.svg` en vez de `logo-{full,sm}.svg`. eCorpus usa esa misma ruta para la barra (clara) y Voyager la pinta sobre el visor (oscuro); con un solo archivo, uno de los dos queda sin contraste. Si falta el archivo blanco, `<object>` muestra el logo por defecto de Voyager. El `Dockerfile` verifica que `logo-full-white.svg` llegue a `voyager-explorer.js`.
 No cubierto: `story/editor_css/content.min.css` (CSS interno del editor de artículos TinyMCE, links `#0089bf`).
 
-### Regenerar el parche tras actualizar Voyager
+### Regenerar un parche tras actualizar Voyager
 
-```bash
-sh scripts/apply-voyager-patches.sh --check        # ¿sigue aplicando?
-# si falla:
-cd source/voyager
-# reaplicar a mano los cambios del .patch viejo sobre source/client/ui/explorer/styles.scss
-git diff --no-color source/client/ui/explorer/styles.scss > ../../patches/voyager/0001-huaka-colors.patch
-git checkout -- source/client/ui/explorer/styles.scss   # dejar el submódulo limpio
-cd ../.. && sh scripts/apply-voyager-patches.sh --check
-```
-Actualizar aquí el hash de Voyager sobre el que se generó.
+`sh scripts/apply-patches.sh --check voyager`; si alguno falla, regenerarlo con la skill `upstream-patches` (Paso 3) y
+actualizar aquí el hash de Voyager sobre el que se generó.
 
-Build local: `sh scripts/apply-voyager-patches.sh && npm run build-ui` deja el submódulo modificado; revertir con `git -C source/voyager checkout -- .` antes de commitear.
+Build local: `sh scripts/apply-patches.sh voyager && npm run build-ui` deja el submódulo modificado; revertir con `git -C source/voyager checkout -- .` antes de commitear.
 
 ## 3. Interfaz en español (requiere build propio)
 
 Terminología: `docs/localization/es-terminology.md`. Lo que queda sin traducir a propósito: `docs/localization/es-untranslated.md`.
 
-**Shell de eCorpus** (i18next en el servidor): `source/server/templates/locales/es.yml`, mismas claves que `en.yml` (lo que falte sale en inglés por `fallbackLng`). Plurales con sufijos `_one`/`_many`/`_other` (i18next v24 pide `_many` para el español). La lista de idiomas está fija en varios puntos de upstream, y cada uno lleva `es`:
+**Shell de eCorpus** (i18next en el servidor): `source/server/templates/locales/es.yml`, mismas claves que `en.yml` (lo que falte sale en inglés por `fallbackLng`). Plurales con sufijos `_one`/`_many`/`_other` (i18next v24 pide `_many` para el español). La lista de idiomas está fija en varios puntos de upstream, y cada uno lleva `es`. Los archivos de upstream de la tabla **no** se editan en git: el cambio está en `patches/ecorpus/0001-es-ui-language.patch` (ver §5); los `*_es.hbs` y `es.yml` son archivos nuevos del fork:
 
 | Archivo | Qué controla |
 |---|---|
@@ -121,3 +113,42 @@ Sin cuenta, el idioma sale de `Accept-Language`; si el navegador no pide es/fr/e
 La imagen `ghcr.io/agentafter/e-corpus` redistribuye eCorpus y Voyager, así que lleva los textos de licencia (Apache-2.0 §4) en `/app/licenses/`: `NOTICE.md` (procedencia, ver §1.5 de AGENTS.md), la licencia de eCorpus, `LICENSE.md`/`3RD_PARTY_LICENSES.txt`/`ATTRIBUTIONS.md` de Voyager y las licencias MIT de sus bibliotecas `ff-*`. Los copia el `Dockerfile`; si falta alguno, el build falla.
 
 `publish.yml` fija la etiqueta `org.opencontainers.image.licenses=Apache-2.0`: sin ella `metadata-action` la deja vacía (el repo no tiene `LICENSE` en la raíz, igual que upstream) y pisa la del `Dockerfile`.
+
+## 5. Parches sobre upstream y sincronización
+
+Regla: en git, `source/` es **igual a upstream** (y el submódulo queda en su commit). Todo cambio a un archivo
+existente de upstream vive como parche; lo nuevo (plantillas, locales, `branding/`) es archivo normal del fork. Así un
+merge de upstream no choca en `source/`, y si upstream cambia las líneas parchadas el parche falla a la vista (fuzz 0)
+en vez de perderse. No se proponen cambios a Holusion (decisión del equipo, 2026-10-17). Procedimiento: skill
+`upstream-patches`.
+
+`scripts/apply-patches.sh [--check|--revert] [--strict] <voyager|ecorpus> [DIR]` — `ecorpus` aplica sobre la raíz del
+repo y `voyager` sobre `source/voyager`. `--revert` deshace (para no commitear `source/` parchado) y `--strict` falla si un
+parche ya estaba aplicado. Se ejecuta en:
+- el `Dockerfile`: `ecorpus` antes de `build-server` y `voyager` antes de `build-ui`, con controles `grep` sobre el
+  bundle. La etapa final copia `templates/` **desde la etapa build** (ya parchada), no desde el contexto;
+- `.github/workflows/build.yml`: `voyager` en el job UI; `--strict ecorpus` en el job Server, antes de los tests (el
+  `templates/` parchado que sube ese job es el que usan `pack` y los e2e).
+
+| Parche | Archivos | Qué hace | Control en el `Dockerfile` |
+|---|---|---|---|
+| `ecorpus/0001-es-ui-language.patch` | los 6 de upstream de §3 | activa `es` en la interfaz | `"ES"` en `server/dist/utils/languages.js` |
+| `voyager/0001-huaka-colors.patch` | `explorer/styles.scss` | colores del visor/editor (§2) | `99193a` en `voyager-explorer.js` |
+| `voyager/0002-huaka-default-colors.patch` | `Annotation.ts`, `CVSlicer.ts` | color de anotaciones nuevas y corte (§2) | `.5922,.7412,.7765` en `voyager-story.js` |
+| `voyager/0003-huaka-white-logo.patch` | `Logo.ts` | logo blanco sobre el visor (§2) | `logo-full-white.svg` en `voyager-explorer.js` |
+
+Trabajo local con los parches: aplicar ambos, build y tests, revertir (`--revert ecorpus` y
+`git -C source/voyager checkout -- .`). Antes de commitear, `git diff --quiet -- source/server source/ui`.
+
+### Sincronizar con upstream
+
+Skill `upstream-sync`. Primero, el informe de solo lectura `sh scripts/upstream-report.sh` (VERDE/AMARILLO/ROJO): prueba
+los parches sobre el código de `upstream/main` y del Voyager nuevo en copias temporales, y avisa de cambios en lo que
+copian los overlays, de migraciones nuevas y de choques de archivos. Después, **merge** (nunca rebase) en una rama
+`sync/upstream-AAAA-MM-DD`.
+
+### Registro de sincronizaciones
+
+| Fecha | eCorpus upstream | Voyager | Notas |
+|---|---|---|---|
+| 2026-10-17 | `d5fca779` (2026-10-15) | `f7a70e6f` | Punto de partida del modelo de parches: las ediciones de §3 pasan a `patches/ecorpus/0001`. |
