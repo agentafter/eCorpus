@@ -439,3 +439,53 @@ errors:
   "Username not found": Nombre de usuario incorrecto
   "requireCreate": "{{what}} requiere derechos de \"creación\""
   "requireUser": "Se requiere autenticación para {{what}}"
+  # Mensajes de error HTTP por defecto (patches/ecorpus/0003)
+  "Bad Request": Solicitud no válida
+  "Unauthorized": No autorizado
+  "Forbidden": Acceso denegado
+  "Not Found": Página no encontrada
+  "Conflict": Conflicto
+  "Internal Server Error": Error interno del servidor
+
+# Textos que upstream deja fijos en las plantillas (patches/ecorpus/0003)
+huaka:
+  send: Enviar
+  noGroupBefore: No hay grupos creados. Escriba un nombre y haga clic en
+  noGroupAfter: para agregar uno
+  scopeAll: todos
+  selectOption: "-- elija una opción --"
+  requestInProgress: solicitud en curso
+  sceneTypeLabel: "Tipo de escena:"
+  errorTitle: "Error {{code}}"
+  # Títulos de pestaña: los traduce el helper pageTitle (utils/templates/helpers/pageTitle.ts).
+  # Clave = título en inglés que pasa la ruta; {{name}}, {{id}} y {{type}} son partes variables.
+  pageTitles:
+    "Login": Iniciar sesión
+    "Authorize": Autorizar
+    "Home": Inicio
+    "eCorpus: Create new scene": Crear una escena
+    "Tags": Colecciones
+    "Search": Buscar
+    "User Settings": Configuración de usuario
+    "Group Settings — User": Grupos — Usuario
+    "API Tokens — User": Tokens de API — Usuario
+    "Archives — User": Escenas archivadas — Usuario
+    "My Tasks — User": Mis tareas — Usuario
+    "UI components": Componentes de interfaz
+    "Embed previews": Vista previa de incrustaciones
+    "Email template previews": Vista previa de correos
+    "Administration": Administración
+    "Archived scenes — Administration": Escenas archivadas — Administración
+    "Users list — Administration": Usuarios — Administración
+    "OAuth clients — Administration": Clientes OAuth — Administración
+    "Groups — Administration": Grupos — Administración
+    "Instance Statistics — Administration": Estadísticas — Administración
+    "Tasks — Administration": Tareas — Administración
+    "Standalone Story": Editor independiente
+    "eCorpus: History of {{name}}": "Historial de {{name}}"
+    "eCorpus: {{name}}": "{{name}}"
+    "Tasks — {{name}}": "Tareas — {{name}}"
+    "Settings — {{name}}": "Configuración — {{name}}"
+    "{{name}}: Explorer": "{{name}}: Visor"
+    "{{name}}: Story Editor": "{{name}}: Editor"
+    "Task #{{id}} — {{type}}": "Tarea #{{id}} — {{type}}"

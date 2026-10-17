@@ -1,0 +1,259 @@
+Huaka: traduce los títulos de pestaña y los textos fijos de las plantillas del shell.
+
+- Títulos: las rutas pasan títulos en inglés; head.hbs y layouts/design.hbs los
+  pasan por el helper pageTitle (utils/templates/helpers/pageTitle.ts, archivo
+  propio), que usa el diccionario huaka.pageTitles del idioma. Aquí solo se
+  registra el helper.
+- Textos fijos (Send, No group created, all, -- select an option --, request in
+  progress, Scene type :, la página de error) pasan por i18n con claves huaka.*.
+- en.yml/fr.yml: bloque huaka al final y mensajes HTTP por defecto en errors
+  (sin ellos, i18next registraría "Missing key" en cada página). Las
+  traducciones al español están en es.yml (archivo propio).
+
+Generado sobre eCorpus upstream d5fca779d6db75a4bdb766c7e8ce6848f6346955 (2026-10-15).
+
+diff --git a/source/server/templates/admin/archives.hbs b/source/server/templates/admin/archives.hbs
+index f34eaaf5..0189884b 100644
+--- a/source/server/templates/admin/archives.hbs
++++ b/source/server/templates/admin/archives.hbs
+@@ -28,7 +28,7 @@
+                 <ui-icon name="trash"></ui-icon>
+               </button>
+             </form>
+-            <progress slot="loader" style="position:absolute; inset: 0;backdrop-filter: blur(5px)">request in progress</progress>
++            <progress slot="loader" style="position:absolute; inset: 0;backdrop-filter: blur(5px)">{{i18n "huaka.requestInProgress"}}</progress>
+           </submit-fragment>
+         </td>
+       </tr>
+diff --git a/source/server/templates/admin/groups.hbs b/source/server/templates/admin/groups.hbs
+index 436cd77f..a216ab05 100644
+--- a/source/server/templates/admin/groups.hbs
++++ b/source/server/templates/admin/groups.hbs
+@@ -44,7 +44,7 @@
+     {{#if groups.length}}
+       <div style="text-align: right;">{{i18n "leads.groupsList" start=start end=end total=total}}</div>
+     {{else}}
+-        <div style="text-align: center;">No group created. Enter a name and click the <ui-icon name="plus"></ui-icon> to add one</div>
++        <div style="text-align: center;">{{i18n "huaka.noGroupBefore"}} <ui-icon name="plus"></ui-icon> {{i18n "huaka.noGroupAfter"}}</div>
+     {{/if}}
+ 
+   </div>
+diff --git a/source/server/templates/admin/home.hbs b/source/server/templates/admin/home.hbs
+index eafdd482..ad4c87d9 100644
+--- a/source/server/templates/admin/home.hbs
++++ b/source/server/templates/admin/home.hbs
+@@ -267,7 +267,7 @@
+         <input id="test-mail-to" name="to" type="email" placeholder="recipient email" value="{{user.email}}">
+       </div>
+       <div class="form-group">
+-        <button role="submit" class="btn">Send</button>
++        <button role="submit" class="btn">{{i18n "huaka.send"}}</button>
+       </div>
+     </form>
+   </submit-fragment>
+diff --git a/source/server/templates/error.hbs b/source/server/templates/error.hbs
+index 735d4826..381ccae8 100644
+--- a/source/server/templates/error.hbs
++++ b/source/server/templates/error.hbs
+@@ -1,8 +1,8 @@
+ <div class="grid-content">
+   <div class="error-main">
+     {{#with error}}
+-      <h1 class="error-title">Error :{{code}}</h1>
+-      <p class="message">{{message}}</p>
++      <h1 class="error-title">{{i18n "huaka.errorTitle" code=code}}</h1>
++      <p class="message">{{i18n (join "errors." message) message}}</p>
+       {{#if reason}}
+       {{else}}
+       <details class="stack">
+diff --git a/source/server/templates/group.hbs b/source/server/templates/group.hbs
+index 5984cff3..b0c299aa 100644
+--- a/source/server/templates/group.hbs
++++ b/source/server/templates/group.hbs
+@@ -77,7 +77,7 @@
+           <input type="hidden" name="groupName" value="{{name}}" />
+           <input id="sceneName" name="sceneName" placeholder="{{i18n "labels.scene"}}" required />
+           <select name="access" aria-label="{{i18n "labels.permission"}}" style="width: auto">
+-            <option disabled selected value> -- select an option -- </option>
++            <option disabled selected value>{{i18n "huaka.selectOption"}}</option>
+             {{> inputs/option selected=false value="none" text=(i18n "fields.removeSpecificAccess")}}
+             {{> inputs/option selected=false value="read" text=(i18n "fields.read")}}
+             {{> inputs/option selected=false value="write" text=(i18n "fields.write")}}
+diff --git a/source/server/templates/layouts/design.hbs b/source/server/templates/layouts/design.hbs
+index fb6b525b..ea2bfe26 100644
+--- a/source/server/templates/layouts/design.hbs
++++ b/source/server/templates/layouts/design.hbs
+@@ -8,7 +8,7 @@
+   components, quick links on emails, etc.).
+ --}}
+ {{#> main }}
+-  <h1 class="grid-header">{{ title }}</h1>
++  <h1 class="grid-header">{{pageTitle title}}</h1>
+   <div class="grid-toolbar">
+     <nav>
+       {{#navLink "/ui/design/" "exact"}}<ui-icon name="layout-panel-left"></ui-icon> <span>components</span>{{/navLink}}
+diff --git a/source/server/templates/locales/en.yml b/source/server/templates/locales/en.yml
+index 150b56ca..328d13db 100644
+--- a/source/server/templates/locales/en.yml
++++ b/source/server/templates/locales/en.yml
+@@ -434,3 +434,23 @@ errors:
+   "Username not found": Invalid Username
+   "requireCreate": "{{what}} requires \"create\" rights"
+   "requireUser": "Authentication is required for {{what}}"
++  # Huaka (patches/ecorpus/0003): default HTTP error messages, shown on the error page
++  "Bad Request": Bad Request
++  "Unauthorized": Unauthorized
++  "Forbidden": Forbidden
++  "Not Found": Not Found
++  "Conflict": Conflict
++  "Internal Server Error": Internal Server Error
++
++# Huaka (patches/ecorpus/0003): strings upstream hardcodes in templates
++huaka:
++  send: Send
++  noGroupBefore: No group created. Enter a name and click the
++  noGroupAfter: to add one
++  scopeAll: all
++  selectOption: "-- select an option --"
++  requestInProgress: request in progress
++  sceneTypeLabel: "Scene type:"
++  errorTitle: "Error {{code}}"
++  # Page titles, translated by the pageTitle helper (none needed in English)
++  pageTitles: {}
+diff --git a/source/server/templates/locales/fr.yml b/source/server/templates/locales/fr.yml
+index 1c1563ce..4777977d 100644
+--- a/source/server/templates/locales/fr.yml
++++ b/source/server/templates/locales/fr.yml
+@@ -450,3 +450,22 @@ errors:
+   "Password not provided": Mot de passe non fourni
+   "Bad password": Mot de passe invalide
+   "Username not found": Nom d'utilisateur invalide
++  # Huaka (patches/ecorpus/0003) : messages d'erreur HTTP par défaut
++  "Bad Request": Requête invalide
++  "Unauthorized": Non autorisé
++  "Forbidden": Accès interdit
++  "Not Found": Page introuvable
++  "Conflict": Conflit
++  "Internal Server Error": Erreur interne du serveur
++
++# Huaka (patches/ecorpus/0003)
++huaka:
++  send: Envoyer
++  noGroupBefore: Aucun groupe créé. Saisissez un nom et cliquez sur
++  noGroupAfter: pour en ajouter un
++  scopeAll: tous
++  selectOption: "-- choisir une option --"
++  requestInProgress: requête en cours
++  sceneTypeLabel: "Type de scène :"
++  errorTitle: "Erreur {{code}}"
++  pageTitles: {}
+diff --git a/source/server/templates/partials/head.hbs b/source/server/templates/partials/head.hbs
+index 3254baa1..e8c9640b 100644
+--- a/source/server/templates/partials/head.hbs
++++ b/source/server/templates/partials/head.hbs
+@@ -12,7 +12,7 @@
+ <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+ 
+ 
+-<title>{{#if title}}{{ title }} — {{/if}}{{#if brand}}{{ brand }} — {{/if}}eCorpus</title>
++<title>{{#if title}}{{pageTitle title}} — {{/if}}{{#if brand}}{{ brand }} — {{/if}}eCorpus</title>
+ 
+ <link rel="icon" type="image/png" href="/dist/favicon.png" sizes="32x32"/>
+ <link rel="shortcut icon" type="image/svg+xml" href="/dist/favicon.svg"/>
+diff --git a/source/server/templates/scene/scene.hbs b/source/server/templates/scene/scene.hbs
+index e42083bb..e833bc04 100644
+--- a/source/server/templates/scene/scene.hbs
++++ b/source/server/templates/scene/scene.hbs
+@@ -69,7 +69,7 @@
+         {{#if meta.copyright}}
+           <p>{{i18n "labels.copyright"}} {{meta.copyright}}</p>
+         {{/if}}
+-        <p>{{i18n "labels.sceneType"}} : {{scene.type}}</p>
++        <p>{{i18n "huaka.sceneTypeLabel"}} {{scene.type}}</p>
+       </div>
+     </div>
+ 
+diff --git a/source/server/templates/scene/settings.hbs b/source/server/templates/scene/settings.hbs
+index 22a873d6..ec9c29b3 100644
+--- a/source/server/templates/scene/settings.hbs
++++ b/source/server/templates/scene/settings.hbs
+@@ -49,7 +49,7 @@
+                       </select>
+                     </div>
+                   </form>
+-                  <progress slot="loader" style="position:absolute; inset: 0;backdrop-filter: blur(5px)">request in progress</progress>
++                  <progress slot="loader" style="position:absolute; inset: 0;backdrop-filter: blur(5px)">{{i18n "huaka.requestInProgress"}}</progress>
+                 </submit-fragment>
+               </td>
+             {{/if}}
+@@ -76,7 +76,7 @@
+                       </select>
+                     </div>
+                   </form>
+-                  <progress slot="loader" style="position:absolute; inset: 0;backdrop-filter: blur(5px)">request in progress</progress>
++                  <progress slot="loader" style="position:absolute; inset: 0;backdrop-filter: blur(5px)">{{i18n "huaka.requestInProgress"}}</progress>
+                 </submit-fragment>
+               </td>
+             {{/if}}
+@@ -136,7 +136,7 @@
+                     <div class="col" style="display: flex;">
+                       <div class="form-item" style="flex-grow: 1;">
+                         <select name="access" aria-label="{{i18n "labels.permission"}}" style="flex-grow: 1">
+-                          <option disabled selected value> -- select an option -- </option>
++                          <option disabled selected value>{{i18n "huaka.selectOption"}}</option>
+                           {{> inputs/option selected=false value="read" text=(i18n "fields.read")}}
+                           {{> inputs/option selected=false value="write" text=(i18n "fields.write")}}
+                           {{> inputs/option selected=false value="admin" text=(i18n "fields.admin")}}
+@@ -219,7 +219,7 @@
+                     <div class="col" style="display: flex;">
+                       <div class="form-item" style="flex-grow: 1">
+                         <select name="access" aria-label="{{i18n "labels.permission"}}" style="flex-grow: 1">
+-                          <option disabled selected value> -- select an option -- </option>
++                          <option disabled selected value>{{i18n "huaka.selectOption"}}</option>
+                           {{> inputs/option selected=false value="read" text=(i18n "fields.read")}}
+                           {{> inputs/option selected=false value="write" text=(i18n "fields.write")}}
+                           {{> inputs/option selected=false value="admin" text=(i18n "fields.admin")}}
+diff --git a/source/server/templates/user/archives.hbs b/source/server/templates/user/archives.hbs
+index d443974d..2b510cf9 100644
+--- a/source/server/templates/user/archives.hbs
++++ b/source/server/templates/user/archives.hbs
+@@ -36,7 +36,7 @@
+                   <ui-icon name="trash"></ui-icon>
+                 </button>
+               </form>
+-              <progress slot="loader" style="position:absolute; inset: 0;backdrop-filter: blur(5px)">request in progress</progress>
++              <progress slot="loader" style="position:absolute; inset: 0;backdrop-filter: blur(5px)">{{i18n "huaka.requestInProgress"}}</progress>
+             </submit-fragment>
+           </td>
+         </tr>
+diff --git a/source/server/templates/user/tokens.hbs b/source/server/templates/user/tokens.hbs
+index ee991339..21263c04 100644
+--- a/source/server/templates/user/tokens.hbs
++++ b/source/server/templates/user/tokens.hbs
+@@ -12,7 +12,7 @@
+         <label>{{i18n "labels.scope"}}</label>
+         <div id="token-scope" class="scope-slider">
+           <div class="scope-slider-head">
+-            <label class="scope-all"><input type="checkbox" name="scope" value="all"> <span>all</span></label>
++            <label class="scope-all"><input type="checkbox" name="scope" value="all"> <span>{{i18n "huaka.scopeAll"}}</span></label>
+             <span class="scope-hint">{{i18n "leads.scopeHint"}}</span>
+           </div>
+           <div class="scope-head" aria-hidden="true">
+diff --git a/source/server/utils/templates/helpers/index.ts b/source/server/utils/templates/helpers/index.ts
+index 9356af9e..5220c969 100644
+--- a/source/server/utils/templates/helpers/index.ts
++++ b/source/server/utils/templates/helpers/index.ts
+@@ -55,6 +55,7 @@ import { test } from "./test.js";
+ import { dateString } from "./dateString.js";
+ import { encodeURIComponentHelper, encodeURIHelper } from "./encoding.js";
+ import { userLevel, accessLevel } from "./levels.js";
++import { pageTitle } from "./pageTitle.js"; // Huaka
+ 
+ export { navLink } from "./navLink.js";
+ export { i18nHelper } from "./i18n.js";
+@@ -76,4 +77,5 @@ export const staticHelpers = {
+   encodeURI: encodeURIHelper,
+   userLevel,
+   accessLevel,
++  pageTitle, // Huaka: translates route titles (patches/ecorpus/0003)
+ };
