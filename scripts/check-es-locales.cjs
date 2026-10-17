@@ -67,6 +67,11 @@ for (const f of fs.readdirSync(patchDir).filter(f => f.endsWith(".patch"))) {
   for (const m of added.matchAll(/get(?:UI)?LocalizedString\(\s*(["'`])((?:(?!\1).)*)\1\s*\)/g)) upstream.add(m[2]);
   const titles = /panelTitles[^{]*\{([^}]*)\}/.exec(added);
   if (titles) for (const m of titles[1].matchAll(/"[\w-]+": "([^"]+)"/g)) upstream.add(m[1]);
+  // the editor mode label (TaskBar, patch 0005) is the ETaskMode option name
+  if (added.includes("ins.mode.getOptionText()")) {
+    const modes = /enum ETaskMode \{([^}]*)\}/.exec(fs.readFileSync(path.join(root, "source/voyager/source/client/applications/taskSets.ts"), "utf8"));
+    for (const m of modes[1].matchAll(/\w+/g)) upstream.add(m[0]);
+  }
 }
 const overlay = json(path.join(root, "branding/language/string.resources.es.json"));
 for (const k of upstream) if (!(k in overlay)) report("Voyager es.json missing:", JSON.stringify(k));

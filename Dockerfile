@@ -52,6 +52,8 @@ RUN grep -qF "logo-full-white.svg" /app/dist/js/voyager-explorer.js \
 RUN grep -qF "translatePanels" /app/dist/js/voyager-story.js \
   && grep -qF "noToursText" /app/dist/js/voyager-explorer.js \
   || { echo "ERROR: Huaka Story panel translation missing from the Voyager bundles" >&2; exit 1; }
+RUN grep -qE "getUILocalizedString\([^()]*\.ins\.mode\.getOptionText\(\)\)" /app/dist/js/voyager-story.js \
+  || { echo "ERROR: Huaka editor mode translation missing from voyager-story.js" >&2; exit 1; }
 # Huaka: ship license texts and attribution with the redistributed image
 # (Apache-2.0 §4; ff-* libs inside Voyager are MIT). Fails if one goes missing.
 COPY NOTICE.md /app/licenses/

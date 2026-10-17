@@ -140,6 +140,7 @@ parche ya estaba aplicado. Se ejecuta en:
 | `ecorpus/0003-i18n-shell-strings.patch` | `helpers/index.ts`, `head.hbs`, `design.hbs`, 9 plantillas, `en.yml`, `fr.yml` | títulos de pestaña (helper `pageTitle`) y textos fijos por `i18n` | `pageTitle` en `helpers/index.js` y en `head.hbs` |
 | `ecorpus/0004-login-link-language.patch` | `routes/auth/login.ts` | correo de enlace de acceso según el idioma | `acceptsLanguages(dicts` en `server/dist/routes/auth/login.js` |
 | `voyager/0004-i18n-story-panels.patch` | `MainView.ts`, `TourMenu.ts`, `ChromeView.ts` | títulos de los paneles del editor y "No tours available." | `translatePanels` en `voyager-story.js` y `noToursText` en `voyager-explorer.js` |
+| `voyager/0005-i18n-task-mode.patch` | `TaskBar.ts` | etiqueta del modo del editor ("Edit" → "Edición") | `getUILocalizedString(…ins.mode.getOptionText())` en `voyager-story.js` |
 
 Archivos propios que acompañan a esos parches: `utils/templates/helpers/pageTitle.ts` (+ test),
 `routes/auth/loginLinkLanguage.test.ts`, el bloque `huaka:` de `es.yml` (con `huaka.pageTitles`: título en
