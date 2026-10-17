@@ -13,22 +13,15 @@ quiere resolver más adelante está resumido en `docs/pendientes.md`.
 ## Pendiente de parche (fuera de alcance de la etapa 1)
 Se resuelve con parches propios en `patches/ecorpus/` o `patches/voyager/` (skill `upstream-patches`); no se
 proponen a Holusion.
-- **Correo de enlace de acceso**: `routes/auth/login.ts` lo envía siempre con `connection_fr.hbs`, sin
-  mirar el idioma del usuario (comportamiento de upstream). `connection_es.hbs` existe y se ve en la vista
-  previa `/ui/design/emails`, pero no se envía hasta que un parche elija la plantilla por idioma.
 - **Textos de Voyager fijos en el código**: los que no pasan por `string.resources.<lang>.json`
-  siguen en inglés. Traducirlos exige parchear el submódulo (AGENTS.md §10). Visibles en el editor:
-  títulos de los paneles (`ui/story/MainView.ts`: Navigator, Media, Collection, Task, Explorer,
-  Article Editor, Tour Editor, Note Editor), encabezado del panel de tareas ("Tours"), barra del editor
-  de artículos (TinyMCE: Save, Close, Paragraph) y "No tours available." (`ui/explorer/TourMenu.ts`).
+  siguen en inglés. Traducirlos exige parchear el submódulo (AGENTS.md §10). Ya resueltos con
+  `patches/voyager/0004`: títulos de los paneles del editor y "No tours available.". Quedan: encabezado
+  del panel de tareas ("Tours") y barra del editor de artículos (TinyMCE: Save, Close, Paragraph).
 - **Idioma del visor público** (`templates/scene/explorer.hbs`): sigue el idioma del *contenido* de la
   escena, no el idioma de la interfaz.
 - `source/ui/state/strings.ts` (diccionario del cliente, solo fr/en): ningún componente lo importa.
-- **Texto fijo en plantillas y rutas del servidor** (no pasa por i18next; también sale en inglés con la
-  interfaz en francés). Traducirlo exige editar archivos de upstream, con un parche en `patches/ecorpus/`:
-  - `<title>` de las páginas: `title: "Home"`, `"Search"`, `"User Settings"`, `"Administration"`, etc. en
-    `routes/views/index.ts` y demás rutas de vistas.
-  - `templates/admin/home.hbs`: botón "Send" del correo de prueba.
-  - `templates/admin/groups.hbs`: "No group created. Enter a name and click the + to add one".
-  - `templates/user/tokens.hbs`: casilla "all" de los alcances (además, `read`/`write`/`admin` son valores de la API).
-  - `templates/scene/scene.hbs`: espacio antes de los dos puntos en "Tipo de escena :".
+- **Texto fijo en plantillas y rutas del servidor**: resuelto con `patches/ecorpus/0003` (títulos de
+  pestaña vía el helper `pageTitle`, "Send", "No group created", "all", "-- select an option --",
+  "request in progress", "Tipo de escena :" y la página de error) y `0004` (correo de enlace de acceso
+  según el idioma). Los valores `read`/`write`/`admin` de los alcances de tokens siguen en inglés: son
+  valores de la API.

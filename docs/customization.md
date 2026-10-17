@@ -136,6 +136,21 @@ parche ya estaba aplicado. Se ejecuta en:
 | `voyager/0001-huaka-colors.patch` | `explorer/styles.scss` | colores del visor/editor (§2) | `99193a` en `voyager-explorer.js` |
 | `voyager/0002-huaka-default-colors.patch` | `Annotation.ts`, `CVSlicer.ts` | color de anotaciones nuevas y corte (§2) | `.5922,.7412,.7765` en `voyager-story.js` |
 | `voyager/0003-huaka-white-logo.patch` | `Logo.ts` | logo blanco sobre el visor (§2) | `logo-full-white.svg` en `voyager-explorer.js` |
+| `ecorpus/0002-huaka-default-copyright.patch` | `utils/schema/default.ts` | copyright por defecto de escenas nuevas: Huaka Digital | `Huaka Digital, todos los derechos` en `server/dist/utils/schema/default.js` |
+| `ecorpus/0003-i18n-shell-strings.patch` | `helpers/index.ts`, `head.hbs`, `design.hbs`, 9 plantillas, `en.yml`, `fr.yml` | títulos de pestaña (helper `pageTitle`) y textos fijos por `i18n` | `pageTitle` en `helpers/index.js` y en `head.hbs` |
+| `ecorpus/0004-login-link-language.patch` | `routes/auth/login.ts` | correo de enlace de acceso según el idioma | `acceptsLanguages(dicts` en `server/dist/routes/auth/login.js` |
+| `voyager/0004-i18n-story-panels.patch` | `MainView.ts`, `TourMenu.ts`, `ChromeView.ts` | títulos de los paneles del editor y "No tours available." | `translatePanels` en `voyager-story.js` y `noToursText` en `voyager-explorer.js` |
+
+Archivos propios que acompañan a esos parches: `utils/templates/helpers/pageTitle.ts` (+ test),
+`routes/auth/loginLinkLanguage.test.ts`, el bloque `huaka:` de `es.yml` (con `huaka.pageTitles`: título en
+inglés → español, admite `{{name}}`) y las claves nuevas de `branding/language/string.resources.es.json`.
+`scripts/check-es-locales.cjs` lee también las líneas agregadas por `patches/voyager/*.patch`.
+
+### Copyright de las escenas
+Las escenas nuevas nacen con "(c) Huaka Digital, todos los derechos reservados" (`ecorpus/0002`). Para poner
+la institución correcta: abrir la escena en el editor (Editar) → panel **Collection** → campo **Copyright**
+→ Guardar. La página de la escena muestra ese valor. Las escenas creadas antes del parche conservan el texto
+de Holusion hasta corregirlas así.
 
 Trabajo local con los parches: aplicar ambos, build y tests, revertir (`--revert ecorpus` y
 `git -C source/voyager checkout -- .`). Antes de commitear, `git diff --quiet -- source/server source/ui`.
