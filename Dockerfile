@@ -27,6 +27,13 @@ RUN sh scripts/apply-patches.sh ecorpus
 RUN npm run build-server
 RUN grep -qF '"ES"' /app/source/server/dist/utils/languages.js \
   || { echo "ERROR: Huaka Spanish UI language missing from server build" >&2; exit 1; }
+RUN grep -qF "Huaka Digital, todos los derechos" /app/source/server/dist/utils/schema/default.js \
+  || { echo "ERROR: Huaka default copyright missing from server build" >&2; exit 1; }
+RUN grep -qF "pageTitle" /app/source/server/dist/utils/templates/helpers/index.js \
+  && grep -qF "{{pageTitle title}}" /app/source/server/templates/partials/head.hbs \
+  || { echo "ERROR: Huaka page title translation missing from server build" >&2; exit 1; }
+RUN grep -qF "acceptsLanguages(dicts" /app/source/server/dist/routes/auth/login.js \
+  || { echo "ERROR: Huaka login link language missing from server build" >&2; exit 1; }
 # outputs files in /app/source/server/dist
 
 COPY source/voyager /app/source/voyager
@@ -42,6 +49,9 @@ RUN grep -qF ".5922,.7412,.7765" /app/dist/js/voyager-story.js \
   || { echo "ERROR: Huaka default annotation color missing from voyager-story.js" >&2; exit 1; }
 RUN grep -qF "logo-full-white.svg" /app/dist/js/voyager-explorer.js \
   || { echo "ERROR: Huaka white viewer logo missing from voyager-explorer.js" >&2; exit 1; }
+RUN grep -qF "translatePanels" /app/dist/js/voyager-story.js \
+  && grep -qF "noToursText" /app/dist/js/voyager-explorer.js \
+  || { echo "ERROR: Huaka Story panel translation missing from the Voyager bundles" >&2; exit 1; }
 # Huaka: ship license texts and attribution with the redistributed image
 # (Apache-2.0 §4; ff-* libs inside Voyager are MIT). Fails if one goes missing.
 COPY NOTICE.md /app/licenses/

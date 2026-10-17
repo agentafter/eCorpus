@@ -284,6 +284,27 @@ h3 { font-weight: 500; }
   }
 }
 
+/* Barras de pestañas (.grid-toolbar: página de escena, usuario, administración)
+   bajo 992px: upstream las pone en una sola fila de ancho fijo y recorta las
+   etiquetas (overflow: hidden), y en español no caben "Configuración" o
+   "Historial". Cada pestaña toma el ancho de su etiqueta y las que no caben
+   pasan a una segunda fila; los separadores verticales sobran al envolver. */
+@media screen and (max-width: 992px) {
+  :root .main-grid > .grid-toolbar > nav {
+    flex-wrap: wrap;
+  }
+  :root .main-grid > .grid-toolbar > nav > .nav-link {
+    flex: 1 0 auto;
+    overflow: visible;
+    white-space: normal;
+    text-align: center;
+    line-height: 1.15;
+  }
+  :root .main-grid > .grid-toolbar > nav > .divider {
+    display: none;
+  }
+}
+
 /* Links del contenido: azul → carmesí al pasar el mouse */
 :root main a:not(.btn, .nav-link):hover {
   color: var(--color-secondary);

@@ -114,6 +114,8 @@ pensada para el uso interno (mis escenas, primeros pasos, modo independiente).
 - **B. Rediseñar `home.hbs` para visitantes anónimos:** misma app y mismo idioma/i18n, pero edita una
   plantilla que upstream sigue cambiando (conflictos al sincronizar). Habría que mantenerlo como parche.
 - Los usuarios con sesión pueden seguir usando la portada actual (`/ui/`) como panel de trabajo.
+  Decidido (2026-10-17): la portada actual queda solo para usuarios con cuenta; la pública será la vitrina.
+  Al hacerla, corregir también el texto de upstream "Bienvenido a Corpus" (`es.yml`, sale igual en `en.yml`).
 - Con el punto 2, la vitrina no debe mostrar escenas "no listadas".
 - Con el punto 1, la vitrina puede mostrar campos de la ficha (procedencia, cultura, fechas) en las tarjetas.
 

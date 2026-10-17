@@ -151,5 +151,16 @@
 	"Delete light": "Eliminar luz",
 	"Please select a light type and enter a name.": "Seleccione un tipo de luz e ingrese un nombre.",
 	"OK": "Aceptar",
-	"Lead": "Introducción"
+	"Lead": "Introducción",
+	"Navigator": "Navegador",
+	"Media": "Medios",
+	"Collection": "Colección",
+	"Explorer": "Visor",
+	"Article Editor": "Editor de artículos",
+	"Tour Editor": "Editor de visitas guiadas",
+	"Note Editor": "Editor de notas",
+	"Console": "Consola",
+	"Hierarchy": "Jerarquía",
+	"Inspector": "Inspector",
+	"No tours available.": "No hay visitas guiadas disponibles."
 }

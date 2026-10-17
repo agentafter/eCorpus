@@ -1,0 +1,48 @@
+Huaka: el correo de enlace de acceso sigue el idioma de quien lo pide.
+
+Upstream lo envía siempre con connection_fr y asunto en francés
+(routes/auth/login.ts, sendLoginLink). Ahora usa el idioma de la sesión o, si no
+hay, Accept-Language (como utils/locals.ts), con su plantilla connection_<lang> y
+un asunto por idioma. Test: routes/auth/loginLinkLanguage.test.ts (archivo propio).
+
+Generado sobre eCorpus upstream d5fca779d6db75a4bdb766c7e8ce6848f6346955 (2026-10-15).
+
+diff --git a/source/server/routes/auth/login.ts b/source/server/routes/auth/login.ts
+index 4d227662..65e2b4a5 100644
+--- a/source/server/routes/auth/login.ts
++++ b/source/server/routes/auth/login.ts
+@@ -4,6 +4,7 @@ import User, { SafeUser } from "../../auth/User.js";
+ import { BadRequestError, ForbiddenError, HTTPError, NotFoundError, UnauthorizedError } from "../../utils/errors.js";
+ import { AppLocals, getHost, getLocals, getSession, getTaskScheduler, getUser, getUserManager, setUser, validateRedirect, useTemplateProperties  } from "../../utils/locals.js";
+ import { sendEmail } from "../../tasks/handlers/sendEmail.js";
++import { AcceptedLocales, dicts } from "../../utils/templates/index.js";
+ 
+ /**
+  * Handler for login flow. Used for automated AND interactive login flows, which makes it a bit more complicated
+@@ -218,11 +219,13 @@ export async function sendLoginLink(req :Request, res :Response){
+     {user, expiresIn: sessionMaxAge, redirect: getHost(req)},
+   );
+ 
+-  let lang = "fr";
++  // Huaka: the email follows the requester's language (session, then Accept-Language)
++  const lang = (getSession(req)?.lang ?? (req.acceptsLanguages(dicts as unknown as string[]) || "en")) as AcceptedLocales;
++  const brand = getLocals(req).config.get("brand");
+   const mail_content = await getLocals(req).templates.render(`emails/connection_${lang}`, {
+     layout: null,
+     name: user.username,
+-    lang: "fr",
++    lang,
+     url: link.toString()
+   });
+   //Don't await delivery: the task is persisted and logs are observable via the tasks UI
+@@ -231,7 +234,9 @@ export async function sendLoginLink(req :Request, res :Response){
+     user_id: user.uid,
+     data: {
+       to: user.email,
+-      subject: "Votre lien de connexion à eCorpus",
++      subject: lang === "fr" ? "Votre lien de connexion à eCorpus"
++        : lang === "es" ? `Su enlace de acceso a ${brand}`
++        : `Your login link to ${brand}`,
+       html: mail_content,
+     },
+   }).catch(err => console.error(`sendLoginLink to ${user.email} failed:`, err));
