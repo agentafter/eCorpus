@@ -1,6 +1,7 @@
 # Texto que queda en inglés (o en otro idioma) a propósito
 
-Registro de lo que la interfaz en español **no** traduce, para que no se confunda con un olvido.
+Registro de lo que la interfaz en español **no** traduce, para que no se confunda con un olvido. Lo que se
+quiere resolver más adelante está resumido en `docs/pendientes.md`.
 
 ## Identificadores técnicos (no se traducen)
 - Claves YAML/JSON, nombres de variables de interpolación (`{{what}}`, `{{count}}`…), rutas y endpoints.
