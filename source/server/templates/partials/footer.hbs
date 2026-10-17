@@ -14,7 +14,6 @@
         <select aria-label="{{i18n "labels.language"}}" name="lang" onchange="this.form.submit()" style="width: auto;">
           {{>inputs/option selected=(test lang "==" "en") value="en" text=(i18n "lang.en")}}
           {{>inputs/option selected=(test lang "==" "fr") value="fr" text=(i18n "lang.fr")}}
-          {{>inputs/option selected=(test lang "==" "es") value="es" text=(i18n "lang.es")}}
         </select>
       </div>
     </form>
