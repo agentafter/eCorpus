@@ -1,0 +1,126 @@
+Huaka: traduce los títulos de los paneles del editor Story y "No tours available.".
+
+Los títulos de los paneles vienen en inglés de los layouts estáticos de MainView
+(y del layout guardado en localStorage), sin pasar por el diccionario. Se
+reescriben por contentId con getUILocalizedString al restaurar el layout y cuando
+cambia el idioma de la interfaz (mismo patrón que TaskBar). TourMenu no tiene
+acceso al gestor de idiomas: ChromeView le pasa el texto ya traducido.
+Las traducciones van en branding/language/string.resources.es.json.
+
+Generado sobre Voyager f7a70e6fe13502410dfa0da50d87b43f91d7d9f7 (2026-10-05).
+
+diff --git a/source/client/ui/explorer/ChromeView.ts b/source/client/ui/explorer/ChromeView.ts
+index 3ba8e2df..304e5aea 100644
+--- a/source/client/ui/explorer/ChromeView.ts
++++ b/source/client/ui/explorer/ChromeView.ts
+@@ -175,7 +175,7 @@ export default class ChromeView extends DocumentView
+             </div>
+             <div class="ff-flex-spacer"></div>
+             ${toursEnabled && tourActive ? html`<sv-tour-navigator @close=${this.closeTours} .system=${this.system}></sv-tour-navigator>` : null}
+-            ${toursEnabled && !tourActive ? html`<sv-tour-menu .tours=${tours} .activeLanguage=${activeLanguage} @close=${this.closeTours} @select=${this.onSelectTour}></sv-tour-menu>` : null}
++            ${toursEnabled && !tourActive ? html`<sv-tour-menu .tours=${tours} .activeLanguage=${activeLanguage} .noToursText=${languageManager.getLocalizedString("No tours available.")} @close=${this.closeTours} @select=${this.onSelectTour}></sv-tour-menu>` : null}
+             ${tagCloudVisible && toolBarAllowed ? html`<sv-tag-cloud .system=${this.system}></sv-tag-cloud>` : null}
+             ${toolsVisible && toolBarAllowed ? html`<div class="sv-tool-bar-container"><sv-tool-bar .system=${this.system} @close=${this.closeTools}></sv-tool-bar></div>` : null}
+             <div class="sv-chrome-footer">
+diff --git a/source/client/ui/explorer/TourMenu.ts b/source/client/ui/explorer/TourMenu.ts
+index 64835d63..5f48f4dc 100644
+--- a/source/client/ui/explorer/TourMenu.ts
++++ b/source/client/ui/explorer/TourMenu.ts
+@@ -41,6 +41,10 @@ export default class TourMenu extends CustomElement
+     @property({ attribute: false })
+     activeLanguage: ELanguageType;
+ 
++    // Huaka: localized by ChromeView (the menu has no language manager)
++    @property({ attribute: false })
++    noToursText: string;
++
+     protected needsFocus: boolean = false;
+     protected focusableElements: HTMLElement[] = [];
+ 
+@@ -68,7 +72,7 @@ export default class TourMenu extends CustomElement
+ 
+         if (tours.length === 0) {
+             return html`<div class="sv-entry">
+-                <h1>No tours available.</h1>
++                <h1>${this.noToursText || "No tours available."}</h1>
+             </div>`;
+         }
+ 
+diff --git a/source/client/ui/story/MainView.ts b/source/client/ui/story/MainView.ts
+index 3dd7e332..da38916e 100644
+--- a/source/client/ui/story/MainView.ts
++++ b/source/client/ui/story/MainView.ts
+@@ -29,6 +29,8 @@ import HierarchyTreeView from "@ff/scene/ui/HierarchyTreeView";
+ 
+ import NavigatorPanel from "./NavigatorPanel";
+ import CVTaskProvider, { ETaskMode } from "../../components/CVTaskProvider";
++import CVLanguageManager from "../../components/CVLanguageManager";
++import DockPanel from "@ff/ui/DockPanel";
+ 
+ import TaskBar from "./TaskBar";
+ 
+@@ -96,6 +98,10 @@ export default class MainView extends CustomElement
+         return this.application.system.getMainComponent(CVTaskProvider);
+     }
+ 
++    protected get language() {
++        return this.application.system.getComponent(CVLanguageManager);
++    }
++
+     get app() {
+         return this.application;
+     }
+@@ -174,12 +180,14 @@ export default class MainView extends CustomElement
+ 
+         this.dockView = this.appendElement(DockView);
+         this.restoreLayout();
++        this.language.outs.uiLanguage.on("value", this.translatePanels, this);
+ 
+         window.addEventListener("beforeunload", this.onUnload);
+     }
+ 
+     protected disconnected()
+     {
++        this.language.outs.uiLanguage.off("value", this.translatePanels, this);
+         this.storeLayout();
+         localStorage.set("voyager-story", MainView.stateKey, this.state);
+     }
+@@ -216,6 +224,38 @@ export default class MainView extends CustomElement
+ 
+         this.dockView.setLayout(expertMode ? state.expertLayout : state.regularLayout, this.registry);
+         this.dockView.setPanelsMovable(true)
++        this.translatePanels();
++    }
++
++    // Huaka: panel titles come in English from the static layouts below (and
++    // from the layout saved in localStorage); relabel them by contentId.
++    protected static readonly panelTitles: Record<string, string> = {
++        "navigator": "Navigator",
++        "assets": "Media",
++        "collection": "Collection",
++        "task": "Task",
++        "explorer": "Explorer",
++        "article-editor": "Article Editor",
++        "tour-editor": "Tour Editor",
++        "notes": "Note Editor",
++        "console": "Console",
++        "hierarchy": "Hierarchy",
++        "inspector": "Inspector",
++    };
++
++    protected translatePanels()
++    {
++        const language = this.language;
++        if (!this.dockView || !language) {
++            return;
++        }
++        this.dockView.querySelectorAll<DockPanel>("ff-dock-panel").forEach(panel => {
++            const source = MainView.panelTitles[panel.getLayout().contentId];
++            if (source) {
++                panel.text = language.getUILocalizedString(source);
++                panel.header?.requestUpdate();
++            }
++        });
+     }
+ 
+     protected static readonly regularLayout: IDockElementLayout = {

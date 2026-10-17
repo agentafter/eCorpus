@@ -37,7 +37,8 @@ const tokens = values => [...new Set(values.flatMap(s => [
 
 const en = group(load("en.yml")), es = group(load("es.yml"));
 for (const k of Object.keys(en)) if (!(k in es)) report("es.yml missing:", k);
-for (const k of Object.keys(es)) if (!(k in en)) report("es.yml extra:", k);
+// huaka.pageTitles is only needed in languages that translate titles (see utils/templates/helpers/pageTitle.ts)
+for (const k of Object.keys(es)) if (!(k in en) && !k.startsWith("huaka.pageTitles.")) report("es.yml extra:", k);
 for (const k of Object.keys(en)) {
   if (k in es && tokens(en[k]) !== tokens(es[k])) report(`es.yml tokens differ for ${k}\n  en: ${tokens(en[k])}\n  es: ${tokens(es[k])}`);
 }
@@ -56,6 +57,16 @@ for (const file of walk(path.join(root, "source/voyager/source/client"))) {
   const src = fs.readFileSync(file, "utf8");
   for (const m of src.matchAll(/getUILocalizedString\(\s*(["'`])((?:(?!\1).)*)\1\s*\)/g)) upstream.add(m[2]);
   if (file.endsWith("Task.ts")) for (const m of src.matchAll(/static readonly text: string = "([^"]+)"/g)) upstream.add(m[1]);
+}
+// Strings that our patches/voyager add (the submodule stays unpatched in git): localized literals and
+// the Story panel titles (MainView.panelTitles)
+const patchDir = path.join(root, "patches/voyager");
+for (const f of fs.readdirSync(patchDir).filter(f => f.endsWith(".patch"))) {
+  const added = fs.readFileSync(path.join(patchDir, f), "utf8").split(/\r?\n/)
+    .filter(l => l.startsWith("+") && !l.startsWith("+++")).join("\n");
+  for (const m of added.matchAll(/get(?:UI)?LocalizedString\(\s*(["'`])((?:(?!\1).)*)\1\s*\)/g)) upstream.add(m[2]);
+  const titles = /panelTitles[^{]*\{([^}]*)\}/.exec(added);
+  if (titles) for (const m of titles[1].matchAll(/"[\w-]+": "([^"]+)"/g)) upstream.add(m[1]);
 }
 const overlay = json(path.join(root, "branding/language/string.resources.es.json"));
 for (const k of upstream) if (!(k in overlay)) report("Voyager es.json missing:", JSON.stringify(k));
