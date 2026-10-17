@@ -110,10 +110,10 @@ Terminología: `docs/localization/es-terminology.md`. Lo que queda sin traducir 
 
 Sin cuenta, el idioma sale de `Accept-Language`; si el navegador no pide es/fr/en, se muestra inglés.
 
-**Voyager** (JSON propio, por idioma): Voyager pide `language/string.resources.<idioma>.json` relativo a `/dist/`, así que el archivo de `branding/language/` lo reemplaza sin tocar el submódulo. Lleva el `es.json` de upstream (70 claves), las 70 claves que solo tienen `en.json`/`fr.json` (textos del editor Story) y 5 valores de upstream cambiados por consistencia con el glosario ("Tour"/"Recorrido" → "Visita guiada" y "Izquierdo" → "Izquierda"). El editor recibe el idioma de la interfaz (`templates/scene/story.hbs`, `uiLang`); el visor público usa el idioma de la escena, y también lee este archivo cuando la escena está en español.
+**Voyager** (JSON propio, por idioma): Voyager pide `language/string.resources.<idioma>.json` relativo a `/dist/`, así que el archivo de `branding/language/` lo reemplaza sin tocar el submódulo. Lleva el `es.json` de upstream (70 claves), las 70 claves que solo tienen `en.json`/`fr.json` (textos del editor Story), 13 cadenas que el código de Voyager traduce pero ningún diccionario de upstream incluye (nombres de las tareas de Story: Pose, Capture, Annotations…) y 5 valores de upstream cambiados por consistencia con el glosario ("Tour"/"Recorrido" → "Visita guiada" y "Izquierdo" → "Izquierda"). El editor recibe el idioma de la interfaz (`templates/scene/story.hbs`, `uiLang`); el visor público usa el idioma de la escena, y también lee este archivo cuando la escena está en español.
 
 ### Al sincronizar con upstream
-`node scripts/check-es-locales.cjs` (tras `npm ci` en `source/server`) falla si `en.yml` tiene claves o placeholders que `es.yml` no tiene, o si el `en.json`/`fr.json` de Voyager trae claves que el overlay no tiene. Traducir lo nuevo, siguiendo el glosario. Si upstream agrega un idioma o cambia alguno de los puntos de la tabla, revisar que `es` siga en cada uno.
+`node scripts/check-es-locales.cjs` (tras `npm ci` en `source/server`) falla si `en.yml` tiene claves o placeholders que `es.yml` no tiene, o si el `en.json`/`fr.json` de Voyager, o las cadenas literales que pasa su código a `getUILocalizedString` (y los `text` de sus tareas), traen claves que el overlay no tiene. Traducir lo nuevo, siguiendo el glosario. Si upstream agrega un idioma o cambia alguno de los puntos de la tabla, revisar que `es` siga en cada uno.
 
 ## 4. Licencias en la imagen publicada
 

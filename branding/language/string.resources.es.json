@@ -138,5 +138,18 @@
 	"User": "Usuario",
 	"Comment": "Comentario",
 	"View Point": "Punto de vista",
-	"Zoom Extents": "Encuadrar todo"
+	"Zoom Extents": "Encuadrar todo",
+	"Action": "Acción",
+	"Annotations": "Anotaciones",
+	"Articles": "Artículos",
+	"Audio": "Audio",
+	"Capture": "Captura",
+	"Derivatives": "Derivados",
+	"Overlay": "Superposición",
+	"Pose": "Pose",
+	"Task": "Tarea",
+	"Delete light": "Eliminar luz",
+	"Please select a light type and enter a name.": "Seleccione un tipo de luz e ingrese un nombre.",
+	"OK": "Aceptar",
+	"Lead": "Introducción"
 }

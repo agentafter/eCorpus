@@ -3,7 +3,7 @@
 //  - source/server/templates/locales/es.yml has the same keys as en.yml (plural forms grouped)
 //    and the same placeholders, $t() nestings, HTML tags and links per key;
 //  - branding/language/string.resources.es.json (Voyager overlay) has every key of
-//    Voyager's en.json and fr.json, and no key they lack.
+//    Voyager's en.json and fr.json plus the literal strings its code localizes, and no other key.
 // Usage: node scripts/check-es-locales.cjs   (needs `npm ci` in source/server for js-yaml)
 const fs = require("fs");
 const path = require("path");
@@ -49,6 +49,14 @@ const upstream = new Set([
   ...Object.keys(json(path.join(voyager, "string.resources.en.json"))),
   ...Object.keys(json(path.join(voyager, "string.resources.fr.json"))),
 ]);
+// Literal strings the Voyager code localizes but no upstream dictionary lists (e.g. Story task names)
+const walk = dir => fs.readdirSync(dir, { withFileTypes: true }).flatMap(e =>
+  e.isDirectory() ? walk(path.join(dir, e.name)) : e.name.endsWith(".ts") ? [path.join(dir, e.name)] : []);
+for (const file of walk(path.join(root, "source/voyager/source/client"))) {
+  const src = fs.readFileSync(file, "utf8");
+  for (const m of src.matchAll(/getUILocalizedString\(\s*(["'`])((?:(?!\1).)*)\1\s*\)/g)) upstream.add(m[2]);
+  if (file.endsWith("Task.ts")) for (const m of src.matchAll(/static readonly text: string = "([^"]+)"/g)) upstream.add(m[1]);
+}
 const overlay = json(path.join(root, "branding/language/string.resources.es.json"));
 for (const k of upstream) if (!(k in overlay)) report("Voyager es.json missing:", JSON.stringify(k));
 for (const k of Object.keys(overlay)) if (!upstream.has(k)) report("Voyager es.json extra:", JSON.stringify(k));
