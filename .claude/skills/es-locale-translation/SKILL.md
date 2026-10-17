@@ -50,7 +50,7 @@ Antes de traducir un término nuevo, revisar primero si ya está en el glosario 
 
 ## Paso 3 — Activar el idioma en código (ya hecho)
 
-`es` ya está en los 6 puntos fijos de upstream (tabla en `docs/customization.md` §3): `uiLanguages`, `dicts`, `?lang=` en `routes/index.ts`, selector del pie, asunto del correo de alta y vista previa de correos, más `templates/emails/onboarding_es.hbs`. Tras sincronizar con upstream, buscar listas nuevas de idiomas fijas (`grep -rn '"fr"' source/server --include=*.ts --include=*.hbs`) y plantillas de correo nuevas por idioma (`templates/emails/*_fr.hbs` sin su `_es`).
+`es` ya está en los 6 puntos fijos de upstream (tabla en `docs/customization.md` §3): `uiLanguages`, `dicts`, `?lang=` en `routes/index.ts`, selector del pie, asunto del correo de alta y vista previa de correos, más `templates/emails/onboarding_es.hbs`. Esos 6 archivos **no** se editan en git: el cambio vive en `patches/ecorpus/0001-es-ui-language.patch` y cualquier texto nuevo que exija tocar un archivo de upstream va en un parche (skill `upstream-patches`); los archivos nuevos (`es.yml`, `*_es.hbs`) sí son archivos normales. Tras sincronizar con upstream, buscar listas nuevas de idiomas fijas (`grep -rn '"fr"' source/server --include=*.ts --include=*.hbs`) y plantillas de correo nuevas por idioma (`templates/emails/*_fr.hbs` sin su `_es`).
 
 ## Paso 4 — Revisar inglés residual
 
@@ -65,7 +65,7 @@ El español suele ser más largo que el inglés. Revisar especialmente botones, 
 - [ ] `es.yml` creado, cubre al menos las pantallas de uso diario.
 - [ ] Ningún placeholder/interpolación roto.
 - [ ] `en.yml`/`fr.yml` no tienen cambios fuera de la línea `lang: es:` agregada.
-- [ ] `uiLanguages` incluye `"ES"` en todos los lugares donde está definido (server y, si aplica, cliente).
+- [ ] `uiLanguages` incluye `"ES"` en todos los lugares donde está definido (server y, si aplica, cliente), vía `patches/ecorpus/` (`sh scripts/apply-patches.sh --check ecorpus`).
 - [ ] Terminología usada es consistente con `docs/localization/es-terminology.md` (y el glosario quedó actualizado si se acuñó un término nuevo).
 - [ ] Se revisaron visualmente las pantallas principales en español, en al menos una resolución angosta.
 - [ ] Si el visor/editor Voyager tiene textos propios sin traducir, quedó explícitamente anotado que es un trabajo aparte (no se intentó traducir a ciegas dentro del submódulo).
