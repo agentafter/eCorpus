@@ -1,6 +1,7 @@
 # Pendientes
 
 Trabajo identificado y dejado para más adelante. Al resolver uno, quitarlo de aquí en la misma PR.
+Funcionalidades nuevas aún sin aprobar (metadatos, enlaces privados, vitrina): `docs/plan-potencial.md`.
 
 ## Interfaz en español: texto que sigue en inglés
 Detalle y ubicación exacta de cada texto en `docs/localization/es-untranslated.md` ("Pendiente de upstream").
