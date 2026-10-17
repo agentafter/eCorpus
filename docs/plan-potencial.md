@@ -46,8 +46,7 @@ digitalización, editables por el equipo y visibles para el público.
    la catalogación ya vive ahí.
 
 Divergencia esperada: archivos nuevos más 2–3 líneas en archivos de upstream, mantenidas como parche en
-`patches/` (como Voyager), para que el build falle si una actualización las rompe. A mediano plazo,
-proponerle el editor de metadatos a Holusion.
+`patches/ecorpus/` (skill `upstream-patches`), para que el build falle si una actualización las rompe.
 
 Fuera de la primera versión: búsqueda por campos personalizados (exige cambiar funciones SQL de upstream).
 
@@ -83,7 +82,8 @@ las colecciones ni el sitemap, y sin pedir inicio de sesión.
   (`public_access = none`), y un enlace con token da acceso de solo lectura a esa escena (visor e
   incrustación). eCorpus ya tiene tokens con alcances y enlaces de acceso firmados (`/auth/payload/...`),
   que conviene reutilizar en lugar de crear un mecanismo paralelo. Es más seguro, pero toca la
-  autorización de upstream: candidato fuerte a proponer a Holusion antes que a parchear.
+  autorización de upstream: se haría como parche propio en `patches/ecorpus/`, con revisión de seguridad
+  (`/security-review`) antes de desplegarlo.
 - Debe poder revocarse (regenerar o borrar el enlace) y dejar claro en la interfaz quién lo ve.
 
 ### Preguntas abiertas

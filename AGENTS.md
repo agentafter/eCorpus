@@ -98,7 +98,10 @@ Para cada cambio, preguntar:
 3. Archivos de theme locales nuevos, custom properties CSS, variables Sass.
 4. Recursos de localización (nuevos archivos, no ediciones de los existentes salvo lo imprescindible).
 5. Puntos de extensión existentes del componente (wrapper components, `::part`, props de theming).
-6. Parches aislados y pequeños sobre código existente.
+6. Parches aislados y pequeños sobre código existente, **siempre como archivo `.patch`**: `patches/ecorpus/` para
+   eCorpus y `patches/voyager/` para Voyager, aplicados en el build por `scripts/apply-patches.sh`. En git, `source/`
+   queda igual a upstream (los archivos nuevos sí van directo al fork). No se proponen cambios a Holusion por ahora.
+   Procedimiento: skill `upstream-patches`; inventario: `docs/customization.md` §5.
 
 **Evitar:**
 - Duplicar componentes completos de upstream.
@@ -233,7 +236,7 @@ Al agregar íconos u otros assets: verificar origen y licencia, confirmar derech
 
 Antes de tocar Voyager, siempre preguntar: **¿esto se puede lograr desde la capa de UI/theme/localización de eCorpus?** Si sí, hacer eso en vez de tocar el submódulo.
 
-Si de verdad hace falta modificar Voyager: documentar por qué, identificar los archivos exactos, mantener el parche lo más pequeño posible, conservar sus headers de licencia y atribución, evitar refactors no relacionados, registrar el commit de Voyager sobre el que se aplicó, y dejarlo fácil de reaplicar sobre un commit de Voyager más nuevo.
+Si de verdad hace falta modificar Voyager: documentar por qué, identificar los archivos exactos, mantener el parche lo más pequeño posible, conservar sus headers de licencia y atribución, evitar refactors no relacionados, registrar el commit de Voyager sobre el que se aplicó, y dejarlo fácil de reaplicar sobre un commit de Voyager más nuevo. El parche va en `patches/voyager/` (skill `upstream-patches`); el submódulo queda en su commit de upstream.
 
 ### Sincronización de submódulos
 ```bash
@@ -255,7 +258,10 @@ git fetch upstream
 git status
 git diff
 git submodule status
+sh scripts/upstream-report.sh   # informe de solo lectura: parches, overlays, migraciones (VERDE/AMARILLO/ROJO)
 ```
+
+Procedimiento completo: skill `upstream-sync` (merge en una rama `sync/upstream-AAAA-MM-DD`, nunca rebase de `main`).
 
 Nunca sobreescribir personalización local con upstream a ciegas. Ante un conflicto de merge en un archivo que también tiene personalización local: **no** elegir automáticamente "ours" ni "theirs" — inspeccionar el cambio upstream, inspeccionar el cambio local, evaluar si la personalización se puede extraer a un archivo/capa separada, preservar la funcionalidad upstream, reaplicar solo la personalización necesaria, rebuild, test. Si el agente no tiene confianza en la resolución, debe detenerse y pedir revisión humana en vez de forzarla.
 
@@ -268,7 +274,7 @@ Nunca sobreescribir personalización local con upstream a ciegas. Ante un confli
 - Antes de cualquier `git push`, correr `git status` / `git diff --stat` y dejar el resumen visible antes de ejecutar.
 - **Nunca** commitear secretos: `.env`, contraseñas, claves privadas, certificados TLS, tokens. Verificar `.gitignore` (`.env`, `*.pem`, `*.key`) antes del primer commit. Si un secreto ya quedó commiteado, no basta con borrarlo en un commit nuevo — hay que avisar de inmediato para rotar la credencial; reescribir historial en ese caso requiere intervención humana, no lo resuelve el agente solo.
 - Credenciales de alcance mínimo: deploy key/PAT dedicado al fork, nunca credenciales personales ni tokens de administrador de la org.
-- Antes de `git rebase upstream/main`: `git status` limpio + rama de respaldo (`git branch backup/pre-rebase-$(date +%F)`). Si el rebase tiene conflictos fuera de lo esperado (ej. algo más que la línea de `uiLanguages`), detenerse y pedir revisión.
+- Upstream se integra con **merge** en una rama `sync/…`, nunca con `git rebase upstream/main` sobre `main` (obligaría a un push forzado). Antes: `git status` limpio. Si el merge tiene conflictos en `source/` (no debería: ahí no se commitean cambios) o fuera de lo esperado, detenerse y pedir revisión.
 - No borrar ramas/tags sin confirmación explícita. No hacer `commit --amend`/rebase sobre historia ya compartida.
 - Commits pequeños y de un solo propósito, con prefijo por tipo — reduce drásticamente los conflictos al sincronizar con upstream:
   ```text
@@ -390,7 +396,7 @@ Reglas:
   (otras formas de invocar el mismo comando, `scp`, comandos encadenados, otro host u otro usuario).
 - Nunca usar `docker compose config` sin `--quiet`: imprime contraseñas interpoladas.
 - Skills del proyecto (`.claude/skills/`): `voyager-submodule-sync`, `es-locale-translation`, `theme-token-override`,
-  `ecorpus-docker-build`.
+  `ecorpus-docker-build`, `upstream-patches`, `upstream-sync`, `staging-visual-check`.
 
 ---
 

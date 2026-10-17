@@ -6,7 +6,9 @@
 
 Todo lo de arriba (AGENTS.md) aplica. Esto es lo específico de trabajar **en local con acceso SSH al servidor**.
 
-**Skills del proyecto** (`.claude/skills/`): `voyager-submodule-sync`, `es-locale-translation`, `theme-token-override`, `ecorpus-docker-build`. Cárgalas cuando la tarea calce con su descripción, y siempre `voyager-submodule-sync` antes de un build o de sincronizar con upstream.
+**Skills del proyecto** (`.claude/skills/`): `voyager-submodule-sync`, `es-locale-translation`, `theme-token-override`, `ecorpus-docker-build`, `upstream-patches`, `upstream-sync`, `staging-visual-check`. Cárgalas cuando la tarea calce con su descripción, y siempre `voyager-submodule-sync` antes de un build o de sincronizar con upstream.
+
+**Cambios a código de upstream (eCorpus o Voyager): solo como parche** en `patches/ecorpus/` o `patches/voyager/` (skill `upstream-patches`); nunca commitees `source/` modificado. Antes de commitear: `sh scripts/apply-patches.sh --revert ecorpus`, `git -C source/voyager checkout -- .` y `git diff --quiet -- source/server source/ui`.
 
 **Acceso al servidor — solo por `ssh huaka-agent <entorno> <verbo>`:**
 - Entornos: `staging` y `prod`. Verbos de lectura (ambos): `ps`, `logs [N]`, `health`, `validate`. Verbos de escritura (solo `staging`): `pull`, `up`, `restart`, `put-branding`, `clear-branding`. `ssh huaka-agent help` los lista.

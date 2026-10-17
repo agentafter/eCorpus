@@ -10,10 +10,12 @@ quiere resolver más adelante está resumido en `docs/pendientes.md`.
 - Nombres de producto: eCorpus, Voyager, Voyager-Story, Voyager-Explorer, OAuth, PKCE, DKIM, GLB/glTF, ZIP.
 - Claves de `errors` (`"Bad password"`, etc.): el servidor las usa como identificador; solo se traduce el valor.
 
-## Pendiente de upstream (fuera de alcance de la etapa 1)
+## Pendiente de parche (fuera de alcance de la etapa 1)
+Se resuelve con parches propios en `patches/ecorpus/` o `patches/voyager/` (skill `upstream-patches`); no se
+proponen a Holusion.
 - **Correo de enlace de acceso**: `routes/auth/login.ts` lo envía siempre con `connection_fr.hbs`, sin
   mirar el idioma del usuario (comportamiento de upstream). `connection_es.hbs` existe y se ve en la vista
-  previa `/ui/design/emails`, pero no se envía hasta que upstream elija la plantilla por idioma.
+  previa `/ui/design/emails`, pero no se envía hasta que un parche elija la plantilla por idioma.
 - **Textos de Voyager fijos en el código**: los que no pasan por `string.resources.<lang>.json`
   siguen en inglés. Traducirlos exige parchear el submódulo (AGENTS.md §10). Visibles en el editor:
   títulos de los paneles (`ui/story/MainView.ts`: Navigator, Media, Collection, Task, Explorer,
@@ -23,7 +25,7 @@ quiere resolver más adelante está resumido en `docs/pendientes.md`.
   escena, no el idioma de la interfaz.
 - `source/ui/state/strings.ts` (diccionario del cliente, solo fr/en): ningún componente lo importa.
 - **Texto fijo en plantillas y rutas del servidor** (no pasa por i18next; también sale en inglés con la
-  interfaz en francés). Traducirlo exige editar archivos de upstream; mejor proponerlo a Holusion:
+  interfaz en francés). Traducirlo exige editar archivos de upstream, con un parche en `patches/ecorpus/`:
   - `<title>` de las páginas: `title: "Home"`, `"Search"`, `"User Settings"`, `"Administration"`, etc. en
     `routes/views/index.ts` y demás rutas de vistas.
   - `templates/admin/home.hbs`: botón "Send" del correo de prueba.
