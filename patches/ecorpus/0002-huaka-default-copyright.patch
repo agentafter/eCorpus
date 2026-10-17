@@ -1,0 +1,22 @@
+Huaka: copyright por defecto de las escenas nuevas a nombre de Huaka Digital.
+
+Upstream crea cada escena con "(c) Holusion SAS, all rights reserved"
+(utils/schema/default.ts, usado por createDocumentFromFiles). Cada escena puede
+cambiarlo luego a la institución correcta desde el editor (panel Collection,
+campo Copyright).
+
+Generado sobre eCorpus upstream d5fca779d6db75a4bdb766c7e8ce6848f6346955 (2026-10-15).
+
+diff --git a/source/server/utils/schema/default.ts b/source/server/utils/schema/default.ts
+index 1294c0cb..b8dd74b2 100644
+--- a/source/server/utils/schema/default.ts
++++ b/source/server/utils/schema/default.ts
+@@ -10,7 +10,7 @@ const default_doc = {
+     "asset": {
+         "type": "application/si-dpo-3d.document+json",
+         "version": "1.0",
+-        "copyright": "(c) Holusion SAS, all rights reserved",
++        "copyright": "(c) Huaka Digital, todos los derechos reservados",
+         "generator": "eCorpus"
+     },
+     "scene": 0,
