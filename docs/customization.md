@@ -107,6 +107,7 @@ Terminología: `docs/localization/es-terminology.md`. Lo que queda sin traducir 
 | `source/server/routes/users/post.ts` | Asunto del correo de bienvenida |
 | `source/server/routes/views/index.ts` | Idiomas de la vista previa `/ui/design/emails` |
 | `source/server/templates/emails/onboarding_es.hbs` | Cuerpo del correo de bienvenida (sin él, crear un usuario en español falla) |
+| `source/server/templates/emails/connection_es.hbs` | Correo de enlace de acceso; hoy solo lo usa la vista previa (upstream envía siempre `connection_fr`) |
 
 Sin cuenta, el idioma sale de `Accept-Language`; si el navegador no pide es/fr/en, se muestra inglés.
 

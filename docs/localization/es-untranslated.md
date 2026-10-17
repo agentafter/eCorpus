@@ -10,9 +10,9 @@ Registro de lo que la interfaz en español **no** traduce, para que no se confun
 - Claves de `errors` (`"Bad password"`, etc.): el servidor las usa como identificador; solo se traduce el valor.
 
 ## Pendiente de upstream (fuera de alcance de la etapa 1)
-- **Correo de enlace de acceso** (`templates/emails/connection_{en,fr}.hbs`): `routes/auth/login.ts`
-  lo envía siempre en francés, sin mirar el idioma del usuario. Es un comportamiento de upstream; no
-  se crea `connection_es.hbs` hasta que upstream elija la plantilla por idioma.
+- **Correo de enlace de acceso**: `routes/auth/login.ts` lo envía siempre con `connection_fr.hbs`, sin
+  mirar el idioma del usuario (comportamiento de upstream). `connection_es.hbs` existe y se ve en la vista
+  previa `/ui/design/emails`, pero no se envía hasta que upstream elija la plantilla por idioma.
 - **Textos de Voyager fijos en el código**: los que no pasan por `string.resources.<lang>.json`
   siguen en inglés. Traducirlos exige parchear el submódulo (AGENTS.md §10). Visibles en el editor:
   títulos de los paneles (`ui/story/MainView.ts`: Navigator, Media, Collection, Task, Explorer,
