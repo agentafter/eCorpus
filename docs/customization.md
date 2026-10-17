@@ -14,6 +14,7 @@ Carpeta `branding/` → montada como `/app/branding` (`ASSETS_DIR`) y servida en
 | `branding/images/logo-full.svg`, `logo-sm.svg` | `/dist/images/logo-*.svg` | Logo Huaka a color en la barra (fondo claro); ver `branding/IMAGES.md` |
 | `branding/images/logo-full-white.svg`, `logo-sm-white.svg` | — (nuevos) | Variante blanca para el visor Voyager (fondo oscuro); la pide el parche `0003` |
 | `branding/favicon.svg`, `favicon.png` | `/dist/favicon.*` | Favicon Huaka (isotipo) |
+| `branding/language/string.resources.es.json` | `/dist/language/string.resources.es.json` (`source/voyager/assets/language/`) | Textos de Voyager en español, completos; ver §3 |
 
 Los SVG salen de los originales de `branding-src/huaka/` cambiando solo el `viewBox` (recorte del margen vacío). Pendiente: los dibujos de fondo (`/dist/images/muse.webp` y `scroll.webp`, de Holusion, Apache-2.0) se reemplazarán igual, con la misma ruta en `branding/images/`.
 
@@ -56,6 +57,7 @@ Desde fuera, `/dist/css/theme.css` debe medir lo mismo que `branding/css/theme.c
 - `theme.css` reemplaza el archivo entero. Tras cada sync, comparar `git diff <viejo>..<nuevo> -- source/ui/styles/theme.scss` y copiar a `branding/css/theme.css` cualquier token nuevo.
 - Lo mismo para `source/voyager/assets/fonts/fonts.css` → `branding/fonts/fonts.css` (familias nuevas) y para `font-family` nuevas en el Sass de Voyager (`grep -rn font-family source/voyager/source/client/ui`).
 - Revisar `git diff -- source/ui/styles/buttons.scss`: `theme.css` sobreescribe `--btn-text-color` en `.btn.btn-{main,primary,secondary,danger,success,info}`.
+- Correr `node scripts/check-es-locales.cjs` (ver §3).
 
 ## 2. Visor/editor Voyager — parche de colores (requiere build propio)
 
@@ -90,7 +92,30 @@ Actualizar aquí el hash de Voyager sobre el que se generó.
 
 Build local: `sh scripts/apply-voyager-patches.sh && npm run build-ui` deja el submódulo modificado; revertir con `git -C source/voyager checkout -- .` antes de commitear.
 
-## 3. Licencias en la imagen publicada
+## 3. Interfaz en español (requiere build propio)
+
+Terminología: `docs/localization/es-terminology.md`. Lo que queda sin traducir a propósito: `docs/localization/es-untranslated.md`.
+
+**Shell de eCorpus** (i18next en el servidor): `source/server/templates/locales/es.yml`, mismas claves que `en.yml` (lo que falte sale en inglés por `fallbackLng`). Plurales con sufijos `_one`/`_many`/`_other` (i18next v24 pide `_many` para el español). La lista de idiomas está fija en varios puntos de upstream, y cada uno lleva `es`:
+
+| Archivo | Qué controla |
+|---|---|
+| `source/server/utils/languages.ts` (`uiLanguages`) | Opciones de idioma que arma `utils/locals.ts` |
+| `source/server/utils/templates/index.ts` (`dicts`) | Diccionarios cargados, `Accept-Language`, `hreflang` del sitemap, idioma del correo de alta y configuraciones de búsqueda (`vfs/Scenes.ts`; `es` usa la configuración `simple` de Postgres) |
+| `source/server/routes/index.ts` | `?lang=` aceptado (ahora cualquiera de `dicts`) |
+| `source/server/templates/partials/footer.hbs` | Selector de idioma del pie |
+| `source/server/routes/users/post.ts` | Asunto del correo de bienvenida |
+| `source/server/routes/views/index.ts` | Idiomas de la vista previa `/ui/design/emails` |
+| `source/server/templates/emails/onboarding_es.hbs` | Cuerpo del correo de bienvenida (sin él, crear un usuario en español falla) |
+
+Sin cuenta, el idioma sale de `Accept-Language`; si el navegador no pide es/fr/en, se muestra inglés.
+
+**Voyager** (JSON propio, por idioma): Voyager pide `language/string.resources.<idioma>.json` relativo a `/dist/`, así que el archivo de `branding/language/` lo reemplaza sin tocar el submódulo. Lleva el `es.json` de upstream (70 claves), las 70 claves que solo tienen `en.json`/`fr.json` (textos del editor Story) y 5 valores de upstream cambiados por consistencia con el glosario ("Tour"/"Recorrido" → "Visita guiada" y "Izquierdo" → "Izquierda"). El editor recibe el idioma de la interfaz (`templates/scene/story.hbs`, `uiLang`); el visor público usa el idioma de la escena, y también lee este archivo cuando la escena está en español.
+
+### Al sincronizar con upstream
+`node scripts/check-es-locales.cjs` (tras `npm ci` en `source/server`) falla si `en.yml` tiene claves o placeholders que `es.yml` no tiene, o si el `en.json`/`fr.json` de Voyager trae claves que el overlay no tiene. Traducir lo nuevo, siguiendo el glosario. Si upstream agrega un idioma o cambia alguno de los puntos de la tabla, revisar que `es` siga en cada uno.
+
+## 4. Licencias en la imagen publicada
 
 La imagen `ghcr.io/agentafter/e-corpus` redistribuye eCorpus y Voyager, así que lleva los textos de licencia (Apache-2.0 §4) en `/app/licenses/`: `NOTICE.md` (procedencia, ver §1.5 de AGENTS.md), la licencia de eCorpus, `LICENSE.md`/`3RD_PARTY_LICENSES.txt`/`ATTRIBUTIONS.md` de Voyager y las licencias MIT de sus bibliotecas `ff-*`. Los copia el `Dockerfile`; si falta alguno, el build falla.
 
