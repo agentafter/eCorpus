@@ -162,10 +162,16 @@ con acceso público de lectura), aunque quien la abra tenga sesión.
 - Textos: `huaka.showcase` en `es.yml`, `en.yml` y `fr.yml`. La carta de "Sobre el proyecto" (`aboutLetter`) es
   provisional.
 - **Destacadas:** las escenas públicas con la etiqueta `destacada` (se agrega en la página de la escena, como
-  cualquier etiqueta). La portada de la vitrina usa la primera destacada con captura; sin destacadas, la más
-  reciente. `destacada` no aparece en "Colecciones"; las demás etiquetas sí.
+  cualquier etiqueta).
+- **Portada:** una pieza al azar entre las que tienen la etiqueta `portada`; si ninguna la tiene, entre todas las
+  públicas de la vitrina. "Ver otra pieza" la cambia sin recargar (sin script, recarga con `?pieza=<nombre>`).
+- `destacada` y `portada` no aparecen en "Colecciones"; las demás etiquetas sí. "Ver todas las colecciones" lleva a
+  `/ui/tags/`.
+- Movimiento (`branding/js/showcase.js`, sin librerías): detrás de cada sección hay una pieza distinta que se funde
+  con la siguiente al hacer scroll, y las tarjetas aparecen y se desvanecen al entrar y salir de pantalla. Con
+  "reducir movimiento" solo se funden.
 - Las fotos son las capturas de Voyager de cada escena (`scene-image-low|medium|high.jpg`); sin captura, la
-  miniatura. "Girar en 3D" abre el visor de la escena dentro de la portada.
+  miniatura. "Ver en 3D" abre el visor de la escena dentro de la portada.
 - Diseño trabajado con la skill `design-taste-frontend` (dirección "la página es el objeto": la ficha de inventario
   de cada pieza).
 

@@ -464,7 +464,8 @@ huaka:
     piece: Pieza
     collection: Colección
     updated: Actualizada
-    rotate: Girar en 3D
+    rotate: Ver en 3D
+    otherPiece: Ver otra pieza
     closeViewer: Cerrar el visor 3D
     browse: Ver todo el archivo
     featuredTitle: Piezas destacadas
@@ -474,6 +475,7 @@ huaka:
     pieces_one: "{{count}} pieza"
     pieces_other: "{{count}} piezas"
     openCollection: Ver la colección completa
+    allCollections: Ver todas las colecciones
     aboutLabel: Sobre el proyecto
     aboutLetter: |
       <p>Patrimonio Virtual reúne piezas del patrimonio cultural digitalizadas en tres dimensiones, para que cualquiera pueda verlas de cerca, desde cualquier lugar.</p>

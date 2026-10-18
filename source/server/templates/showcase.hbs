@@ -2,6 +2,8 @@
   Huaka: the public showcase ("vitrina"). Route: routes/views/showcase.ts. Styles and script: branding/css/showcase.css,
   branding/js/showcase.js. Each piece is presented as its inventory card: the hero card, the slips of the featured
   pieces, the catalogue tags of the recent ones.
+  Cards fade in and out with the scroll ([data-sc-fade]). The hero piece is random (or tagged "portada"); "Ver otra
+  pieza" swaps it from the #sc-hero-pool list without reloading.
   Behind every section, a fixed stage holds one piece per section (backdrops, chosen by the route); the script
   crossfades them as the sections pass. Without the script, the first one stays.
 --}}
@@ -23,19 +25,23 @@
       <img class="sc-hero__photo" src="{{hero.thumb}}" width="320" height="320" alt="{{hero.title}}">
     {{/if}}{{/unless}}
   </div>
-  <div class="sc-hero__card" data-sc-card>
+  <div class="sc-hero__card" data-sc-card data-sc-fade data-sc-current="{{hero.name}}">
     <h1 class="sc-hero__title" id="sc-hero-title" data-sc-words>{{#if brand}}{{brand}}{{else}}eCorpus{{/if}}</h1>
     <p class="sc-hero__lead">{{i18n "huaka.showcase.heroLead"}}</p>
     <dl class="sc-facts">
-      <div><dt>{{i18n "huaka.showcase.piece"}}</dt><dd>{{hero.title}}</dd></div>
-      {{#if hero.collection}}<div><dt>{{i18n "huaka.showcase.collection"}}</dt><dd>{{hero.collection}}</dd></div>{{/if}}
-      <div><dt>{{i18n "huaka.showcase.updated"}}</dt><dd>{{dateString hero.mtime "date"}}</dd></div>
+      <div><dt>{{i18n "huaka.showcase.piece"}}</dt><dd data-sc-hero="title">{{hero.title}}</dd></div>
+      <div {{#unless hero.collection}}hidden{{/unless}}><dt>{{i18n "huaka.showcase.collection"}}</dt><dd data-sc-hero="collection">{{hero.collection}}</dd></div>
+      <div><dt>{{i18n "huaka.showcase.updated"}}</dt><dd data-sc-hero="date">{{dateString hero.mtime "date"}}</dd></div>
     </dl>
     <div class="sc-hero__actions">
       <a class="sc-btn" href="{{hero.viewUri}}" data-sc-rotate="{{hero.viewUri}}"
         data-sc-close-label="{{i18n "huaka.showcase.closeViewer"}}">{{i18n "huaka.showcase.rotate"}}</a>
       <a class="sc-link" href="/ui/scenes/">{{i18n "huaka.showcase.browse"}}</a>
     </div>
+    {{#if nextHeroUri}}
+    <a class="sc-hero__next" href="{{nextHeroUri}}" data-sc-next>{{i18n "huaka.showcase.otherPiece"}} →</a>
+    <script type="application/json" id="sc-hero-pool">{{{heroAlternatives}}}</script>
+    {{/if}}
   </div>
 </section>
 {{else}}
@@ -47,13 +53,13 @@
 
 {{#if featured.length}}
 <section class="sc-feat" aria-labelledby="sc-feat-title" data-sc-section="featured">
-  <div class="sc-feat__text">
+  <div class="sc-feat__text" data-sc-fade>
     <h2 class="sc-h2" id="sc-feat-title" data-sc-words>{{i18n "huaka.showcase.featuredTitle"}}</h2>
     <p class="sc-statement" data-sc-words>{{i18n "huaka.showcase.featuredLead"}}</p>
   </div>
   <ul class="sc-slips" role="list">
     {{#each featured}}
-    <li class="sc-slip" data-sc-reveal>
+    <li class="sc-slip" data-sc-fade>
       <a class="sc-slip__link" href="{{viewUri}}">
         {{#if image}}<img class="sc-slip__plate" src="{{image.low}}" width="640" height="640" alt="" loading="lazy">{{/if}}
         <strong class="sc-slip__title">{{title}}</strong>
@@ -70,13 +76,13 @@
 
 {{#if recent.length}}
 <section class="sc-recent" aria-labelledby="sc-recent-title" data-sc-section="recent">
-  <div class="sc-recent__head">
+  <div class="sc-recent__head" data-sc-fade>
     <h2 class="sc-h2" id="sc-recent-title" data-sc-words>{{i18n "huaka.showcase.recentTitle"}}</h2>
     <a class="sc-link" href="/ui/scenes/?orderBy=mtime&orderDirection=desc">{{i18n "huaka.showcase.browse"}}</a>
   </div>
   <ul class="sc-tiles" role="list">
     {{#each recent}}
-    <li class="sc-tile" data-sc-reveal>
+    <li class="sc-tile" data-sc-fade>
       <a class="sc-tile__link" href="{{uri}}">
         <span class="sc-tile__photo">
           {{#if image}}
@@ -103,10 +109,10 @@
 {{#if collections.length}}
 <section class="sc-colls" aria-labelledby="sc-colls-title" data-sc-section="collections">
   <div class="sc-colls__col">
-  <h2 class="sc-giant" id="sc-colls-title" data-sc-words>{{i18n "huaka.showcase.collectionsWord"}}</h2>
+  <h2 class="sc-giant" id="sc-colls-title" data-sc-words data-sc-fade>{{i18n "huaka.showcase.collectionsWord"}}</h2>
   <div class="sc-bars">
     {{#each collections}}
-    <details class="sc-bar" {{#if @first}}open{{/if}} data-sc-reveal>
+    <details class="sc-bar" {{#if @first}}open{{/if}} data-sc-fade>
       <summary class="sc-bar__summary">
         <span class="sc-bar__name">{{name}}</span>
         <span class="sc-bar__count">{{i18n "huaka.showcase.pieces" count=size}}</span>
@@ -129,12 +135,13 @@
     </details>
     {{/each}}
   </div>
+  <a class="sc-btn sc-colls__all" href="/ui/tags/" data-sc-fade>{{i18n "huaka.showcase.allCollections"}}</a>
   </div>
 </section>
 {{/if}}
 
 <section class="sc-about" aria-label="{{i18n "huaka.showcase.aboutLabel"}}" data-sc-section="about">
-  <div class="sc-sheet" data-sc-reveal>
+  <div class="sc-sheet" data-sc-fade>
     <div class="sc-sheet__letter">
       {{{i18n "huaka.showcase.aboutLetter"}}}
       <p class="sc-sheet__sign">{{i18n "huaka.showcase.aboutSign"}}</p>

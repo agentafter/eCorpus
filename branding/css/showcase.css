@@ -282,6 +282,32 @@
   align-items: center;
   gap: 16px 24px;
 }
+.sc-facts > div[hidden] {
+  display: none;
+}
+/* "Ver otra pieza": texto chico al pie de la ficha */
+.sc-hero__next {
+  align-self: flex-end;
+  margin-top: -8px;
+  font-size: var(--sc-s-1);
+  font-weight: 600;
+  color: var(--sc-ink-soft);
+  text-decoration: none;
+  transition: color 160ms var(--sc-ease);
+}
+.sc-hero__next:hover,
+.sc-hero__next:focus-visible {
+  color: var(--sc-accent);
+}
+/* Al cambiar de pieza, los datos de la ficha y la foto se funden */
+.sc-hero__card [data-sc-hero],
+.sc-stage__layer img {
+  transition: opacity 260ms var(--sc-ease);
+}
+.sc-swapping .sc-hero__card [data-sc-hero],
+.sc-swapping .sc-stage__layer[data-sc-layer="hero"] img {
+  opacity: 0;
+}
 
 /* Con el visor 3D abierto, la ficha se aparta y queda como un talón */
 .sc-hero.is-live .sc-hero__stage {
@@ -458,6 +484,9 @@
   flex-direction: column;
   justify-content: center;
   padding: 96px var(--sc-m);
+}
+.sc-colls__all {
+  margin-top: 28px;
 }
 .sc-colls__col {
   width: 100%; /* en un flex en columna, container-type lo encogería a su contenido */
@@ -699,13 +728,10 @@
     from { transform: scale(1); }
     to { transform: scale(1.04) translateY(-1%); }
   }
-  .sc-pending {
-    opacity: 0;
-    transform: translateY(24px);
-  }
-  .sc-reveal {
-    transition:
-      opacity 700ms var(--sc-ease) calc(var(--sc-i, 0) * 70ms),
-      transform 700ms var(--sc-ease) calc(var(--sc-i, 0) * 70ms);
-  }
+}
+/* Tarjetas que aparecen al entrar y se desvanecen al salir, al ritmo del scroll (showcase.js pone --sc-fo y
+   --sc-fy). `translate` es independiente de `transform`: las fichas inclinadas conservan su giro */
+.sc-faded [data-sc-fade] {
+  opacity: var(--sc-fo, 1);
+  translate: 0 var(--sc-fy, 0);
 }

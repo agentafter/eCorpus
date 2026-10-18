@@ -12,11 +12,15 @@ import { Scene } from "../../vfs/types.js";
 
 /** Scenes carrying this tag are featured. It is not listed as a collection */
 export const FEATURED_TAG = "destacada";
+/** The hero piece is picked at random among the scenes with this tag (or among all public pieces, when none has it) */
+export const HERO_TAG = "portada";
+const RESERVED_TAGS = [FEATURED_TAG, HERO_TAG];
 
 const RECENT_LIMIT = 12;
 const FEATURED_LIMIT = 6;
 const COLLECTIONS_LIMIT = 8;
 const COLLECTION_SCENES_LIMIT = 8;
+const HERO_POOL_LIMIT = 24;
 
 export interface ShowcaseImage {
   low: string;
@@ -62,6 +66,18 @@ export function pickBackdrops(hero: ShowcaseCard | null, lists: Partial<Record<S
   return backdrops;
 }
 
+/**
+ * The hero piece: the one asked for (`?pieza=`, the no-script fallback of "Ver otra pieza") when it is in the pool,
+ * else a random one. Pieces with a capture are preferred.
+ */
+export function pickHero(pool: ShowcaseCard[], requested: unknown, random: () => number = Math.random): ShowcaseCard | null {
+  const asked = typeof requested === "string" ? pool.find(c => c.name === requested) : undefined;
+  if (asked) return asked;
+  const withImage = pool.filter(c => c.image);
+  const from = withImage.length ? withImage : pool;
+  return from.length ? from[Math.floor(random() * from.length) % from.length] : null;
+}
+
 export interface ShowcaseCollection {
   name: string;
   size: number;
@@ -99,7 +115,7 @@ export async function renderShowcase(req: Request, res: Response) {
     const card: ShowcaseCard = {
       name: scene.name,
       title: pickTitle(scene.name, meta.titles, meta.primary_language, lang),
-      collection: scene.tags.find(t => t !== FEATURED_TAG) ?? null,
+      collection: scene.tags.find(t => !RESERVED_TAGS.includes(t)) ?? null,
       author: scene.author,
       mtime: scene.mtime,
       uri: `/ui/scenes/${encodeURIComponent(scene.name)}/`,
@@ -120,22 +136,33 @@ export async function renderShowcase(req: Request, res: Response) {
     return { size: scenes.length, scenes: await Promise.all(scenes.slice(0, limit).map(toCard)) };
   }
 
-  const [recentScenes, featured, tags] = await Promise.all([
+  const [recentScenes, featured, heroTagged, tags] = await Promise.all([
     vfs.getScenes(undefined, { limit: RECENT_LIMIT, orderBy: "mtime", orderDirection: "desc", type: "voyager" }),
     tagScenes(FEATURED_TAG, FEATURED_LIMIT),
-    vfs.getTags({ limit: COLLECTIONS_LIMIT + 1 }),
+    tagScenes(HERO_TAG, HERO_POOL_LIMIT),
+    vfs.getTags({ limit: COLLECTIONS_LIMIT + RESERVED_TAGS.length }),
   ]);
   const recent = await Promise.all(recentScenes.filter(s => !s.archived).map(toCard));
 
   const collections: ShowcaseCollection[] = [];
   for (const tag of tags) {
-    if (tag.name === FEATURED_TAG || collections.length >= COLLECTIONS_LIMIT) continue;
+    if (RESERVED_TAGS.includes(tag.name) || collections.length >= COLLECTIONS_LIMIT) continue;
     const { size, scenes } = await tagScenes(tag.name, COLLECTION_SCENES_LIMIT);
     if (size) collections.push({ name: tag.name, size, uri: `/ui/tags/${encodeURIComponent(tag.name)}`, scenes });
   }
 
-  //The hero is the first featured piece with a capture, else the most recent one
-  const hero = [...featured.scenes, ...recent].find(c => c.image) ?? featured.scenes[0] ?? recent[0] ?? null;
+  //Pieces tagged for the hero, else every public piece on the page (each once)
+  const heroPool = (heroTagged.scenes.length ? heroTagged.scenes : [...featured.scenes, ...recent, ...collections.flatMap(c => c.scenes)])
+    .filter((c, i, a) => a.findIndex(o => o.name === c.name) === i)
+    .slice(0, HERO_POOL_LIMIT);
+  const hero = pickHero(heroPool, req.query.pieza);
+  //The others, for "Ver otra pieza": the script swaps the hero without reloading. Dates are formatted here, as
+  //dateString would format them in the template
+  const heroAlternatives = heroPool.filter(c => c !== hero && c.image).map(c => ({
+    name: c.name, title: c.title, collection: c.collection, viewUri: c.viewUri, image: c.image,
+    date: c.mtime.toLocaleDateString(lang),
+  }));
+  const nextHero = heroAlternatives.length ? heroAlternatives[Math.floor(Math.random() * heroAlternatives.length)].name : null;
 
   const backdrops = pickBackdrops(hero, {
     featured: featured.scenes,
@@ -147,6 +174,9 @@ export async function renderShowcase(req: Request, res: Response) {
     layout: "showcase",
     title: "Showcase",
     hero,
+    //JSON for a <script type="application/json">: "<" escaped so that no "</script>" can close it
+    heroAlternatives: heroAlternatives.length ? JSON.stringify(heroAlternatives).replace(/</g, "\\u003c") : null,
+    nextHeroUri: nextHero ? `?pieza=${encodeURIComponent(nextHero)}` : null,
     backdrops,
     featured: featured.scenes,
     recent,

@@ -52,7 +52,7 @@ diff --git a/source/server/templates/partials/navbar.hbs b/source/server/templat
 diff --git a/source/server/templates/locales/en.yml b/source/server/templates/locales/en.yml
 --- a/source/server/templates/locales/en.yml
 +++ b/source/server/templates/locales/en.yml
-@@ -452,5 +452,29 @@
+@@ -452,5 +452,31 @@
    requestInProgress: request in progress
    sceneTypeLabel: "Scene type:"
    errorTitle: "Error {{code}}"
@@ -62,7 +62,8 @@ diff --git a/source/server/templates/locales/en.yml b/source/server/templates/lo
 +    piece: Piece
 +    collection: Collection
 +    updated: Updated
-+    rotate: Turn in 3D
++    rotate: View in 3D
++    otherPiece: See another piece
 +    closeViewer: Close the 3D viewer
 +    browse: Browse the whole archive
 +    featuredTitle: Featured pieces
@@ -72,6 +73,7 @@ diff --git a/source/server/templates/locales/en.yml b/source/server/templates/lo
 +    pieces_one: "{{count}} piece"
 +    pieces_other: "{{count}} pieces"
 +    openCollection: See the whole collection
++    allCollections: See all collections
 +    aboutLabel: About the project
 +    aboutLetter: |
 +      <p>Patrimonio Virtual brings together cultural heritage pieces digitized in three dimensions, so that anyone can see them up close, from anywhere.</p>
@@ -85,7 +87,7 @@ diff --git a/source/server/templates/locales/en.yml b/source/server/templates/lo
 diff --git a/source/server/templates/locales/fr.yml b/source/server/templates/locales/fr.yml
 --- a/source/server/templates/locales/fr.yml
 +++ b/source/server/templates/locales/fr.yml
-@@ -468,4 +468,28 @@
+@@ -468,4 +468,30 @@
    requestInProgress: requête en cours
    sceneTypeLabel: "Type de scène :"
    errorTitle: "Erreur {{code}}"
@@ -95,7 +97,8 @@ diff --git a/source/server/templates/locales/fr.yml b/source/server/templates/lo
 +    piece: Pièce
 +    collection: Collection
 +    updated: Mise à jour
-+    rotate: Tourner en 3D
++    rotate: Voir en 3D
++    otherPiece: Voir une autre pièce
 +    closeViewer: Fermer la visionneuse 3D
 +    browse: Parcourir toute l'archive
 +    featuredTitle: Pièces à la une
@@ -105,6 +108,7 @@ diff --git a/source/server/templates/locales/fr.yml b/source/server/templates/lo
 +    pieces_one: "{{count}} pièce"
 +    pieces_other: "{{count}} pièces"
 +    openCollection: Voir toute la collection
++    allCollections: Voir toutes les collections
 +    aboutLabel: À propos du projet
 +    aboutLetter: |
 +      <p>Patrimonio Virtual réunit des pièces du patrimoine culturel numérisées en trois dimensions, pour que chacun puisse les voir de près, où qu'il soit.</p>

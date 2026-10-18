@@ -2,7 +2,7 @@ import request from "supertest";
 import User from "../../auth/User.js";
 import UserManager from "../../auth/UserManager.js";
 import Vfs from "../../vfs/index.js";
-import { FEATURED_TAG, ShowcaseCard, pickBackdrops, pickTitle } from "./showcase.js";
+import { FEATURED_TAG, HERO_TAG, ShowcaseCard, pickBackdrops, pickHero, pickTitle } from "./showcase.js";
 
 /**
  * Huaka (patches/ecorpus/0005): the public showcase replaces the home page for
@@ -89,6 +89,24 @@ describe("Showcase (/ui/ and /ui/vitrina/)", function () {
     expect(res.text).not.to.include(`class="sc-recent"`);
   });
 
+  it("takes the hero from the scenes tagged for it, and never lists that tag as a collection", async function () {
+    await vfs.addTag("vasija_publica", HERO_TAG);
+    for (let i = 0; i < 5; i++) {
+      const res = await request(this.server).get("/ui/vitrina/").set("Accept", "text/html").expect(200);
+      expect(res.text).to.include(`data-sc-current="vasija_publica"`);
+      expect(res.text).not.to.include(`<span class="sc-bar__name">${HERO_TAG}</span>`);
+    }
+  });
+
+  it("shows the piece asked for with ?pieza= when it is public, and ignores it otherwise", async function () {
+    let res = await request(this.server).get("/ui/vitrina/?pieza=vasija_destacada").set("Accept", "text/html").expect(200);
+    expect(res.text).to.include(`data-sc-current="vasija_destacada"`);
+    res = await request(this.server).get("/ui/vitrina/?pieza=vasija_privada").set("Accept", "text/html").expect(200);
+    //The name still appears in the page's own URL (login link), but the piece is not shown
+    expect(res.text).not.to.include(`data-sc-current="vasija_privada"`);
+    expect(res.text).not.to.include("/scenes/vasija_privada/");
+  });
+
   it("leaves the stage out when no public piece has a capture", async function () {
     const res = await request(this.server).get("/ui/vitrina/").set("Accept", "text/html").expect(200);
     //No capture was uploaded in this test: no stage, the hero falls back to the thumbnail or nothing
@@ -115,6 +133,20 @@ describe("Showcase (/ui/ and /ui/vitrina/)", function () {
 
     it("is empty when no piece has a capture", function () {
       expect(pickBackdrops(card("a", false), { recent: [card("b", false)] })).to.deep.equal({});
+    });
+  });
+
+  describe("pickHero()", function () {
+    const card = (name: string, image = true) => ({ name, image: image ? { low: "", medium: "", high: "" } : null }) as ShowcaseCard;
+    it("returns the requested piece when it is in the pool", function () {
+      expect(pickHero([card("a"), card("b")], "b", () => 0)!.name).to.equal("b");
+    });
+    it("otherwise picks at random, preferring pieces with a capture", function () {
+      const pool = [card("a", false), card("b"), card("c")];
+      expect(pickHero(pool, "zzz", () => 0)!.name).to.equal("b");
+      expect(pickHero(pool, undefined, () => 0.99)!.name).to.equal("c");
+      expect(pickHero([card("a", false)], undefined, () => 0.5)!.name).to.equal("a");
+      expect(pickHero([], undefined)).to.equal(null);
     });
   });
 

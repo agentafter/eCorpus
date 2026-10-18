@@ -20,7 +20,7 @@ listado de escenas.
 ## Vitrina pública
 - **Texto de "Sobre el proyecto"** (`huaka.showcase.aboutLetter` en `es.yml`, `en.yml` vía `ecorpus/0005`, `fr.yml`):
   es provisional; Huaka Digital debe escribir o validar el definitivo.
-- **Escenas destacadas:** etiquetar con `destacada` las que deben encabezar la vitrina (hoy ninguna; la portada usa
-  la más reciente).
+- **Escenas destacadas y de portada:** etiquetar con `destacada` las que van en "Piezas destacadas" y con `portada`
+  las que pueden salir en la portada (hoy ninguna: la portada elige al azar entre todas las públicas).
 - Todas las escenas públicas aparecen en "Recién digitalizadas" y en sus colecciones: lo que no deba mostrarse va
   privado hasta que exista el estado "no listada" (`plan-potencial.md` §2).
