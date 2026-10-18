@@ -165,6 +165,10 @@ con acceso público de lectura), aunque quien la abra tenga sesión.
   cualquier etiqueta).
 - **Portada:** una pieza al azar entre las que tienen la etiqueta `portada`; si ninguna la tiene, entre todas las
   públicas de la vitrina. "Ver otra pieza" la cambia sin recargar (sin script, recarga con `?pieza=<nombre>`).
+  "Ver en 3D" abre el visor ahí mismo; "Ver ficha completa" lleva a la página de la pieza en eCorpus
+  (`/ui/scenes/<nombre>/`), donde irán la metadata y la paradata.
+- El logo de la barra superior lleva a la vitrina (`/ui/vitrina/`) para todos. Con sesión, la barra suma "Vitrina" y
+  "Mi panel" (`/ui/`, el panel de trabajo con "Mis escenas").
 - `destacada` y `portada` no aparecen en "Colecciones"; las demás etiquetas sí. "Ver todas las colecciones" lleva a
   `/ui/tags/`.
 - Movimiento (`branding/js/showcase.js`, sin librerías): detrás de cada sección hay una pieza distinta que se funde

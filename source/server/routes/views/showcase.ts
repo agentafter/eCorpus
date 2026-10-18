@@ -170,7 +170,7 @@ export async function renderShowcase(req: Request, res: Response) {
   //Every other piece, captured or not: the script hides the stage photo for a piece without capture. (A hero without
   //capture means no piece in the pool has one, since pickHero prefers them.)
   const heroAlternatives = heroPool.filter(c => c !== hero).map(c => ({
-    name: c.name, title: c.title, collection: c.collection, viewUri: c.viewUri, image: c.image,
+    name: c.name, title: c.title, collection: c.collection, uri: c.uri, viewUri: c.viewUri, image: c.image,
     date: c.mtime.toLocaleDateString(lang),
   }));
   const nextHero = heroAlternatives.length ? heroAlternatives[Math.floor(Math.random() * heroAlternatives.length)].name : null;
