@@ -171,7 +171,9 @@ con acceso público de lectura), aunque quien la abra tenga sesión.
   con la siguiente al hacer scroll, y las tarjetas aparecen y se desvanecen al entrar y salir de pantalla. Con
   "reducir movimiento" solo se funden.
 - Las fotos son las capturas de Voyager de cada escena (`scene-image-low|medium|high.jpg`); sin captura, la
-  miniatura. "Ver en 3D" abre el visor de la escena dentro de la portada.
+  miniatura. **Las capturas no se generan al subir el modelo:** hay que abrir la escena en el editor → tarea
+  **Captura** → botón de captura → **Guardar** (genera la miniatura y las tres capturas). Una pieza sin captura
+  aparece en la vitrina con su nombre sobre un fondo azul y no entra en el escenario de fondo. "Ver en 3D" abre el visor de la escena dentro de la portada.
 - Diseño trabajado con la skill `design-taste-frontend` (dirección "la página es el objeto": la ficha de inventario
   de cada pieza).
 

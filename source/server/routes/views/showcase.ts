@@ -39,6 +39,13 @@ export interface ShowcaseCard {
   /** Voyager's scene captures (640, 1280 and 2560 px), when the scene has them */
   image: ShowcaseImage | null;
   thumb: string | null;
+  /** Up to two characters standing in for the photo of a piece that was never captured ("Urpu decorado" → "UD") */
+  monogram: string;
+}
+
+export function monogram(title: string): string {
+  const words = title.match(/[\p{L}\p{N}]+/gu) ?? [];
+  return words.slice(0, 2).map(w => w[0]).join("").toUpperCase() || "·";
 }
 
 /** The sections of the showcase, in page order. Each one gets its own piece on the background stage */
@@ -122,7 +129,9 @@ export async function renderShowcase(req: Request, res: Response) {
       viewUri: `/ui/scenes/${encodeURIComponent(scene.name)}/view?lang=${encodeURIComponent(lang)}`,
       image,
       thumb: scene.thumb ? base + encodeURIComponent(scene.thumb) : null,
+      monogram: "",
     };
+    card.monogram = monogram(card.title);
     cards.set(scene.id, card);
     return card;
   }
@@ -158,7 +167,8 @@ export async function renderShowcase(req: Request, res: Response) {
   const hero = pickHero(heroPool, req.query.pieza);
   //The others, for "Ver otra pieza": the script swaps the hero without reloading. Dates are formatted here, as
   //dateString would format them in the template
-  const heroAlternatives = heroPool.filter(c => c !== hero && c.image).map(c => ({
+  //Only pieces in the same state as the hero (all captured, or none): swapping must not leave a stale photo behind
+  const heroAlternatives = heroPool.filter(c => c !== hero && !!c.image === !!hero?.image).map(c => ({
     name: c.name, title: c.title, collection: c.collection, viewUri: c.viewUri, image: c.image,
     date: c.mtime.toLocaleDateString(lang),
   }));

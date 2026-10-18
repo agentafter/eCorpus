@@ -2,7 +2,7 @@ import request from "supertest";
 import User from "../../auth/User.js";
 import UserManager from "../../auth/UserManager.js";
 import Vfs from "../../vfs/index.js";
-import { FEATURED_TAG, HERO_TAG, ShowcaseCard, pickBackdrops, pickHero, pickTitle } from "./showcase.js";
+import { FEATURED_TAG, HERO_TAG, ShowcaseCard, monogram, pickBackdrops, pickHero, pickTitle } from "./showcase.js";
 
 /**
  * Huaka (patches/ecorpus/0005): the public showcase replaces the home page for
@@ -49,7 +49,7 @@ describe("Showcase (/ui/ and /ui/vitrina/)", function () {
       .set("Accept", "text/html")
       .set("Accept-Language", "es")
       .expect(200);
-    expect(res.text).to.include(`class="sc-hero"`);
+    expect(res.text).to.include(`data-sc-section="hero"`);
     expect(res.text).to.include("<title>Vitrina — ");
     expect(res.text).to.include("vasija_publica");
     expect(res.text).to.include("vasija_destacada");
@@ -70,7 +70,7 @@ describe("Showcase (/ui/ and /ui/vitrina/)", function () {
   it("keeps the dashboard as the home page of logged-in users, with a link to the showcase", async function () {
     const agent = await login(this.server);
     const res = await agent.get("/ui/").set("Accept", "text/html").expect(200);
-    expect(res.text).not.to.include(`class="sc-hero"`);
+    expect(res.text).not.to.include(`data-sc-section="hero"`);
     expect(res.text).to.include(`href="/ui/vitrina/"`);
   });
 
@@ -107,11 +107,14 @@ describe("Showcase (/ui/ and /ui/vitrina/)", function () {
     expect(res.text).not.to.include("/scenes/vasija_privada/");
   });
 
-  it("leaves the stage out when no public piece has a capture", async function () {
+  it("degrades without captures: no stage, a centred card and named placeholders", async function () {
     const res = await request(this.server).get("/ui/vitrina/").set("Accept", "text/html").expect(200);
     //No capture was uploaded in this test: no stage, the hero falls back to the thumbnail or nothing
     expect(res.text).not.to.include(`class="sc-stage"`);
     expect(res.text).to.include(`data-sc-section="hero"`);
+    //No empty frames: the hero card is centred and each piece shows its name instead of a photo
+    expect(res.text).to.include("sc-hero--bare");
+    expect(res.text).to.match(/<span class="sc-ph" aria-hidden="true">VP<\/span>/);
   });
 
   describe("pickBackdrops()", function () {
@@ -147,6 +150,16 @@ describe("Showcase (/ui/ and /ui/vitrina/)", function () {
       expect(pickHero(pool, undefined, () => 0.99)!.name).to.equal("c");
       expect(pickHero([card("a", false)], undefined, () => 0.5)!.name).to.equal("a");
       expect(pickHero([], undefined)).to.equal(null);
+    });
+  });
+
+  describe("monogram()", function () {
+    it("takes the first letter of the first two words", function () {
+      expect(monogram("Urpu decorado")).to.equal("UD");
+      expect(monogram("Kero 2")).to.equal("K2");
+      expect(monogram("C-067254 - Corral Redondo")).to.equal("C0");
+      expect(monogram("ñusta")).to.equal("Ñ");
+      expect(monogram("—")).to.equal("·");
     });
   });
 
