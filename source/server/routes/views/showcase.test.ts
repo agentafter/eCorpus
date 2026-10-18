@@ -115,6 +115,9 @@ describe("Showcase (/ui/ and /ui/vitrina/)", function () {
     //No empty frames: the hero card is centred and each piece shows its name instead of a photo
     expect(res.text).to.include("sc-hero--bare");
     expect(res.text).to.match(/<span class="sc-ph" aria-hidden="true">VP<\/span>/);
+    //"Ver otra pieza" still switches between the pieces without a capture
+    expect(res.text).to.include("data-sc-next");
+    expect(res.text).to.include(`id="sc-hero-pool"`);
   });
 
   describe("pickBackdrops()", function () {
