@@ -49,7 +49,11 @@ trap 'rm -rf "$tmp"' EXIT
 opts="-p1 -d $dir --fuzz=0 --binary --no-backup-if-mismatch -s -f"
 
 status=0
-for p in "$patch_dir"/*.patch; do
+# Se revierten en orden inverso: un parche puede apoyarse en otro anterior sobre el mismo archivo.
+patches=$(ls "$patch_dir"/*.patch 2>/dev/null | sort)
+[ "$mode" = revert ] && patches=$(printf '%s
+' "$patches" | sort -r)
+for p in $patches; do
   [ -e "$p" ] || continue
   name=$(basename "$p")
   # Los parches se guardan en LF. Un checkout de Windows (core.autocrlf=true)
