@@ -124,6 +124,9 @@
       image: heroImg ? { src: heroImg.getAttribute("src"), srcset: heroImg.getAttribute("srcset") } : null,
     };
     function show(piece) {
+      // Una pieza sin captura no tiene foto: se apaga la del escenario y la ficha va al centro
+      hero.classList.toggle("sc-hero--bare", !piece.image);
+      if (layers.hero) layers.hero.classList.toggle("is-empty", !piece.image);
       card.querySelector("[data-sc-hero=title]").textContent = piece.title;
       var collection = card.querySelector("[data-sc-hero=collection]");
       collection.textContent = piece.collection || "";
@@ -148,12 +151,15 @@
       closeViewer();
       var piece = pool.splice(Math.floor(Math.random() * pool.length), 1)[0];
       pool.push(current);
+      // Si cambia de "con foto" a "sin foto" (o al revés), la ficha cambia de lugar: se funde entera
+      var moves = !piece.image !== !current.image;
       current = piece;
       root.classList.add("sc-swapping");
+      if (moves) root.classList.add("sc-swapping-card");
       window.setTimeout(function () {
         show(piece);
-        var reveal = function () { root.classList.remove("sc-swapping"); };
-        if (heroImg && !heroImg.complete) {
+        var reveal = function () { root.classList.remove("sc-swapping", "sc-swapping-card"); };
+        if (heroImg && piece.image && !heroImg.complete) {
           heroImg.addEventListener("load", reveal, { once: true });
           heroImg.addEventListener("error", reveal, { once: true });
         } else {
