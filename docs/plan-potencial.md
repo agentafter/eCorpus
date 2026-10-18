@@ -62,6 +62,9 @@ Fuera de la primera versión: búsqueda por campos personalizados (exige cambiar
 
 ## 2. Escenas visibles solo con el enlace (sin listarlas y sin login)
 
+> **Hecho (2026-10-18):** opción B, enlace secreto (`ecorpus/0006`): sin vencimiento, varios por escena con nombre,
+> incrustables. Ver `docs/customization.md`, "Enlaces privados". Lo de abajo queda como registro de la decisión.
+
 **Objetivo:** compartir una escena con quien tenga el enlace, sin que aparezca en la portada, la búsqueda,
 las colecciones ni el sitemap, y sin pedir inicio de sesión.
 

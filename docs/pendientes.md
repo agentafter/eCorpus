@@ -23,4 +23,4 @@ listado de escenas.
 - **Escenas destacadas y de portada:** etiquetar con `destacada` las que van en "Piezas destacadas" y con `portada`
   las que pueden salir en la portada (hoy ninguna: la portada elige al azar entre todas las públicas).
 - Todas las escenas públicas aparecen en "Recién digitalizadas" y en sus colecciones: lo que no deba mostrarse va
-  privado hasta que exista el estado "no listada" (`plan-potencial.md` §2).
+  privado, y se comparte con un enlace privado (configuración de la escena → "Enlaces privados").
