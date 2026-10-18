@@ -121,6 +121,7 @@
       collection: card.querySelector("[data-sc-hero=collection]").textContent || null,
       date: card.querySelector("[data-sc-hero=date]").textContent,
       viewUri: rotate.getAttribute("data-sc-rotate"),
+      uri: card.querySelector("[data-sc-record]") ? card.querySelector("[data-sc-record]").getAttribute("href") : null,
       image: heroImg ? { src: heroImg.getAttribute("src"), srcset: heroImg.getAttribute("srcset") } : null,
     };
     function show(piece) {
@@ -134,6 +135,8 @@
       card.querySelector("[data-sc-hero=date]").textContent = piece.date;
       card.setAttribute("data-sc-current", piece.name);
       rotate.href = piece.viewUri;
+      var record = card.querySelector("[data-sc-record]");
+      if (record) record.href = piece.uri;
       rotate.setAttribute("data-sc-rotate", piece.viewUri);
       if (heroImg && piece.image) {
         if (piece.image.src) {

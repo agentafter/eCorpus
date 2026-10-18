@@ -51,6 +51,10 @@ describe("Showcase (/ui/ and /ui/vitrina/)", function () {
       .expect(200);
     expect(res.text).to.include(`data-sc-section="hero"`);
     expect(res.text).to.include("<title>Vitrina — ");
+    //"Ver ficha completa" opens the piece's record page, not the viewer; the logo leads to the showcase
+    const hero = /data-sc-current="([^"]+)"/.exec(res.text)![1];
+    expect(res.text).to.include(`href="/ui/scenes/${encodeURIComponent(hero)}/" data-sc-record>Ver ficha completa</a>`);
+    expect(res.text).to.include(`<a class="logo" href="/ui/vitrina/">`);
     expect(res.text).to.include("vasija_publica");
     expect(res.text).to.include("vasija_destacada");
     expect(res.text).not.to.include("vasija_privada");

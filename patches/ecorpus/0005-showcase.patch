@@ -5,7 +5,7 @@ templates/layouts/showcase.hbs, branding/css/showcase.css, branding/js/showcase.
 Este parche solo la engancha:
 - routes/views/index.ts: la portada llama a renderShowcase cuando no hay sesión
   (con sesión sigue siendo el panel de trabajo) y se agrega la ruta /vitrina.
-- partials/navbar.hbs: enlace "Vitrina" para quien tiene sesión.
+- partials/navbar.hbs: enlace "Vitrina" para quien tiene sesión, y el logo lleva a la vitrina.
 - en.yml/fr.yml: textos huaka.showcase. Se genera con 0003 aplicado (mismo bloque huaka).
 
 Generado sobre eCorpus upstream d5fca779d6db75a4bdb766c7e8ce6848f6346955 (2026-10-17).
@@ -41,6 +41,14 @@ diff --git a/source/server/routes/views/index.ts b/source/server/routes/views/in
 diff --git a/source/server/templates/partials/navbar.hbs b/source/server/templates/partials/navbar.hbs
 --- a/source/server/templates/partials/navbar.hbs
 +++ b/source/server/templates/partials/navbar.hbs
+@@ -1,6 +1,6 @@
+ <nav id="main-navbar" class="navbar-nav">
+   <div class="nav-content">
+-    <a class="logo" href="/">
++    <a class="logo" href="/ui/vitrina/">
+       <picture>
+         <source srcset="/dist/images/logo-sm.svg" media="(max-width: 576px)"/>
+         <img src="/dist/images/logo-full.svg" alt="Site Logo"/>
 @@ -18,6 +18,7 @@
        </form>
        {{/unless}}
@@ -52,7 +60,7 @@ diff --git a/source/server/templates/partials/navbar.hbs b/source/server/templat
 diff --git a/source/server/templates/locales/en.yml b/source/server/templates/locales/en.yml
 --- a/source/server/templates/locales/en.yml
 +++ b/source/server/templates/locales/en.yml
-@@ -452,5 +452,31 @@
+@@ -452,5 +452,32 @@
    requestInProgress: request in progress
    sceneTypeLabel: "Scene type:"
    errorTitle: "Error {{code}}"
@@ -66,6 +74,7 @@ diff --git a/source/server/templates/locales/en.yml b/source/server/templates/lo
 +    otherPiece: See another piece
 +    closeViewer: Close the 3D viewer
 +    browse: Browse the whole archive
++    fullRecord: View full record
 +    featuredTitle: Featured pieces
 +    featuredLead: A selection from the archive. Each piece opens in the viewer, where you can turn it, zoom in and follow its annotations.
 +    recentTitle: Recently digitized
@@ -87,7 +96,7 @@ diff --git a/source/server/templates/locales/en.yml b/source/server/templates/lo
 diff --git a/source/server/templates/locales/fr.yml b/source/server/templates/locales/fr.yml
 --- a/source/server/templates/locales/fr.yml
 +++ b/source/server/templates/locales/fr.yml
-@@ -468,4 +468,30 @@
+@@ -468,4 +468,31 @@
    requestInProgress: requête en cours
    sceneTypeLabel: "Type de scène :"
    errorTitle: "Erreur {{code}}"
@@ -101,6 +110,7 @@ diff --git a/source/server/templates/locales/fr.yml b/source/server/templates/lo
 +    otherPiece: Voir une autre pièce
 +    closeViewer: Fermer la visionneuse 3D
 +    browse: Parcourir toute l'archive
++    fullRecord: Voir la fiche complète
 +    featuredTitle: Pièces à la une
 +    featuredLead: Une sélection de l'archive. Chaque pièce s'ouvre dans la visionneuse, où l'on peut la tourner, s'en approcher et suivre ses annotations.
 +    recentTitle: Récemment numérisées

@@ -37,7 +37,8 @@
     <div class="sc-hero__actions">
       <a class="sc-btn" href="{{hero.viewUri}}" data-sc-rotate="{{hero.viewUri}}"
         data-sc-close-label="{{i18n "huaka.showcase.closeViewer"}}">{{i18n "huaka.showcase.rotate"}}</a>
-      <a class="sc-link" href="/ui/scenes/">{{i18n "huaka.showcase.browse"}}</a>
+      {{!-- The piece's own page in eCorpus: its record (metadata, files, history), not the 3D viewer --}}
+      <a class="sc-link" href="{{hero.uri}}" data-sc-record>{{i18n "huaka.showcase.fullRecord"}}</a>
     </div>
     {{#if nextHeroUri}}
     <a class="sc-hero__next" href="{{nextHeroUri}}" data-sc-next>{{i18n "huaka.showcase.otherPiece"}} →</a>

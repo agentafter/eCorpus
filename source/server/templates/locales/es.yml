@@ -468,6 +468,7 @@ huaka:
     otherPiece: Ver otra pieza
     closeViewer: Cerrar el visor 3D
     browse: Ver todo el archivo
+    fullRecord: Ver ficha completa
     featuredTitle: Piezas destacadas
     featuredLead: Una selección del archivo. Cada pieza se abre en el visor, donde se puede girar, acercar y recorrer con sus anotaciones.
     recentTitle: Recién digitalizadas
