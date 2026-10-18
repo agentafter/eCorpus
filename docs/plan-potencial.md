@@ -95,6 +95,10 @@ las colecciones ni el sitemap, y sin pedir inicio de sesión.
 
 ## 3. Portada de exhibición para visitantes
 
+> **Hecho (2026-10-17):** vitrina con plantilla y ruta propias (`ecorpus/0005`), etiqueta `destacada`, colecciones por
+> etiqueta, recientes y carta del proyecto, en ES/EN/FR. Ver `docs/customization.md`, "Vitrina pública". Lo de abajo
+> queda como registro de la decisión.
+
 **Objetivo:** que la portada muestre lo que hay de forma atractiva (vitrina), en vez de la portada actual,
 pensada para el uso interno (mis escenas, primeros pasos, modo independiente).
 

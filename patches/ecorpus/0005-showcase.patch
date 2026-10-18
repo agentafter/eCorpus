@@ -1,0 +1,120 @@
+Huaka: vitrina pública. Sin sesión, /ui/ muestra la vitrina; para todos, en /ui/vitrina/.
+
+La vitrina es código propio (routes/views/showcase.ts, templates/showcase.hbs,
+templates/layouts/showcase.hbs, branding/css/showcase.css, branding/js/showcase.js).
+Este parche solo la engancha:
+- routes/views/index.ts: la portada llama a renderShowcase cuando no hay sesión
+  (con sesión sigue siendo el panel de trabajo) y se agrega la ruta /vitrina.
+- partials/navbar.hbs: enlace "Vitrina" para quien tiene sesión.
+- en.yml/fr.yml: textos huaka.showcase. Se genera con 0003 aplicado (mismo bloque huaka).
+
+Generado sobre eCorpus upstream d5fca779d6db75a4bdb766c7e8ce6848f6346955 (2026-10-17).
+
+diff --git a/source/server/routes/views/index.ts b/source/server/routes/views/index.ts
+--- a/source/server/routes/views/index.ts
++++ b/source/server/routes/views/index.ts
+@@ -11,6 +11,7 @@
+ import { BadRequestError } from "../../utils/errors.js";
+ import { TaskDefinition } from "../../tasks/types.js";
+ import { aggregateHistory } from "./historyAggregate.js";
++import { renderShowcase } from "./showcase.js"; // Huaka
+ import { createLogger } from "../../utils/log/index.js";
+ 
+ 
+@@ -38,6 +39,7 @@
+ 
+ routes.get("/", wrap(async (req, res)=>{
+   const user = getUser(req);
++  if(!user) return await renderShowcase(req, res); // Huaka: visitors get the public showcase
+   const vfs = getVfs(req);
+   const uid = user?.uid;
+ 
+@@ -87,6 +89,8 @@
+ 
+ 
+ 
++routes.get("/vitrina", wrap(renderShowcase)); // Huaka
++
+ routes.get("/upload", wrap(async (req, res)=>{
+   const {templates}= getLocals(req);
+   const requester = getUser(req);
+diff --git a/source/server/templates/partials/navbar.hbs b/source/server/templates/partials/navbar.hbs
+--- a/source/server/templates/partials/navbar.hbs
++++ b/source/server/templates/partials/navbar.hbs
+@@ -18,6 +18,7 @@
+       </form>
+       {{/unless}}
+     <div id="main-navbar-links" popover="" class="navbar">
++      {{#if user}}{{#navLink "/ui/vitrina/"}}{{i18n "huaka.showcase.nav"}}{{/navLink}}{{/if}}
+       {{#navLink "/ui/tags/"}}{{i18n "nav.tags"}}{{/navLink}}
+       {{#if (userLevel user.level "create")}}
+         {{#navLink "/ui/upload/" aria-label="username"}}{{i18n "nav.upload"}}{{/navLink}}
+diff --git a/source/server/templates/locales/en.yml b/source/server/templates/locales/en.yml
+--- a/source/server/templates/locales/en.yml
++++ b/source/server/templates/locales/en.yml
+@@ -452,5 +452,31 @@
+   requestInProgress: request in progress
+   sceneTypeLabel: "Scene type:"
+   errorTitle: "Error {{code}}"
++  showcase:
++    nav: Showcase
++    heroLead: Cultural heritage pieces in 3D, open to everyone.
++    piece: Piece
++    collection: Collection
++    updated: Updated
++    rotate: View in 3D
++    otherPiece: See another piece
++    closeViewer: Close the 3D viewer
++    browse: Browse the whole archive
++    featuredTitle: Featured pieces
++    featuredLead: A selection from the archive. Each piece opens in the viewer, where you can turn it, zoom in and follow its annotations.
++    recentTitle: Recently digitized
++    collectionsWord: Collections
++    pieces_one: "{{count}} piece"
++    pieces_other: "{{count}} pieces"
++    openCollection: See the whole collection
++    allCollections: See all collections
++    aboutLabel: About the project
++    aboutLetter: |
++      <p>Patrimonio Virtual brings together cultural heritage pieces digitized in three dimensions, so that anyone can see them up close, from anywhere.</p>
++      <p>Each model reproduces the shape and colour of the real piece. In the viewer you can turn it, zoom in and read the annotations of those who study it.</p>
++      <p>The archive grows with every collection that is digitized. If your institution holds pieces it would like to share this way, write to us.</p>
++    aboutSign: Huaka Digital
++    writeUs: Write to us
++    empty: There are no public pieces in the archive yet.
+   # Page titles, translated by the pageTitle helper (none needed in English)
+   pageTitles: {}
+diff --git a/source/server/templates/locales/fr.yml b/source/server/templates/locales/fr.yml
+--- a/source/server/templates/locales/fr.yml
++++ b/source/server/templates/locales/fr.yml
+@@ -468,4 +468,30 @@
+   requestInProgress: requête en cours
+   sceneTypeLabel: "Type de scène :"
+   errorTitle: "Erreur {{code}}"
++  showcase:
++    nav: Vitrine
++    heroLead: Des pièces du patrimoine culturel en 3D, ouvertes à tous.
++    piece: Pièce
++    collection: Collection
++    updated: Mise à jour
++    rotate: Voir en 3D
++    otherPiece: Voir une autre pièce
++    closeViewer: Fermer la visionneuse 3D
++    browse: Parcourir toute l'archive
++    featuredTitle: Pièces à la une
++    featuredLead: Une sélection de l'archive. Chaque pièce s'ouvre dans la visionneuse, où l'on peut la tourner, s'en approcher et suivre ses annotations.
++    recentTitle: Récemment numérisées
++    collectionsWord: Collections
++    pieces_one: "{{count}} pièce"
++    pieces_other: "{{count}} pièces"
++    openCollection: Voir toute la collection
++    allCollections: Voir toutes les collections
++    aboutLabel: À propos du projet
++    aboutLetter: |
++      <p>Patrimonio Virtual réunit des pièces du patrimoine culturel numérisées en trois dimensions, pour que chacun puisse les voir de près, où qu'il soit.</p>
++      <p>Chaque modèle reproduit la forme et la couleur de la pièce réelle. Dans la visionneuse, on peut la tourner, s'en approcher et lire les annotations de ceux qui l'étudient.</p>
++      <p>L'archive s'enrichit à chaque collection numérisée. Si votre institution conserve des pièces qu'elle souhaite partager ainsi, écrivez-nous.</p>
++    aboutSign: Huaka Digital
++    writeUs: Écrivez-nous
++    empty: L'archive ne contient pas encore de pièce publique.
+   pageTitles: {}

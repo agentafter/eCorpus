@@ -1,0 +1,737 @@
+/*
+ * Huaka Digital — vitrina pública (templates/showcase.hbs, routes/views/showcase.ts).
+ *
+ * Dirección: "la página es el objeto". Cada pieza se presenta como su ficha de
+ * inventario: la tarjeta de la portada, las fichas de las destacadas y las
+ * etiquetas de catálogo de las recientes. El fondo oscuro es el de las capturas
+ * de Voyager (#141B23), para que las fotos no tengan borde.
+ *
+ * Todo cuelga de .sc: no afecta al resto del shell. Las reglas globales de
+ * corpus.css y theme.css para section, h1 y h2 (esquinas, barras, sombras) se
+ * anulan aquí con la misma especificidad, porque esta hoja carga después.
+ */
+
+.sc {
+  --sc-ground: #141B23;
+  --sc-navy: #1D3557;
+  --sc-navy-step: #26406A;
+  --sc-paper: #F2F3F4;
+  --sc-paper-step: #E1E3E4;
+  --sc-ink: #1D3557;
+  --sc-ink-soft: #44474E;
+  --sc-on-dark: #F2F3F4;
+  --sc-accent: #99193A;
+  --sc-accent-hover: #801430;
+
+  --sc-m: clamp(16px, 2.4vw, 32px);
+  --sc-gap: clamp(120px, 14vw, 200px);
+
+  /* Cinco pasos de tipo, no más */
+  --sc-s-1: 14px;
+  --sc-s0: 17px;
+  --sc-s1: clamp(20px, 1.7vw, 26px);
+  --sc-s2: clamp(34px, 4vw, 60px);
+  --sc-s3: clamp(56px, 9vw, 150px);
+
+  --sc-ease: cubic-bezier(.2, .7, .2, 1);
+
+  --sc-screen: calc(100svh - var(--nav-height, 44px));
+
+  display: block;
+  position: relative;
+  background: var(--sc-ground);
+  color: var(--sc-on-dark);
+  font-family: var(--font-body, "Inter", sans-serif);
+  font-size: var(--sc-s0);
+  line-height: 1.5;
+  overflow-x: clip;
+}
+
+/* ---- Neutralizar los estilos globales del shell dentro de la vitrina ---- */
+:root .sc section {
+  box-shadow: none; /* taste-skill-ignore: anula la sombra global de section */
+}
+/* :where() deja la especificidad en (0,1,0): las clases de cada sección, más abajo, mandan */
+.sc :where(section) {
+  background: none;
+  padding: 0;
+  margin: 0;
+}
+:root .sc section::before,
+:root .sc section::after {
+  content: none;
+}
+:root .sc :is(h1, h2, h3) {
+  display: block;
+  position: static;
+  width: auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  text-align: left;
+  color: inherit;
+  font-family: var(--font-heading, "Poppins", sans-serif);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  text-wrap: balance;
+}
+:root .sc :is(h1, h2, h3)::after {
+  content: none;
+}
+.sc a {
+  color: inherit;
+}
+.sc ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.sc img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+.sc p {
+  margin: 0;
+}
+.sc :focus-visible {
+  outline: 3px solid var(--sc-accent);
+  outline-offset: 3px;
+}
+
+/* ---- Controles: un solo botón, rectangular, y un enlace de texto ---- */
+.sc .sc-btn { /* .sc a { color: inherit } no debe ganarle */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 28px;
+  background: var(--sc-accent);
+  color: #FFFFFF;
+  font-family: var(--font-heading, "Poppins", sans-serif);
+  font-weight: 600;
+  font-size: var(--sc-s0);
+  text-decoration: none;
+  border: 0;
+  border-radius: 0;
+  cursor: pointer;
+  transition: background-color 160ms var(--sc-ease), transform 160ms var(--sc-ease);
+}
+.sc .sc-btn:hover {
+  background: var(--sc-accent-hover);
+}
+.sc .sc-btn:active {
+  transform: translateY(1px) scale(0.98);
+}
+.sc-link {
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 5px;
+  transition: text-underline-offset 160ms var(--sc-ease), color 160ms var(--sc-ease);
+}
+.sc-link:hover {
+  text-underline-offset: 8px;
+}
+
+.sc-h2 {
+  font-size: var(--sc-s2);
+  max-width: 16ch;
+}
+.sc-statement {
+  font-size: var(--sc-s1);
+  line-height: 1.4;
+  max-width: 34ch;
+}
+
+/* =========================================================================
+ * Escenario: una pieza por sección, fija detrás de todo. showcase.js funde
+ * una con otra al pasar de sección (acercándose al entrar, creciendo al
+ * irse). Sin script, se ve la primera.
+ * ========================================================================= */
+.sc-stage {
+  position: sticky;
+  top: var(--nav-height, 44px);
+  height: var(--sc-screen);
+  margin-bottom: calc(-1 * var(--sc-screen));
+  overflow: hidden;
+  z-index: 0;
+  pointer-events: none;
+}
+.sc-stage__layer {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transform: translate3d(0, var(--sc-y, 0), 0) scale(var(--sc-s, 1));
+  will-change: opacity, transform;
+}
+.sc-stage__layer:first-child {
+  opacity: 1;
+}
+/* Con el script (clase en <html>), cada capa toma la opacidad que calcula */
+.sc-staged .sc-stage__layer {
+  opacity: var(--sc-o, 0);
+}
+/* La captura entera, cuadrada. El borde se funde con el fondo: el viñeteado de las capturas es más claro que
+   --sc-ground y, sin máscara, el cuadrado se nota al acercarse */
+.sc-stage__layer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.sc-stage__layer img {
+  height: 100%;
+  width: auto;
+  max-width: 100%;
+  aspect-ratio: 1;
+  object-fit: contain;
+  -webkit-mask-image: radial-gradient(closest-side, #000 62%, transparent 100%); /* taste-skill-ignore: funde el borde de la foto, no es un degradado de color */
+  mask-image: radial-gradient(closest-side, #000 62%, transparent 100%); /* taste-skill-ignore: idem */
+}
+.sc-stage__layer:is([data-sc-layer="hero"], [data-sc-layer="featured"]) {
+  justify-content: flex-end;
+  padding-right: 4vw;
+}
+/* Detrás de grillas y listas la pieza baja de tono, para que el contenido mande */
+.sc-stage__layer:is([data-sc-layer="recent"], [data-sc-layer="collections"]) img { filter: brightness(0.42); }
+
+.sc > section {
+  position: relative;
+  z-index: 1;
+  min-height: var(--sc-screen);
+}
+
+/* =========================================================================
+ * 1. Portada: la ficha de la pieza sobre su propia captura
+ * ========================================================================= */
+.sc-hero {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  align-items: center;
+  padding: var(--sc-m);
+  isolation: isolate;
+}
+/* Solo para el visor 3D ("Girar en 3D") o la miniatura de una pieza sin captura */
+.sc-hero__stage {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+}
+.sc-hero__photo {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: contain;
+  object-position: 80% 50%;
+}
+.sc-hero__stage iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: var(--sc-ground);
+}
+.sc-hero__card {
+  grid-column: 1 / span 5;
+  background: var(--sc-paper);
+  color: var(--sc-ink);
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  transform-origin: 0 100%;
+  transition: transform 520ms var(--sc-ease);
+}
+.sc-hero__title {
+  font-size: var(--sc-s2);
+}
+.sc-hero__lead {
+  font-size: var(--sc-s1);
+  line-height: 1.35;
+  max-width: 26ch;
+}
+.sc-facts {
+  margin: 0;
+  display: grid;
+  gap: 6px;
+  padding-top: 20px;
+  border-top: 6px dotted var(--sc-paper-step); /* la línea de corte de una ficha */
+}
+.sc-facts > div {
+  display: grid;
+  grid-template-columns: 9ch 1fr;
+  gap: 12px;
+  align-items: baseline;
+}
+.sc-facts dt {
+  font-size: var(--sc-s-1);
+  color: var(--sc-ink-soft);
+}
+.sc-facts dd {
+  margin: 0;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.sc-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px 24px;
+}
+.sc-facts > div[hidden] {
+  display: none;
+}
+/* "Ver otra pieza": texto chico al pie de la ficha */
+.sc-hero__next {
+  align-self: flex-end;
+  margin-top: -8px;
+  font-size: var(--sc-s-1);
+  font-weight: 600;
+  color: var(--sc-ink-soft);
+  text-decoration: none;
+  transition: color 160ms var(--sc-ease);
+}
+.sc-hero__next:hover,
+.sc-hero__next:focus-visible {
+  color: var(--sc-accent);
+}
+/* Al cambiar de pieza, los datos de la ficha y la foto se funden */
+.sc-hero__card [data-sc-hero],
+.sc-stage__layer img {
+  transition: opacity 260ms var(--sc-ease);
+}
+.sc-swapping .sc-hero__card [data-sc-hero],
+.sc-swapping .sc-stage__layer[data-sc-layer="hero"] img {
+  opacity: 0;
+}
+
+/* Con el visor 3D abierto, la ficha se aparta y queda como un talón */
+.sc-hero.is-live .sc-hero__stage {
+  inset: 0;
+  z-index: 0;
+}
+.sc-hero.is-live .sc-hero__card {
+  position: relative;
+  z-index: 1;
+  align-self: end;
+  transform: scale(0.62);
+}
+.sc-hero.is-live :is(.sc-hero__lead, .sc-facts, .sc-hero__actions .sc-link) {
+  display: none;
+}
+
+.sc-empty {
+  padding: var(--sc-gap) var(--sc-m);
+  display: grid;
+  gap: 24px;
+}
+
+/* =========================================================================
+ * 2. Destacadas: la foto queda fija mientras pasan las fichas
+ * ========================================================================= */
+.sc-feat {
+  display: flex;
+  flex-direction: column;
+}
+.sc-feat__text {
+  position: relative;
+  margin: 14svh 0 0 var(--sc-m);
+  max-width: 40rem;
+  padding: 32px;
+  background: rgb(20 27 35 / 0.78); /* velo neutro detrás del texto, solo en esta columna */
+  display: grid;
+  gap: 24px;
+}
+.sc-slips {
+  position: relative;
+  margin-top: auto;
+  padding: 12svh var(--sc-m) 0;
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+}
+.sc-slip {
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 300px;
+  background: var(--sc-paper);
+  color: var(--sc-ink);
+  min-height: 34svh;
+  transition: transform 220ms var(--sc-ease);
+}
+.sc-slip:nth-child(3n+1) { min-height: 42svh; }
+.sc-slip:nth-child(3n+2) { min-height: 30svh; transform: rotate(-1.5deg); }
+.sc-slip:nth-child(4n) { min-height: 38svh; transform: rotate(1.2deg); }
+.sc-slip:hover {
+  transform: translateY(-10px);
+}
+.sc-slip__link {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  height: 100%;
+  padding: 16px 16px 28px;
+  font-size: 15px;
+  line-height: 1.4;
+  text-decoration: none;
+}
+.sc-slip__plate {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  margin-bottom: 8px;
+}
+.sc-slip__title {
+  font-family: var(--font-heading, "Poppins", sans-serif);
+  font-size: var(--sc-s0);
+  line-height: 1.2;
+}
+.sc-slip__rule {
+  color: var(--sc-ink-soft);
+  letter-spacing: 0.1em;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.sc-slip__go {
+  margin-top: 8px;
+  font-weight: 600;
+  color: var(--sc-accent);
+}
+
+/* =========================================================================
+ * 3. Recientes: capturas con su etiqueta de catálogo
+ * ========================================================================= */
+/* El cambio a fondo claro ya separa: sin margen, para que no asome una franja de foto sola */
+.sc-recent {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 96px var(--sc-m);
+}
+.sc-recent__head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px 32px;
+  margin-bottom: 40px;
+}
+.sc-tiles {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 28px 12px;
+}
+.sc-tile__link {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  text-decoration: none;
+}
+.sc-tile__photo {
+  display: block;
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: var(--sc-ground);
+}
+.sc-tile__photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 600ms var(--sc-ease);
+}
+.sc-tile__link:hover .sc-tile__photo img,
+.sc-tile__link:focus-visible .sc-tile__photo img {
+  transform: scale(1.04);
+}
+.sc-tile__tag {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 92px;
+  padding: 12px;
+  font-size: var(--sc-s-1);
+  font-variant-numeric: tabular-nums;
+  background: var(--sc-navy);
+  color: var(--sc-on-dark);
+}
+.sc-tile:nth-child(4n+2) .sc-tile__tag { background: var(--sc-paper-step); color: var(--sc-ink); }
+.sc-tile:nth-child(4n+3) .sc-tile__tag { background: var(--sc-accent); color: #FFFFFF; }
+.sc-tile:nth-child(4n+4) .sc-tile__tag { background: var(--sc-ground); color: var(--sc-on-dark); }
+.sc-tile__title {
+  font-family: var(--font-heading, "Poppins", sans-serif);
+  font-weight: 600;
+  font-size: var(--sc-s0);
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+.sc-tile__row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* =========================================================================
+ * 4. Colecciones: la palabra grande y una barra por colección
+ * ========================================================================= */
+.sc-colls {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 96px var(--sc-m);
+}
+.sc-colls__all {
+  margin-top: 28px;
+}
+.sc-colls__col {
+  width: 100%; /* en un flex en columna, container-type lo encogería a su contenido */
+  max-width: 640px;
+  margin-inline: auto;
+  container-type: inline-size;
+}
+/* La palabra llena la columna de borde a borde (unidades de contenedor) */
+:root .sc .sc-giant {
+  font-size: 15.2cqw;
+  line-height: 0.8;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+  margin: 0 0 20px;
+  white-space: nowrap;
+}
+.sc-bars {
+  display: grid;
+  gap: 6px;
+}
+.sc-bar {
+  background: var(--sc-navy);
+}
+.sc-bar__summary {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 56px;
+  padding: 0 18px;
+  cursor: pointer;
+  list-style: none;
+  transition: background-color 160ms var(--sc-ease);
+}
+.sc-bar__summary::-webkit-details-marker {
+  display: none;
+}
+.sc-bar__summary:hover {
+  background: color-mix(in srgb, var(--sc-navy-step), white 8%);
+}
+.sc-bar__name {
+  font-weight: 600;
+  flex: 1;
+}
+.sc-bar__count {
+  font-size: var(--sc-s-1);
+  font-variant-numeric: tabular-nums;
+}
+.sc-bar__sign {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  flex: none;
+}
+.sc-bar__sign::before,
+.sc-bar__sign::after {
+  content: "";
+  position: absolute;
+  inset: 7px 0;
+  background: currentColor;
+  transition: transform 220ms var(--sc-ease);
+}
+.sc-bar__sign::after {
+  transform: rotate(90deg);
+}
+.sc-bar[open] .sc-bar__sign::after {
+  transform: rotate(0deg);
+}
+.sc-bar__panel {
+  padding: 4px 18px 20px;
+  display: grid;
+  gap: 16px;
+}
+.sc-bar__items {
+  display: grid;
+  gap: 10px;
+}
+.sc-bar__items li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.sc-bar__items a {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  text-decoration: none;
+}
+.sc-bar__items a:hover span {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.sc-bar__items img {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  flex: none;
+}
+.sc-bar__items time {
+  font-size: var(--sc-s-1);
+  font-variant-numeric: tabular-nums;
+  flex: none;
+}
+
+/* =========================================================================
+ * 5. Sobre el proyecto: carta en una hoja con talón desprendible
+ * ========================================================================= */
+.sc-about {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 96px var(--sc-m);
+}
+.sc-sheet {
+  max-width: 640px;
+  margin-inline: auto;
+  background: var(--sc-paper);
+  color: var(--sc-ink);
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), 96.875% 100%, 93.75% calc(100% - 10px), 90.625% 100%, 87.5% calc(100% - 10px), 84.375% 100%, 81.25% calc(100% - 10px), 78.125% 100%, 75% calc(100% - 10px), 71.875% 100%, 68.75% calc(100% - 10px), 65.625% 100%, 62.5% calc(100% - 10px), 59.375% 100%, 56.25% calc(100% - 10px), 53.125% 100%, 50% calc(100% - 10px), 46.875% 100%, 43.75% calc(100% - 10px), 40.625% 100%, 37.5% calc(100% - 10px), 34.375% 100%, 31.25% calc(100% - 10px), 28.125% 100%, 25% calc(100% - 10px), 21.875% 100%, 18.75% calc(100% - 10px), 15.625% 100%, 12.5% calc(100% - 10px), 9.375% 100%, 6.25% calc(100% - 10px), 3.125% 100%, 0% calc(100% - 10px));
+  padding-bottom: 10px;
+}
+.sc-sheet__letter {
+  padding: 60px 60px 40px;
+  display: grid;
+  gap: 1.1em;
+  line-height: 1.55;
+}
+.sc-sheet__sign {
+  margin-top: 0.6em;
+  font-family: var(--font-heading, "Poppins", sans-serif);
+  font-weight: 600;
+  font-size: var(--sc-s1);
+}
+.sc-sheet__role {
+  margin-top: -0.9em;
+  font-size: var(--sc-s-1);
+  color: var(--sc-ink-soft);
+}
+.sc-sheet__stub {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 72px;
+  padding: 20px 60px 24px;
+  border-top: 6px dotted var(--sc-paper-step);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+/* =========================================================================
+ * Teléfono y tableta
+ * ========================================================================= */
+@media (max-width: 900px) {
+  /* La pieza arriba, la ficha abajo */
+  .sc-stage__layer,
+  .sc-stage__layer:is([data-sc-layer="hero"], [data-sc-layer="featured"]) {
+    align-items: flex-start;
+    justify-content: center;
+    padding-right: 0;
+  }
+  .sc-stage__layer img {
+    height: auto;
+    width: 100%;
+  }
+  .sc-hero {
+    grid-template-columns: 1fr;
+    align-items: end;
+    padding: 0 var(--sc-m) var(--sc-m);
+  }
+  .sc-hero__card {
+    grid-column: 1;
+    padding: 24px;
+  }
+  .sc-hero.is-live .sc-hero__stage {
+    inset: 0 0 auto;
+    height: 56svh;
+  }
+  .sc-hero.is-live .sc-hero__card {
+    transform: none;
+  }
+  .sc-feat__text {
+    margin: 12svh var(--sc-m) 0;
+    padding: 24px;
+  }
+  .sc-slips {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: end;
+    padding-top: 20svh;
+  }
+  .sc-slips .sc-slip:nth-child(n) { /* gana a las alturas e inclinaciones por :nth-child de escritorio */
+    max-width: none;
+    min-height: 0;
+    transform: none;
+  }
+  .sc-tiles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px 8px;
+  }
+  .sc-tile__row time {
+    display: none;
+  }
+  .sc-sheet__letter {
+    padding: 32px 24px 28px;
+  }
+  .sc-sheet__stub {
+    padding: 20px 24px 24px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+/* =========================================================================
+ * Movimiento: solo si el sistema no pide reducirlo. Sin script, todo se ve.
+ * ========================================================================= */
+/* Títulos palabra por palabra (showcase.js envuelve cada palabra en .sc-word) */
+.sc-word {
+  display: inline-block;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .sc-words-pending .sc-word {
+    opacity: 0;
+    transform: translateY(0.45em);
+  }
+  .sc-words .sc-word {
+    transition:
+      opacity 640ms var(--sc-ease) calc(var(--sc-w, 0) * 55ms),
+      transform 640ms var(--sc-ease) calc(var(--sc-w, 0) * 55ms);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .sc-stage__layer img {
+    animation: sc-drift 26s ease-in-out infinite alternate;
+  }
+  @keyframes sc-drift {
+    from { transform: scale(1); }
+    to { transform: scale(1.04) translateY(-1%); }
+  }
+}
+/* Tarjetas que aparecen al entrar y se desvanecen al salir, al ritmo del scroll (showcase.js pone --sc-fo y
+   --sc-fy). `translate` es independiente de `transform`: las fichas inclinadas conservan su giro */
+.sc-faded [data-sc-fade] {
+  opacity: var(--sc-fo, 1);
+  translate: 0 var(--sc-fy, 0);
+}

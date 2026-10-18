@@ -19,3 +19,6 @@ secrets.env
 *.key
 # Instancia local desechable (scripts/local-seed.sh): credenciales de prueba y cookies
 .local/
+
+# design-taste-frontend working files (direction sheet, screenshots)
+.taste-skill/

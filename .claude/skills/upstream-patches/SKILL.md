@@ -101,6 +101,8 @@ Se aplican en orden alfabético. Si el tema nuevo toca un archivo ya parchado, e
 anteriores aplicados**: exportar el diff entre "anteriores aplicados" y "anteriores + cambio nuevo". Forma simple:
 copiar el archivo con los anteriores aplicados (`cp a.ts /tmp/a.orig`), editar, y `diff -u` con las rutas
 `a/<ruta>` y `b/<ruta>`. Si los dos temas se entrelazan demasiado, juntarlos en un solo parche.
+`apply-patches.sh` maneja la cadena: `--check` aplica en orden sobre una copia, y antes de aplicar o revertir deshace
+los ya aplicados en orden inverso (ejemplo: `ecorpus/0005` sobre `0003` en `en.yml`/`fr.yml`).
 
 ## Paso 4 — Probar en local
 

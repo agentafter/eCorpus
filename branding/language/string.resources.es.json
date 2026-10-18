@@ -162,5 +162,10 @@
 	"Console": "Consola",
 	"Hierarchy": "Jerarquía",
 	"Inspector": "Inspector",
-	"No tours available.": "No hay visitas guiadas disponibles."
+	"No tours available.": "No hay visitas guiadas disponibles.",
+	"QC": "Control de calidad",
+	"Authoring": "Autoría",
+	"Edit": "Edición",
+	"Expert": "Experto",
+	"Standalone": "Independiente"
 }

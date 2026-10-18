@@ -1,0 +1,22 @@
+Huaka: traduce la etiqueta del modo del editor Story ("Edit", "Expert"…).
+
+TaskBar muestra el texto de la opción del enum ETaskMode tal cual, sin pasar por
+el diccionario, así que en español la barra empezaba con "Edit". Se pasa por
+getUILocalizedString; TaskBar ya vuelve a renderizar al cambiar el idioma.
+Las traducciones van en branding/language/string.resources.es.json.
+
+Generado sobre Voyager f7a70e6fe13502410dfa0da50d87b43f91d7d9f7 (2026-10-17).
+
+diff --git a/source/client/ui/story/TaskBar.ts b/source/client/ui/story/TaskBar.ts
+index f96a2a46..7f65ae67 100644
+--- a/source/client/ui/story/TaskBar.ts
++++ b/source/client/ui/story/TaskBar.ts
+@@ -79,7 +79,7 @@ export default class TaskBar extends SystemView
+         const tasks = this.taskProvider.scopedComponents;
+         const activeTask = this.taskProvider.activeComponent;
+         const taskMode = this.taskProvider.ins.mode.value;
+-        const taskModeText = this.taskProvider.ins.mode.getOptionText();
++        const taskModeText = this.language.getUILocalizedString(this.taskProvider.ins.mode.getOptionText()); // Huaka
+         const downloadButtonVisible = taskMode !== ETaskMode.Standalone;
+         const exitButtonVisible = taskMode !== ETaskMode.Standalone;
+         const languageManager = this.language;
