@@ -1,0 +1,138 @@
+Huaka: enlaces privados a una escena (enlace secreto, sin cuenta, incrustable).
+
+El código es propio (utils/shareLinks.ts, routes/shareLinks.ts, partials/huakaShareLinks.hbs,
+share/created.hbs, tests). La escena sigue privada, así que no se lista en ningún lado; el enlace
+abre su visor y sus archivos en solo lectura por rutas propias, sin tocar la autorización de eCorpus.
+Este parche solo los engancha:
+- routes/index.ts: monta /ui/compartido (visor y gestión) y /compartido (archivos).
+- routes/views/index.ts: la página de configuración de la escena recibe sus enlaces.
+- scene/settings.hbs: incluye la sección "Enlaces privados", antes de renombrar/archivar.
+- en.yml/fr.yml: textos huaka.share. Se genera con 0003 y 0005 aplicados.
+
+Generado sobre eCorpus upstream d5fca779d6db75a4bdb766c7e8ce6848f6346955 (2026-10-18).
+
+diff --git a/source/server/routes/index.ts b/source/server/routes/index.ts
+--- a/source/server/routes/index.ts
++++ b/source/server/routes/index.ts
+@@ -15,6 +15,7 @@
+ import { getMetadata } from "./auth/oauth.js";
+ 
+ import viewsRoutes from "./views/index.js";
++import { shareFilesRouter, shareUiRouter } from "./shareLinks.js"; // Huaka
+ import adminRoutes from "./admin/index.js";
+ import authRoutes from "./auth/index.js";
+ import historyRoutes from "./history/index.js";
+@@ -217,6 +218,7 @@
+   // static file server
+   app.use("/dist", express.static(locals.config.get("dist_dir")));
+ 
++  app.use("/ui/compartido", shareUiRouter); // Huaka: secret links to a private scene
+   app.use("/ui", viewsRoutes);
+ 
+   //Privilege-protected routes
+@@ -224,6 +226,7 @@
+   app.use("/auth", authRoutes);
+   app.use("/history", historyRoutes);
+   app.use("/scenes", scenesRoutes);
++  app.use("/compartido", shareFilesRouter); // Huaka
+   app.use("/users", usersRoutes);
+   app.use("/tags", tagsRoutes);
+   app.use("/groups", groupsRoutes);
+diff --git a/source/server/routes/views/index.ts b/source/server/routes/views/index.ts
+--- a/source/server/routes/views/index.ts
++++ b/source/server/routes/views/index.ts
+@@ -12,6 +12,7 @@
+ import { TaskDefinition } from "../../tasks/types.js";
+ import { aggregateHistory } from "./historyAggregate.js";
+ import { renderShowcase } from "./showcase.js"; // Huaka
++import { listShareLinks } from "../shareLinks.js"; // Huaka
+ import { createLogger } from "../../utils/log/index.js";
+ 
+ 
+@@ -841,6 +842,7 @@
+     groupPermissions,
+     userPermissions,
+     tagSuggestions,
++    shareLinks: await listShareLinks(req, scene.id), // Huaka
+   });
+ }));
+ 
+diff --git a/source/server/templates/scene/settings.hbs b/source/server/templates/scene/settings.hbs
+--- a/source/server/templates/scene/settings.hbs
++++ b/source/server/templates/scene/settings.hbs
+@@ -301,6 +301,9 @@
+   </submit-fragment>
+ </section>
+ 
++{{!-- Huaka: secret links --}}
++{{> huakaShareLinks}}
++
+ <section>
+   {{#if scene.archived }}
+     <p>
+diff --git a/source/server/templates/locales/en.yml b/source/server/templates/locales/en.yml
+--- a/source/server/templates/locales/en.yml
++++ b/source/server/templates/locales/en.yml
+@@ -452,6 +452,29 @@
+   requestInProgress: request in progress
+   sceneTypeLabel: "Scene type:"
+   errorTitle: "Error {{code}}"
++  share:
++    title: Private links
++    lead: >
++      A private link opens this scene in the 3D viewer, without an account, for whoever holds it. It can also be
++      embedded in another site. The scene does not appear in the showcase or in search. The link lasts until
++      it is revoked.
++    publicWarning: This scene is public, so anyone can see it and it appears in the showcase. To show it only through a link, set public access to "none".
++    name: Name
++    created: Created
++    lastUsed: Last used
++    never: never
++    revoke: Revoke
++    none: This scene has no private links yet.
++    newLink: New link
++    namePlaceholder: "Who it is for, e.g.: Site museum"
++    create: Create link
++    createdTitle: Private link created
++    createdFor: "Link “{{name}}” for the scene {{scene}}."
++    copyNow: Copy the link now. For security it is not stored and will not be shown again; if you lose it, create another one and revoke this one.
++    link: Link
++    embed: Embed code
++    open: Open the link
++    back: Back to settings
+   showcase:
+     nav: Showcase
+     dashboard: My dashboard
+diff --git a/source/server/templates/locales/fr.yml b/source/server/templates/locales/fr.yml
+--- a/source/server/templates/locales/fr.yml
++++ b/source/server/templates/locales/fr.yml
+@@ -468,6 +468,29 @@
+   requestInProgress: requête en cours
+   sceneTypeLabel: "Type de scène :"
+   errorTitle: "Erreur {{code}}"
++  share:
++    title: Liens privés
++    lead: >
++      Un lien privé ouvre cette scène dans la visionneuse 3D, sans compte, pour qui le détient. Il peut aussi
++      être intégré dans un autre site. La scène n'apparaît ni dans la vitrine ni dans la recherche. Le lien
++      reste valable jusqu'à sa révocation.
++    publicWarning: Cette scène est publique, donc visible par tous et présente dans la vitrine. Pour qu'elle ne soit visible que par un lien, réglez l'accès public sur « aucun ».
++    name: Nom
++    created: Créé
++    lastUsed: Dernière utilisation
++    never: jamais
++    revoke: Révoquer
++    none: Cette scène n'a pas encore de lien privé.
++    newLink: Nouveau lien
++    namePlaceholder: "Pour qui, par exemple : Musée de site"
++    create: Créer le lien
++    createdTitle: Lien privé créé
++    createdFor: "Lien « {{name}} » pour la scène {{scene}}."
++    copyNow: Copiez le lien maintenant. Par sécurité il n'est pas conservé et ne sera plus affiché ; si vous le perdez, créez-en un autre et révoquez celui-ci.
++    link: Lien
++    embed: Code d'intégration
++    open: Ouvrir le lien
++    back: Retour aux paramètres
+   showcase:
+     nav: Vitrine
+     dashboard: Mon tableau de bord

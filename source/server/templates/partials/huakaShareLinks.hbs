@@ -1,0 +1,55 @@
+{{!--
+  Huaka: secret links to this scene (routes/shareLinks.ts). Included at the end of scene/settings.hbs by
+  patches/ecorpus/0006, which also passes `shareLinks`. Plain forms: no script needed.
+--}}
+<section id="enlaces-privados">
+  <h3>{{i18n "huaka.share.title"}}</h3>
+  <aside class="help-block">
+    <ui-icon name="info"></ui-icon>
+    <div class="help-block-content">
+      <p>{{i18n "huaka.share.lead"}}</p>
+      {{#if (test scene.public_access "!=" "none")}}<p><strong>{{i18n "huaka.share.publicWarning"}}</strong></p>{{/if}}
+    </div>
+  </aside>
+
+  {{#if shareLinks.length}}
+  <div class="list-table-wrap">
+    <table class="list-table compact">
+      <thead>
+        <tr>
+          <th>{{i18n "huaka.share.name"}}</th>
+          <th>{{i18n "huaka.share.created"}}</th>
+          <th>{{i18n "huaka.share.lastUsed"}}</th>
+          <th><span class="hidden">{{i18n "huaka.share.revoke"}}</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each shareLinks}}
+        <tr>
+          <td>{{name}}</td>
+          <td title="{{author}}">{{dateString created_at "date"}}</td>
+          <td>{{#if last_used_at}}{{dateString last_used_at "date"}}{{else}}{{i18n "huaka.share.never"}}{{/if}}</td>
+          <td>
+            <form method="POST" action="/ui/compartido/escena/{{encodeURIComponent @root.scene.name}}/{{id}}/revocar">
+              <button type="submit" class="btn btn-danger" title="{{i18n "huaka.share.revoke"}}: {{name}}">
+                <ui-icon name="trash"></ui-icon> {{i18n "huaka.share.revoke"}}
+              </button>
+            </form>
+          </td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+  {{else}}
+  <p>{{i18n "huaka.share.none"}}</p>
+  {{/if}}
+
+  <form method="POST" action="/ui/compartido/escena/{{encodeURIComponent scene.name}}" class="form-control" autocomplete="off">
+    <div class="form-item">
+      <label for="huaka-share-name">{{i18n "huaka.share.newLink"}}</label>
+      <input id="huaka-share-name" name="name" type="text" required maxlength="120" placeholder="{{i18n "huaka.share.namePlaceholder"}}" />
+      <button type="submit" class="btn btn-main"><ui-icon name="plus"></ui-icon> {{i18n "huaka.share.create"}}</button>
+    </div>
+  </form>
+</section>

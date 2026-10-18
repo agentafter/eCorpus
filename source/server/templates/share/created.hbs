@@ -1,0 +1,32 @@
+{{!--
+  Huaka: a secret link just created (routes/shareLinks.ts). The only time it is shown: only its hash is stored.
+--}}
+<h1 class="grid-header">{{i18n "huaka.share.createdTitle"}}</h1>
+
+<div class="grid-content">
+  <section>
+    <p>{{i18n "huaka.share.createdFor" name=name scene=scene.name}}</p>
+    <aside class="help-block">
+      <ui-icon name="info"></ui-icon>
+      <div class="help-block-content">
+        <p><strong>{{i18n "huaka.share.copyNow"}}</strong></p>
+      </div>
+    </aside>
+
+    <div class="form-control">
+      <div class="form-item">
+        <label for="huaka-share-link">{{i18n "huaka.share.link"}}</label>
+        <input id="huaka-share-link" type="text" readonly value="{{link}}" onfocus="this.select()" />
+      </div>
+      <div class="form-item">
+        <label for="huaka-share-embed">{{i18n "huaka.share.embed"}}</label>
+        <textarea id="huaka-share-embed" readonly rows="4" onfocus="this.select()">{{embed}}</textarea>
+      </div>
+    </div>
+
+    <p style="display:flex;gap:1rem;flex-wrap:wrap;margin-top:1rem;">
+      <a class="btn btn-main" href="{{link}}" target="_blank" rel="noopener noreferrer">{{i18n "huaka.share.open"}}</a>
+      <a class="btn" href="{{settings}}#enlaces-privados">{{i18n "huaka.share.back"}}</a>
+    </p>
+  </section>
+</div>
