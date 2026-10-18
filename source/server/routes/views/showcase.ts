@@ -167,8 +167,9 @@ export async function renderShowcase(req: Request, res: Response) {
   const hero = pickHero(heroPool, req.query.pieza);
   //The others, for "Ver otra pieza": the script swaps the hero without reloading. Dates are formatted here, as
   //dateString would format them in the template
-  //Only pieces in the same state as the hero (all captured, or none): swapping must not leave a stale photo behind
-  const heroAlternatives = heroPool.filter(c => c !== hero && !!c.image === !!hero?.image).map(c => ({
+  //Every other piece, captured or not: the script hides the stage photo for a piece without capture. (A hero without
+  //capture means no piece in the pool has one, since pickHero prefers them.)
+  const heroAlternatives = heroPool.filter(c => c !== hero).map(c => ({
     name: c.name, title: c.title, collection: c.collection, viewUri: c.viewUri, image: c.image,
     date: c.mtime.toLocaleDateString(lang),
   }));

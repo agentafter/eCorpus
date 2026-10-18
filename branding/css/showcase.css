@@ -243,7 +243,6 @@
   flex-direction: column;
   gap: 24px;
   transform-origin: 0 100%;
-  transition: transform 520ms var(--sc-ease);
 }
 .sc-hero__title {
   font-size: var(--sc-s2);
@@ -305,7 +304,15 @@
   transition: opacity 260ms var(--sc-ease);
 }
 .sc-swapping .sc-hero__card [data-sc-hero],
-.sc-swapping .sc-stage__layer[data-sc-layer="hero"] img {
+.sc-swapping .sc-stage__layer[data-sc-layer="hero"] img,
+.sc-stage__layer.is-empty img {
+  opacity: 0;
+}
+/* Al pasar entre una pieza con foto y otra sin ella, la ficha cambia de lugar: se funde entera para no saltar */
+.sc-hero__card {
+  transition: transform 520ms var(--sc-ease), opacity 260ms var(--sc-ease);
+}
+:root.sc-swapping-card .sc-hero__card {
   opacity: 0;
 }
 
