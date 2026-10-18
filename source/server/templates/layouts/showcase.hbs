@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="{{lang}}">
+  <head>
+    {{> head }}
+    {{!-- Huaka: served from branding/ (ASSETS_DIR) --}}
+    <link rel="stylesheet" href="/dist/css/showcase.css?ref={{ config.build_ref }}">
+  </head>
+  <body class="sc-body">
+    {{> navbar }}
+    <main class="sc">
+      {{{body}}}
+    </main>
+    {{> footer }}
+    <script src="/dist/js/corpus.js?ref={{ config.build_ref }}"></script>
+    <script src="/dist/js/showcase.js?ref={{ config.build_ref }}" defer></script>
+  </body>
+</html>

@@ -1,0 +1,101 @@
+import request from "supertest";
+import User from "../../auth/User.js";
+import UserManager from "../../auth/UserManager.js";
+import Vfs from "../../vfs/index.js";
+import { FEATURED_TAG, pickTitle } from "./showcase.js";
+
+/**
+ * Huaka (patches/ecorpus/0005): the public showcase replaces the home page for
+ * visitors and is also served at /ui/vitrina/. It must never list a scene that an
+ * anonymous visitor cannot read.
+ */
+describe("Showcase (/ui/ and /ui/vitrina/)", function () {
+  let vfs: Vfs, userManager: UserManager, bob: User;
+
+  this.beforeAll(async function () {
+    const locals = await createIntegrationContext(this);
+    vfs = locals.vfs;
+    userManager = locals.userManager;
+  });
+
+  this.beforeEach(async function () {
+    await resetIntegrationContext(this);
+    bob = await userManager.addUser("bob", "12345678", "create");
+    const scenes: Array<[string, "read" | "none", string[]]> = [
+      ["vasija_publica", "read", ["Corral Redondo"]],
+      ["vasija_destacada", "read", [FEATURED_TAG, "Corral Redondo"]],
+      ["vasija_privada", "none", [FEATURED_TAG, "Corral Redondo", "Coleccion privada"]],
+    ];
+    for (const [name, access, tags] of scenes) {
+      const id = await vfs.createScene(name, bob.uid);
+      await vfs.writeDoc("{}", { scene: id, user_id: bob.uid, name: "scene.svx.json", mime: "application/si-dpo-3d.document+json" });
+      await userManager.setPublicAccess(name, access);
+      for (const tag of tags) await vfs.addTag(id, tag);
+    }
+  });
+
+  async function login(server: any) {
+    const agent = request.agent(server);
+    await agent.post("/auth/login")
+      .send({ username: "bob", password: "12345678" })
+      .set("Content-Type", "application/json")
+      .set("Accept", "")
+      .expect(200);
+    return agent;
+  }
+
+  it("shows the showcase to visitors, with public scenes only", async function () {
+    const res = await request(this.server).get("/ui/")
+      .set("Accept", "text/html")
+      .set("Accept-Language", "es")
+      .expect(200);
+    expect(res.text).to.include(`class="sc-hero"`);
+    expect(res.text).to.include("<title>Vitrina — ");
+    expect(res.text).to.include("vasija_publica");
+    expect(res.text).to.include("vasija_destacada");
+    expect(res.text).not.to.include("vasija_privada");
+    expect(res.text).not.to.include("Coleccion privada");
+  });
+
+  it("features tagged scenes without listing the tag as a collection", async function () {
+    const res = await request(this.server).get("/ui/vitrina/").set("Accept", "text/html").expect(200);
+    const featured = res.text.slice(res.text.indexOf(`class="sc-feat"`), res.text.indexOf(`class="sc-recent"`));
+    expect(featured).to.include("vasija_destacada");
+    expect(featured).not.to.include("vasija_publica");
+    const collections = res.text.slice(res.text.indexOf(`class="sc-colls"`));
+    expect(collections).to.include("Corral Redondo");
+    expect(collections).not.to.include(`<span class="sc-bar__name">${FEATURED_TAG}</span>`);
+  });
+
+  it("keeps the dashboard as the home page of logged-in users, with a link to the showcase", async function () {
+    const agent = await login(this.server);
+    const res = await agent.get("/ui/").set("Accept", "text/html").expect(200);
+    expect(res.text).not.to.include(`class="sc-hero"`);
+    expect(res.text).to.include(`href="/ui/vitrina/"`);
+  });
+
+  it("shows logged-in users what visitors see", async function () {
+    const agent = await login(this.server);
+    const res = await agent.get("/ui/vitrina/").set("Accept", "text/html").expect(200);
+    expect(res.text).to.include("vasija_publica");
+    //bob owns it, but it is not public
+    expect(res.text).not.to.include("vasija_privada");
+  });
+
+  it("renders when there is nothing public yet", async function () {
+    for (const name of ["vasija_publica", "vasija_destacada"]) await userManager.setPublicAccess(name, "none");
+    const res = await request(this.server).get("/ui/vitrina/").set("Accept", "text/html").expect(200);
+    expect(res.text).to.include(`class="sc-empty"`);
+    expect(res.text).not.to.include(`class="sc-recent"`);
+  });
+
+  describe("pickTitle()", function () {
+    it("prefers the interface language, then the scene's primary language, then the name", function () {
+      const titles = { ES: "Cántaro", EN: "Jar" };
+      expect(pickTitle("C-1", titles, "EN", "es")).to.equal("Cántaro");
+      expect(pickTitle("C-1", titles, "EN", "fr")).to.equal("Jar");
+      expect(pickTitle("C-1", { ES: "  " }, undefined, "es")).to.equal("C-1");
+      expect(pickTitle("C-1", undefined, undefined, "en")).to.equal("C-1");
+    });
+  });
+});
