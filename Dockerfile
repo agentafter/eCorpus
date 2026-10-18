@@ -34,6 +34,9 @@ RUN grep -qF "pageTitle" /app/source/server/dist/utils/templates/helpers/index.j
   || { echo "ERROR: Huaka page title translation missing from server build" >&2; exit 1; }
 RUN grep -qF "acceptsLanguages(dicts" /app/source/server/dist/routes/auth/login.js \
   || { echo "ERROR: Huaka login link language missing from server build" >&2; exit 1; }
+RUN grep -qF "renderShowcase" /app/source/server/dist/routes/views/index.js \
+  && grep -qF "/ui/vitrina/" /app/source/server/templates/partials/navbar.hbs \
+  || { echo "ERROR: Huaka public showcase missing from server build" >&2; exit 1; }
 # outputs files in /app/source/server/dist
 
 COPY source/voyager /app/source/voyager
