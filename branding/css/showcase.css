@@ -35,7 +35,10 @@
 
   --sc-ease: cubic-bezier(.2, .7, .2, 1);
 
+  --sc-screen: calc(100svh - var(--nav-height, 44px));
+
   display: block;
+  position: relative;
   background: var(--sc-ground);
   color: var(--sc-on-dark);
   font-family: var(--font-body, "Inter", sans-serif);
@@ -143,30 +146,85 @@
 }
 
 /* =========================================================================
+ * Escenario: una pieza por sección, fija detrás de todo. showcase.js funde
+ * una con otra al pasar de sección (acercándose al entrar, creciendo al
+ * irse). Sin script, se ve la primera.
+ * ========================================================================= */
+.sc-stage {
+  position: sticky;
+  top: var(--nav-height, 44px);
+  height: var(--sc-screen);
+  margin-bottom: calc(-1 * var(--sc-screen));
+  overflow: hidden;
+  z-index: 0;
+  pointer-events: none;
+}
+.sc-stage__layer {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transform: translate3d(0, var(--sc-y, 0), 0) scale(var(--sc-s, 1));
+  will-change: opacity, transform;
+}
+.sc-stage__layer:first-child {
+  opacity: 1;
+}
+/* Con el script (clase en <html>), cada capa toma la opacidad que calcula */
+.sc-staged .sc-stage__layer {
+  opacity: var(--sc-o, 0);
+}
+/* La captura entera, cuadrada. El borde se funde con el fondo: el viñeteado de las capturas es más claro que
+   --sc-ground y, sin máscara, el cuadrado se nota al acercarse */
+.sc-stage__layer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.sc-stage__layer img {
+  height: 100%;
+  width: auto;
+  max-width: 100%;
+  aspect-ratio: 1;
+  object-fit: contain;
+  -webkit-mask-image: radial-gradient(closest-side, #000 62%, transparent 100%); /* taste-skill-ignore: funde el borde de la foto, no es un degradado de color */
+  mask-image: radial-gradient(closest-side, #000 62%, transparent 100%); /* taste-skill-ignore: idem */
+}
+.sc-stage__layer:is([data-sc-layer="hero"], [data-sc-layer="featured"]) {
+  justify-content: flex-end;
+  padding-right: 4vw;
+}
+/* Detrás de grillas y listas la pieza baja de tono, para que el contenido mande */
+.sc-stage__layer:is([data-sc-layer="recent"], [data-sc-layer="collections"]) img { filter: brightness(0.42); }
+
+.sc > section {
+  position: relative;
+  z-index: 1;
+  min-height: var(--sc-screen);
+}
+
+/* =========================================================================
  * 1. Portada: la ficha de la pieza sobre su propia captura
  * ========================================================================= */
 .sc-hero {
-  position: relative;
-  min-height: calc(100svh - var(--nav-height, 44px));
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
   align-items: center;
   padding: var(--sc-m);
   isolation: isolate;
 }
+/* Solo para el visor 3D ("Girar en 3D") o la miniatura de una pieza sin captura */
 .sc-hero__stage {
   position: absolute;
   inset: 0;
   z-index: -1;
   overflow: hidden;
 }
-/* La captura entera, sin recorte, contra la derecha: su borde es del mismo tono que el fondo */
 .sc-hero__photo {
   width: 100%;
   height: 100%;
   max-width: none;
   object-fit: contain;
-  object-position: 78% 50%;
+  object-position: 80% 50%;
 }
 .sc-hero__stage iframe {
   position: absolute;
@@ -249,29 +307,13 @@
 /* =========================================================================
  * 2. Destacadas: la foto queda fija mientras pasan las fichas
  * ========================================================================= */
-/* Sin margen arriba: el cambio de foto ya separa de la portada, y un hueco oscuro se lee como pantalla vacía */
 .sc-feat {
-  position: relative;
   display: flex;
   flex-direction: column;
 }
-.sc-feat__backdrop {
-  position: sticky;
-  top: 0;
-  height: 100svh;
-  margin-bottom: -100svh;
-  overflow: hidden;
-}
-.sc-feat__backdrop img {
-  width: 100%;
-  height: 100%;
-  max-width: none;
-  object-fit: cover;
-  filter: brightness(0.5);
-}
 .sc-feat__text {
   position: relative;
-  margin: 18svh 0 0 18%;
+  margin: 14svh 0 0 var(--sc-m);
   max-width: 40rem;
   padding: 32px;
   background: rgb(20 27 35 / 0.78); /* velo neutro detrás del texto, solo en esta columna */
@@ -281,7 +323,7 @@
 .sc-slips {
   position: relative;
   margin-top: auto;
-  padding: 30svh var(--sc-m) 0;
+  padding: 12svh var(--sc-m) 0;
   display: flex;
   align-items: flex-end;
   gap: 12px;
@@ -339,9 +381,10 @@
  * ========================================================================= */
 /* El cambio a fondo claro ya separa: sin margen, para que no asome una franja de foto sola */
 .sc-recent {
-  padding: var(--sc-gap) var(--sc-m) 120px;
-  background: var(--sc-paper);
-  color: var(--sc-ink);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 96px var(--sc-m);
 }
 .sc-recent__head {
   display: flex;
@@ -411,11 +454,13 @@
  * 4. Colecciones: la palabra grande y una barra por colección
  * ========================================================================= */
 .sc-colls {
-  padding: var(--sc-gap) var(--sc-m);
-  background: var(--sc-navy);
-  color: var(--sc-on-dark);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 96px var(--sc-m);
 }
 .sc-colls__col {
+  width: 100%; /* en un flex en columna, container-type lo encogería a su contenido */
   max-width: 640px;
   margin-inline: auto;
   container-type: inline-size;
@@ -434,7 +479,7 @@
   gap: 6px;
 }
 .sc-bar {
-  background: var(--sc-navy-step);
+  background: var(--sc-navy);
 }
 .sc-bar__summary {
   display: flex;
@@ -522,7 +567,10 @@
  * 5. Sobre el proyecto: carta en una hoja con talón desprendible
  * ========================================================================= */
 .sc-about {
-  padding: var(--sc-gap) var(--sc-m);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 96px var(--sc-m);
 }
 .sc-sheet {
   max-width: 640px;
@@ -566,31 +614,32 @@
  * Teléfono y tableta
  * ========================================================================= */
 @media (max-width: 900px) {
+  /* La pieza arriba, la ficha abajo */
+  .sc-stage__layer,
+  .sc-stage__layer:is([data-sc-layer="hero"], [data-sc-layer="featured"]) {
+    align-items: flex-start;
+    justify-content: center;
+    padding-right: 0;
+  }
+  .sc-stage__layer img {
+    height: auto;
+    width: 100%;
+  }
   .sc-hero {
     grid-template-columns: 1fr;
     align-items: end;
-    padding: 0 0 var(--sc-m);
-    min-height: auto;
-  }
-  .sc-hero__stage {
-    position: relative;
-    inset: auto;
-    z-index: 0;
-    height: 62svh;
+    padding: 0 var(--sc-m) var(--sc-m);
   }
   .sc-hero__card {
     grid-column: 1;
-    position: relative;
-    z-index: 1;
-    margin: -12svh var(--sc-m) 0;
     padding: 24px;
   }
   .sc-hero.is-live .sc-hero__stage {
-    height: 78svh;
+    inset: 0 0 auto;
+    height: 56svh;
   }
   .sc-hero.is-live .sc-hero__card {
     transform: none;
-    margin-top: 0;
   }
   .sc-feat__text {
     margin: 12svh var(--sc-m) 0;
@@ -627,13 +676,28 @@
 /* =========================================================================
  * Movimiento: solo si el sistema no pide reducirlo. Sin script, todo se ve.
  * ========================================================================= */
+/* Títulos palabra por palabra (showcase.js envuelve cada palabra en .sc-word) */
+.sc-word {
+  display: inline-block;
+}
 @media (prefers-reduced-motion: no-preference) {
-  .sc-hero__photo {
-    animation: sc-drift 24s ease-in-out infinite alternate;
+  .sc-words-pending .sc-word {
+    opacity: 0;
+    transform: translateY(0.45em);
+  }
+  .sc-words .sc-word {
+    transition:
+      opacity 640ms var(--sc-ease) calc(var(--sc-w, 0) * 55ms),
+      transform 640ms var(--sc-ease) calc(var(--sc-w, 0) * 55ms);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .sc-stage__layer img {
+    animation: sc-drift 26s ease-in-out infinite alternate;
   }
   @keyframes sc-drift {
     from { transform: scale(1); }
-    to { transform: scale(1.06) translateY(-1.5%); }
+    to { transform: scale(1.04) translateY(-1%); }
   }
   .sc-pending {
     opacity: 0;

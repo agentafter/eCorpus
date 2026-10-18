@@ -2,7 +2,7 @@ import request from "supertest";
 import User from "../../auth/User.js";
 import UserManager from "../../auth/UserManager.js";
 import Vfs from "../../vfs/index.js";
-import { FEATURED_TAG, pickTitle } from "./showcase.js";
+import { FEATURED_TAG, ShowcaseCard, pickBackdrops, pickTitle } from "./showcase.js";
 
 /**
  * Huaka (patches/ecorpus/0005): the public showcase replaces the home page for
@@ -87,6 +87,35 @@ describe("Showcase (/ui/ and /ui/vitrina/)", function () {
     const res = await request(this.server).get("/ui/vitrina/").set("Accept", "text/html").expect(200);
     expect(res.text).to.include(`class="sc-empty"`);
     expect(res.text).not.to.include(`class="sc-recent"`);
+  });
+
+  it("leaves the stage out when no public piece has a capture", async function () {
+    const res = await request(this.server).get("/ui/vitrina/").set("Accept", "text/html").expect(200);
+    //No capture was uploaded in this test: no stage, the hero falls back to the thumbnail or nothing
+    expect(res.text).not.to.include(`class="sc-stage"`);
+    expect(res.text).to.include(`data-sc-section="hero"`);
+  });
+
+  describe("pickBackdrops()", function () {
+    const card = (name: string, image = true) => ({
+      name, image: image ? { low: `${name}-l`, medium: `${name}-m`, high: `${name}-h` } : null,
+    }) as ShowcaseCard;
+
+    it("uses a different piece per section, the section's own first", function () {
+      const [a, b, c, d, e] = ["a", "b", "c", "d", "e"].map(n => card(n));
+      const picked = pickBackdrops(a, { featured: [a, b], recent: [b, c], collections: [d, e] });
+      expect(Object.keys(picked)).to.deep.equal(["hero", "featured", "recent", "collections", "about"]);
+      expect(Object.values(picked).map(c => c!.name)).to.deep.equal(["a", "b", "c", "d", "e"]);
+    });
+
+    it("reuses pieces when there are fewer than sections, and skips those without a capture", function () {
+      const picked = pickBackdrops(card("a"), { featured: [card("x", false)], recent: [card("b")] });
+      expect(Object.values(picked).map(c => c!.name)).to.deep.equal(["a", "b", "a", "b", "a"]);
+    });
+
+    it("is empty when no piece has a capture", function () {
+      expect(pickBackdrops(card("a", false), { recent: [card("b", false)] })).to.deep.equal({});
+    });
   });
 
   describe("pickTitle()", function () {

@@ -37,6 +37,31 @@ export interface ShowcaseCard {
   thumb: string | null;
 }
 
+/** The sections of the showcase, in page order. Each one gets its own piece on the background stage */
+export const STAGE_SECTIONS = ["hero", "featured", "recent", "collections", "about"] as const;
+export type StageSection = typeof STAGE_SECTIONS[number];
+
+/**
+ * Give each section a different piece with a capture, in page order: the hero keeps its own, then the first unused
+ * piece of the section's own list, then any unused one. With fewer pieces than sections, they are reused in order.
+ */
+export function pickBackdrops(hero: ShowcaseCard | null, lists: Partial<Record<StageSection, ShowcaseCard[]>>): Partial<Record<StageSection, ShowcaseCard>> {
+  const all = [hero, ...STAGE_SECTIONS.flatMap(s => lists[s] ?? [])]
+    .filter((c): c is ShowcaseCard => !!c?.image)
+    .filter((c, i, a) => a.findIndex(o => o.name === c.name) === i);
+  const backdrops: Partial<Record<StageSection, ShowcaseCard>> = {};
+  if (!all.length) return backdrops;
+  const used = new Set<string>();
+  let next = 0;
+  for (const section of STAGE_SECTIONS) {
+    const own = section === "hero" ? (hero?.image ? [hero] : []) : (lists[section] ?? []).filter(c => c.image);
+    const card = own.find(c => !used.has(c.name)) ?? all.find(c => !used.has(c.name)) ?? all[next++ % all.length];
+    used.add(card.name);
+    backdrops[section] = card;
+  }
+  return backdrops;
+}
+
 export interface ShowcaseCollection {
   name: string;
   size: number;
@@ -112,10 +137,17 @@ export async function renderShowcase(req: Request, res: Response) {
   //The hero is the first featured piece with a capture, else the most recent one
   const hero = [...featured.scenes, ...recent].find(c => c.image) ?? featured.scenes[0] ?? recent[0] ?? null;
 
+  const backdrops = pickBackdrops(hero, {
+    featured: featured.scenes,
+    recent,
+    collections: collections.flatMap(c => c.scenes),
+  });
+
   res.render("showcase", {
     layout: "showcase",
     title: "Showcase",
     hero,
+    backdrops,
     featured: featured.scenes,
     recent,
     collections,
