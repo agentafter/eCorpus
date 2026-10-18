@@ -460,6 +460,7 @@ huaka:
   # Vitrina pública (templates/showcase.hbs). Texto provisional en aboutLetter: lo revisa Huaka Digital.
   showcase:
     nav: Vitrina
+    dashboard: Mi panel
     heroLead: Piezas del patrimonio cultural en 3D, abiertas a todos.
     piece: Pieza
     collection: Colección

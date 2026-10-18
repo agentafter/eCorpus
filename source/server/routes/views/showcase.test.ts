@@ -76,6 +76,11 @@ describe("Showcase (/ui/ and /ui/vitrina/)", function () {
     const res = await agent.get("/ui/").set("Accept", "text/html").expect(200);
     expect(res.text).not.to.include(`data-sc-section="hero"`);
     expect(res.text).to.include(`href="/ui/vitrina/"`);
+    //"Mi panel" leads back here, and is the only active link (exact match: every page is under /ui/)
+    expect(res.text).to.include(`<a class="nav-link active" href="/ui/">`);
+    const showcase = await agent.get("/ui/vitrina/").set("Accept", "text/html").expect(200);
+    expect(showcase.text).to.include(`<a class="nav-link" href="/ui/">`);
+    expect(showcase.text).to.include(`<a class="nav-link active" href="/ui/vitrina/">`);
   });
 
   it("shows logged-in users what visitors see", async function () {
