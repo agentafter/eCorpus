@@ -37,6 +37,7 @@ RUN grep -qF "acceptsLanguages(dicts" /app/source/server/dist/routes/auth/login.
 RUN grep -qF "renderShowcase" /app/source/server/dist/routes/views/index.js \
   && grep -qF "/ui/vitrina/" /app/source/server/templates/partials/navbar.hbs \
   || { echo "ERROR: Huaka public showcase missing from server build" >&2; exit 1; }
+RUN grep -qF "shareFilesRouter" /app/source/server/dist/routes/index.js   && grep -qF "huakaShareLinks" /app/source/server/templates/scene/settings.hbs   || { echo "ERROR: Huaka share links missing from server build" >&2; exit 1; }
 # outputs files in /app/source/server/dist
 
 COPY source/voyager /app/source/voyager
