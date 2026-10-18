@@ -18,7 +18,8 @@
 </div>
 {{/if}}
 {{#if hero}}
-<section class="sc-hero" aria-labelledby="sc-hero-title" data-sc-section="hero">
+{{!-- sc-hero--bare: the piece has neither capture nor thumbnail (not captured in the editor yet) --}}
+<section class="sc-hero{{#unless backdrops.hero}}{{#unless hero.thumb}} sc-hero--bare{{/unless}}{{/unless}}" aria-labelledby="sc-hero-title" data-sc-section="hero">
   {{!-- "Girar en 3D" opens the viewer here; the piece itself is on the stage --}}
   <div class="sc-hero__stage" data-sc-stage>
     {{#unless backdrops.hero}}{{#if hero.thumb}}
@@ -61,7 +62,7 @@
     {{#each featured}}
     <li class="sc-slip" data-sc-fade>
       <a class="sc-slip__link" href="{{viewUri}}">
-        {{#if image}}<img class="sc-slip__plate" src="{{image.low}}" width="640" height="640" alt="" loading="lazy">{{/if}}
+        {{#if image}}<img class="sc-slip__plate" src="{{image.low}}" width="640" height="640" alt="" loading="lazy">{{else}}<span class="sc-slip__plate sc-ph" aria-hidden="true">{{monogram}}</span>{{/if}}
         <strong class="sc-slip__title">{{title}}</strong>
         <span class="sc-slip__rule" aria-hidden="true">· · · · · · · · · · · ·</span>
         {{#if collection}}<span>{{i18n "huaka.showcase.collection"}}: {{collection}}</span>{{/if}}
@@ -90,6 +91,8 @@
               sizes="(max-width: 700px) 50vw, 25vw" width="640" height="640" alt="{{title}}" loading="lazy">
           {{else if thumb}}
             <img src="{{thumb}}" width="320" height="320" alt="{{title}}" loading="lazy">
+          {{else}}
+            <span class="sc-ph" aria-hidden="true">{{monogram}}</span>
           {{/if}}
         </span>
         <span class="sc-tile__tag">
@@ -123,7 +126,7 @@
           {{#each scenes}}
           <li>
             <a href="{{uri}}">
-              {{#if image}}<img src="{{image.low}}" width="640" height="640" alt="" loading="lazy">{{else if thumb}}<img src="{{thumb}}" width="320" height="320" alt="" loading="lazy">{{/if}}
+              {{#if image}}<img src="{{image.low}}" width="640" height="640" alt="" loading="lazy">{{else if thumb}}<img src="{{thumb}}" width="320" height="320" alt="" loading="lazy">{{else}}<span class="sc-ph sc-ph--mark" aria-hidden="true"></span>{{/if}}
               <span>{{title}}</span>
             </a>
             <time datetime="{{dateString mtime "iso"}}">{{dateString mtime "date"}}</time>
