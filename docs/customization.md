@@ -141,11 +141,33 @@ parche ya estaba aplicado. Se ejecuta en:
 | `ecorpus/0004-login-link-language.patch` | `routes/auth/login.ts` | correo de enlace de acceso según el idioma | `acceptsLanguages(dicts` en `server/dist/routes/auth/login.js` |
 | `voyager/0004-i18n-story-panels.patch` | `MainView.ts`, `TourMenu.ts`, `ChromeView.ts` | títulos de los paneles del editor y "No tours available." | `translatePanels` en `voyager-story.js` y `noToursText` en `voyager-explorer.js` |
 | `voyager/0005-i18n-task-mode.patch` | `TaskBar.ts` | etiqueta del modo del editor ("Edit" → "Edición") | `getUILocalizedString(…ins.mode.getOptionText())` en `voyager-story.js` |
+| `ecorpus/0005-showcase.patch` | `routes/views/index.ts`, `navbar.hbs`, `en.yml`, `fr.yml` (sobre 0003) | engancha la vitrina pública: `/ui/` sin sesión y `/ui/vitrina/` | `renderShowcase` en `dist/routes/views/index.js` y `/ui/vitrina/` en `navbar.hbs` |
 
 Archivos propios que acompañan a esos parches: `utils/templates/helpers/pageTitle.ts` (+ test),
 `routes/auth/loginLinkLanguage.test.ts`, el bloque `huaka:` de `es.yml` (con `huaka.pageTitles`: título en
 inglés → español, admite `{{name}}`) y las claves nuevas de `branding/language/string.resources.es.json`.
 `scripts/check-es-locales.cjs` lee también las líneas agregadas por `patches/voyager/*.patch`.
+
+`scripts/apply-patches.sh --revert` deshace en orden inverso: `0005` se apoya en las líneas que agrega `0003` en
+`en.yml`/`fr.yml`.
+
+### Vitrina pública
+Sin sesión, `/ui/` (y por lo tanto `/`) muestra la vitrina; con sesión, `/ui/` sigue siendo el panel de trabajo y la
+barra superior suma "Vitrina" (`/ui/vitrina/`). La vitrina lista siempre lo que ve un visitante anónimo (solo escenas
+con acceso público de lectura), aunque quien la abra tenga sesión.
+- Código propio: `routes/views/showcase.ts` (+ test), `templates/showcase.hbs`, `templates/layouts/showcase.hbs`,
+  `branding/css/showcase.css` y `branding/js/showcase.js`. Los dos últimos se sirven desde `branding/`
+  (`ASSETS_DIR`): sin la carpeta montada la vitrina sale sin estilos, así que en producción hay que sincronizar
+  `branding/` junto con la imagen.
+- Textos: `huaka.showcase` en `es.yml`, `en.yml` y `fr.yml`. La carta de "Sobre el proyecto" (`aboutLetter`) es
+  provisional.
+- **Destacadas:** las escenas públicas con la etiqueta `destacada` (se agrega en la página de la escena, como
+  cualquier etiqueta). La portada de la vitrina usa la primera destacada con captura; sin destacadas, la más
+  reciente. `destacada` no aparece en "Colecciones"; las demás etiquetas sí.
+- Las fotos son las capturas de Voyager de cada escena (`scene-image-low|medium|high.jpg`); sin captura, la
+  miniatura. "Girar en 3D" abre el visor de la escena dentro de la portada.
+- Diseño trabajado con la skill `design-taste-frontend` (dirección "la página es el objeto": la ficha de inventario
+  de cada pieza).
 
 ### Copyright de las escenas
 Las escenas nuevas nacen con "(c) Huaka Digital, todos los derechos reservados" (`ecorpus/0002`). Para poner
