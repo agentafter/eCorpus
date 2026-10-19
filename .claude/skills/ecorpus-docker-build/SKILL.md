@@ -117,7 +117,7 @@ Una vez aplicado el cambio, el agente verifica en solo lectura:
 ssh huaka-agent prod health
 ssh huaka-agent prod logs 100
 ```
-y se revisa `https://patrimoniovirtual.huaka.digital` en el navegador. Si algo falla, la persona vuelve al tag anterior (`ghcr.io/agentafter/e-corpus:<hash-anterior>` o `ghcr.io/holusion/e-corpus:main`) y repite `docker compose up -d`.
+y se revisa `https://qullqa3d.com` en el navegador. Si algo falla, la persona vuelve al tag anterior (`ghcr.io/agentafter/e-corpus:<hash-anterior>` o `ghcr.io/holusion/e-corpus:main`) y repite `docker compose up -d`.
 
 ## Checklist de salida
 

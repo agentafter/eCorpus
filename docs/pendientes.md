@@ -12,6 +12,21 @@ propio, skill `upstream-patches`):
 - **Shell de eCorpus**: títulos de rutas que se agreguen en upstream después de 2026-10-17 (el helper
   `pageTitle` los deja en inglés hasta sumarlos a `huaka.pageTitles` en `es.yml`).
 
+## Cambio de marca y dominio: Qullqa 3D (`qullqa3d.com`)
+La marca pasa a **Qullqa 3D** (`BRAND` en `branding/branding.env` y `deploy/prod/branding.env`, texto de la vitrina).
+Staging conserva su dominio. Falta, a cargo de la persona:
+- **Logo:** los SVG de `branding/images/` (barra superior y visor) siguen siendo los de Huaka Digital; reemplazarlos
+  cuando exista el logo de Qullqa 3D.
+- **Cloudflare:** zona `qullqa3d.com`, registros proxied, SSL Full (strict) y un certificado de origen nuevo (el de
+  `huaka.digital` no cubre otra zona).
+- **CloudPanel:** sitio Reverse Proxy `qullqa3d.com` → `http://127.0.0.1:8000` con ese certificado; el sitio de
+  `patrimoniovirtual.huaka.digital` queda como redirección 301 a `https://qullqa3d.com$request_uri` (enlaces,
+  marcadores e iframes existentes siguen funcionando).
+- **`X-Frame-Options: SAMEORIGIN`:** lo agrega el vhost de CloudPanel (staging y producción, comprobado) a toda
+  respuesta, y bloquea incrustar escenas y enlaces privados en otros sitios. eCorpus ya maneja el encuadre por su
+  cuenta (`DENY` solo en `/auth`, `utils/headers.ts`): quitar esa línea del vhost.
+- Si el compose de producción define `HOSTNAME`, pasarlo a `qullqa3d.com` (identidad SMTP y correos de bienvenida).
+
 ## Copyright de escenas existentes
 Las escenas creadas antes de `patches/ecorpus/0002` dicen "(c) Holusion SAS, all rights reserved". Corregir
 cada una en el editor (panel Collection, campo Copyright): en staging, Kero; en producción, revisar el
