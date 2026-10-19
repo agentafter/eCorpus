@@ -3,6 +3,9 @@ Huaka: activa el español ("es") como idioma de la interfaz del shell de eCorpus
 Upstream fija la lista de idiomas en varios puntos (solo en/fr). Este parche
 agrega "es" en cada uno; los archivos nuevos (templates/locales/es.yml,
 templates/emails/*_es.hbs) viven en el fork como archivos normales.
+Además, el español va primero en `dicts`: es el idioma de quien no declara ninguno (Accept-Language), incluidos los
+robots de buscadores y de vistas previas de enlaces; y los diccionarios se cargan al arrancar (`preload`), para que
+la primera página en un idioma no salga en inglés.
 Detalle por archivo: docs/customization.md §3.
 
 Generado sobre eCorpus upstream d5fca779d6db75a4bdb766c7e8ce6848f6346955 (2026-10-15).
@@ -74,15 +77,24 @@ index 8f917d72..a66f381a 100644
  
  
 diff --git a/source/server/utils/templates/index.ts b/source/server/utils/templates/index.ts
-index 21b17f5b..7c3aea87 100644
 --- a/source/server/utils/templates/index.ts
 +++ b/source/server/utils/templates/index.ts
-@@ -6,7 +6,7 @@ import i18next, { i18n, TFunction } from "i18next";
+@@ -6,7 +6,8 @@
  import Backend from "i18next-fs-backend";
  import { staticHelpers } from "./helpers/index.js";
  
 -export const dicts = ["fr", "en"] as const;
-+export const dicts = ["fr", "en", "es"] as const;
++//Huaka: Spanish first, so that it is the language of a visitor (or a crawler) that states no preference
++export const dicts = ["es", "fr", "en"] as const;
  export const locales = [...dicts, "cimode"];
  export type AcceptedLocales = typeof dicts[number] | "cimode";
  
+@@ -48,6 +49,8 @@
+         loadPath: path.join(this.#dir, "locales/{{lng}}.yml"),
+       },
+       load: 'languageOnly',
++      //Huaka: load every dictionary at start, else the first page in a language renders in the fallback (English)
++      preload: [...dicts],
+       fallbackLng: 'en',
+       saveMissing: true,
+       saveMissingTo: "current",

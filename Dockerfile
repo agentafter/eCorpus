@@ -38,6 +38,10 @@ RUN grep -qF "renderShowcase" /app/source/server/dist/routes/views/index.js \
   && grep -qF "/ui/vitrina/" /app/source/server/templates/partials/navbar.hbs \
   || { echo "ERROR: Huaka public showcase missing from server build" >&2; exit 1; }
 RUN grep -qF "shareFilesRouter" /app/source/server/dist/routes/index.js   && grep -qF "huakaShareLinks" /app/source/server/templates/scene/settings.hbs   || { echo "ERROR: Huaka share links missing from server build" >&2; exit 1; }
+RUN grep -qF "useSeoDefaults" /app/source/server/dist/routes/index.js \
+  && grep -qF "{{metaTags}}" /app/source/server/templates/partials/head.hbs \
+  && grep -qF '["es", "fr", "en"]' /app/source/server/dist/utils/templates/index.js \
+  || { echo "ERROR: Huaka meta tags or Spanish default language missing from server build" >&2; exit 1; }
 # outputs files in /app/source/server/dist
 
 COPY source/voyager /app/source/voyager
