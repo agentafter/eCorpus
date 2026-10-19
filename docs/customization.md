@@ -143,6 +143,7 @@ parche ya estaba aplicado. Se ejecuta en:
 | `voyager/0005-i18n-task-mode.patch` | `TaskBar.ts` | etiqueta del modo del editor ("Edit" → "Edición") | `getUILocalizedString(…ins.mode.getOptionText())` en `voyager-story.js` |
 | `ecorpus/0005-showcase.patch` | `routes/views/index.ts`, `navbar.hbs`, `en.yml`, `fr.yml` (sobre 0003) | engancha la vitrina pública: `/ui/` sin sesión y `/ui/vitrina/` | `renderShowcase` en `dist/routes/views/index.js` y `/ui/vitrina/` en `navbar.hbs` |
 | `ecorpus/0006-share-links.patch` | `routes/index.ts`, `routes/views/index.ts`, `scene/settings.hbs`, `en.yml`, `fr.yml` (sobre 0003 y 0005) | engancha los enlaces privados a una escena | `shareFilesRouter` en `dist/routes/index.js` y `huakaShareLinks` en `settings.hbs` |
+| `ecorpus/0007-meta-tags.patch` | `head.hbs`, `helpers/index.ts`, `routes/views/index.ts`, `routes/index.ts`, `en.yml`, `fr.yml` (sobre 0001–0006) | metatags para buscadores y vistas previas de enlaces | `useSeoDefaults` en `dist/routes/index.js` y `{{metaTags}}` en `head.hbs` |
 
 Archivos propios que acompañan a esos parches: `utils/templates/helpers/pageTitle.ts` (+ test),
 `routes/auth/loginLinkLanguage.test.ts`, el bloque `huaka:` de `es.yml` (con `huaka.pageTitles`: título en
@@ -197,6 +198,25 @@ página de configuración, sección **Enlaces privados** (solo administradores d
   no-store` (Cloudflare no guarda copias tras revocar) y `X-Robots-Tag: noindex`.
 - El token viaja en la URL: los registros del proxy (CloudPanel/nginx) y de Cloudflare la guardan. Quien tenga
   acceso a esos registros puede abrir la escena; revocar el enlace lo corta.
+
+### Metatags (buscadores y vistas previas de enlaces)
+Lo que leen Google y las vistas previas de WhatsApp, Facebook, LinkedIn, etc. Lo arma `utils/seo.ts` y lo escribe el
+helper `{{metaTags}}` en `<head>` (`ecorpus/0007`): `description`, `canonical`, `hreflang` por idioma, Open Graph
+(`og:title`, `og:description`, `og:image`, `og:url`, `og:locale`…), `twitter:card` y, en las escenas públicas, datos
+estructurados JSON-LD (schema.org `3DModel`).
+- **Idioma:** quien no declara idioma (los robots no lo hacen) recibe el sitio en español (`ecorpus/0001`: el español
+  va primero en `dicts`). Con `?lang=` o la preferencia del navegador, su idioma.
+- **Página o visor de una escena:** título de la ficha en el idioma de la página (panel Colección del editor), la
+  **introducción** de la ficha como descripción (si está vacía: "<título>, de la colección <colección>: pieza del
+  patrimonio cultural en 3D…") y la captura `scene-image-medium.jpg` (1280 px). Sin captura no hay imagen: nunca la de
+  otra pieza. Para mejorar cómo se ve una pieza al compartirla: escribir su introducción y generar su captura.
+- **Vitrina y demás páginas:** el nombre del sitio, el lema (`huaka.showcase.heroLead`) y la captura de una pieza:
+  la más reciente con captura entre las `destacada`, luego las `portada`, luego todas las públicas (se recalcula cada
+  10 minutos; no cambia en cada visita como la portada). `/ui/` y `/ui/vitrina/` declaran la misma URL canónica.
+- **Enlaces privados:** muestran título e imagen de la pieza a quien recibe el enlace (la imagen se lee por el mismo
+  enlace), con `noindex` y sin JSON-LD.
+- Probar una URL: [Sharing Debugger de Facebook](https://developers.facebook.com/tools/debug/) (también renueva la
+  caché de la vista previa, que Facebook y WhatsApp guardan días) y Post Inspector de LinkedIn.
 
 ### Copyright de las escenas
 Las escenas nuevas nacen con "(c) Huaka Digital, todos los derechos reservados" (`ecorpus/0002`). Para poner
