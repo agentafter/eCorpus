@@ -5,7 +5,7 @@ Este archivo guía a cualquier agente de IA (Claude Code, Cursor, Devin, etc.) q
 - **Fork**: `github.com/agentafter/eCorpus` (org donde vivirá el fork).
 - **Upstream eCorpus**: https://github.com/Holusion/eCorpus — Apache-2.0 — https://ecorpus.eu/en/doc/
 - **Upstream Voyager** (submódulo): eCorpus usa `source/voyager` como **submódulo git recursivo**, apuntando al fork de Holusion de DPO-Voyager (`https://github.com/Holusion/dpo-voyager.git`), que a su vez desciende de `https://github.com/Smithsonian/dpo-voyager` — también Apache-2.0, pero con `3RD_PARTY_LICENSES.txt` y `ATTRIBUTIONS.md` propios.
-- **Producción**: `qullqa3d.com` (marca **Qullqa 3D**; el dominio anterior `patrimoniovirtual.huaka.digital` redirige con 301), servida vía Docker en un servidor Hetzner con CloudPanel (reverse proxy) y Cloudflare delante (proxied, SSL Full-strict).
+- **Producción**: `qullqa3d.com` (nombre **Qullqa 3D**; logo y organización: Huaka Digital), servida vía Docker en un servidor Hetzner con CloudPanel (reverse proxy) y Cloudflare delante (proxied, SSL Full-strict).
 - **Modo de trabajo del agente**: **en local** (clon del fork, con submódulos) y con acceso al servidor **solo por SSH con una llave restringida** (`huaka-agent`, sección 14.2). Las skills del proyecto están en `.claude/skills/`; las reglas de permisos de Claude Code en `.claude/settings.json`.
 
 **No** es un dato menor que haya dos códigos upstream distintos (eCorpus y Voyager) con licencias separadas: cualquier tarea de branding/tipografía/idioma puede tocar uno, otro, o ambos, y cada uno tiene su propia estrategia de sincronización.

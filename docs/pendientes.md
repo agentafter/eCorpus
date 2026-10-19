@@ -12,19 +12,20 @@ propio, skill `upstream-patches`):
 - **Shell de eCorpus**: títulos de rutas que se agreguen en upstream después de 2026-10-17 (el helper
   `pageTitle` los deja en inglés hasta sumarlos a `huaka.pageTitles` en `es.yml`).
 
-## Cambio de marca y dominio: Qullqa 3D (`qullqa3d.com`)
-La marca pasa a **Qullqa 3D** (`BRAND` en `branding/branding.env` y `deploy/prod/branding.env`, texto de la vitrina).
-Staging conserva su dominio. Falta, a cargo de la persona:
-- **Logo:** los SVG de `branding/images/` (barra superior y visor) siguen siendo los de Huaka Digital; reemplazarlos
-  cuando exista el logo de Qullqa 3D.
+## Cambio de nombre y dominio: Qullqa 3D (`qullqa3d.com`)
+El nombre pasa a **Qullqa 3D** (`BRAND` en `branding/branding.env` y `deploy/prod/branding.env`, texto de la
+vitrina). El logo sigue siendo el de Huaka Digital, la organización detrás del proyecto. Staging conserva su dominio
+y el dominio anterior de producción no se redirige (tenía un solo usuario, avisado por correo). Falta, a cargo de la
+persona:
 - **Cloudflare:** zona `qullqa3d.com`, registros proxied, SSL Full (strict) y un certificado de origen nuevo (el de
   `huaka.digital` no cubre otra zona).
-- **CloudPanel:** sitio Reverse Proxy `qullqa3d.com` → `http://127.0.0.1:8000` con ese certificado; el sitio de
-  `patrimoniovirtual.huaka.digital` queda como redirección 301 a `https://qullqa3d.com$request_uri` (enlaces,
-  marcadores e iframes existentes siguen funcionando).
-- **`X-Frame-Options: SAMEORIGIN`:** lo agrega el vhost de CloudPanel (staging y producción, comprobado) a toda
-  respuesta, y bloquea incrustar escenas y enlaces privados en otros sitios. eCorpus ya maneja el encuadre por su
-  cuenta (`DENY` solo en `/auth`, `utils/headers.ts`): quitar esa línea del vhost.
+- **CloudPanel:** sitio Reverse Proxy `qullqa3d.com` → `http://127.0.0.1:8000` con ese certificado.
+- **`X-Frame-Options: SAMEORIGIN`:** lo agrega `include /etc/nginx/global_settings;` del vhost (staging y producción,
+  comprobado) a toda respuesta, y bloquea incrustar escenas y enlaces privados en otros sitios. eCorpus ya maneja el
+  encuadre (`DENY` solo en `/auth`, `utils/headers.ts`) y manda sus propios `nosniff`, `Referrer-Policy` y HSTS.
+  Arreglo: repetir `add_header Cache-Control no-transform;` dentro de `location @reverse_proxy { … }`; en nginx un
+  `add_header` en la location corta la herencia de los del nivel `server`, así que las respuestas de eCorpus dejan
+  de llevar los de `global_settings` (sin tocar ese archivo, que es de todos los sitios).
 - Si el compose de producción define `HOSTNAME`, pasarlo a `qullqa3d.com` (identidad SMTP y correos de bienvenida).
 
 ## Copyright de escenas existentes
