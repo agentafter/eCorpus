@@ -12,6 +12,22 @@ propio, skill `upstream-patches`):
 - **Shell de eCorpus**: títulos de rutas que se agreguen en upstream después de 2026-10-17 (el helper
   `pageTitle` los deja en inglés hasta sumarlos a `huaka.pageTitles` en `es.yml`).
 
+## Cambio de nombre y dominio: Qullqa 3D (`qullqa3d.com`)
+El nombre pasa a **Qullqa 3D** (`BRAND` en `branding/branding.env` y `deploy/prod/branding.env`, texto de la
+vitrina). El logo sigue siendo el de Huaka Digital, la organización detrás del proyecto. Staging conserva su dominio
+y el dominio anterior de producción no se redirige (tenía un solo usuario, avisado por correo). Falta, a cargo de la
+persona:
+- **Cloudflare:** zona `qullqa3d.com`, registros proxied, SSL Full (strict) y un certificado de origen nuevo (el de
+  `huaka.digital` no cubre otra zona).
+- **CloudPanel:** sitio Reverse Proxy `qullqa3d.com` → `http://127.0.0.1:8000` con ese certificado.
+- **`X-Frame-Options: SAMEORIGIN`:** lo agrega `include /etc/nginx/global_settings;` del vhost (staging y producción,
+  comprobado) a toda respuesta, y bloquea incrustar escenas y enlaces privados en otros sitios. eCorpus ya maneja el
+  encuadre (`DENY` solo en `/auth`, `utils/headers.ts`) y manda sus propios `nosniff`, `Referrer-Policy` y HSTS.
+  Arreglo: repetir `add_header Cache-Control no-transform;` dentro de `location @reverse_proxy { … }`; en nginx un
+  `add_header` en la location corta la herencia de los del nivel `server`, así que las respuestas de eCorpus dejan
+  de llevar los de `global_settings` (sin tocar ese archivo, que es de todos los sitios).
+- Si el compose de producción define `HOSTNAME`, pasarlo a `qullqa3d.com` (identidad SMTP y correos de bienvenida).
+
 ## Copyright de escenas existentes
 Las escenas creadas antes de `patches/ecorpus/0002` dicen "(c) Holusion SAS, all rights reserved". Corregir
 cada una en el editor (panel Collection, campo Copyright): en staging, Kero; en producción, revisar el

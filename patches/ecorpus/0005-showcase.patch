@@ -94,7 +94,7 @@ diff --git a/source/server/templates/locales/en.yml b/source/server/templates/lo
 +    allCollections: See all collections
 +    aboutLabel: About the project
 +    aboutLetter: |
-+      <p>Patrimonio Virtual brings together cultural heritage pieces digitized in three dimensions, so that anyone can see them up close, from anywhere.</p>
++      <p>Qullqa 3D brings together cultural heritage pieces digitized in three dimensions, so that anyone can see them up close, from anywhere.</p>
 +      <p>Each model reproduces the shape and colour of the real piece. In the viewer you can turn it, zoom in and read the annotations of those who study it.</p>
 +      <p>The archive grows with every collection that is digitized. If your institution holds pieces it would like to share this way, write to us.</p>
 +    aboutSign: Huaka Digital
@@ -131,7 +131,7 @@ diff --git a/source/server/templates/locales/fr.yml b/source/server/templates/lo
 +    allCollections: Voir toutes les collections
 +    aboutLabel: À propos du projet
 +    aboutLetter: |
-+      <p>Patrimonio Virtual réunit des pièces du patrimoine culturel numérisées en trois dimensions, pour que chacun puisse les voir de près, où qu'il soit.</p>
++      <p>Qullqa 3D réunit des pièces du patrimoine culturel numérisées en trois dimensions, pour que chacun puisse les voir de près, où qu'il soit.</p>
 +      <p>Chaque modèle reproduit la forme et la couleur de la pièce réelle. Dans la visionneuse, on peut la tourner, s'en approcher et lire les annotations de ceux qui l'étudient.</p>
 +      <p>L'archive s'enrichit à chaque collection numérisée. Si votre institution conserve des pièces qu'elle souhaite partager ainsi, écrivez-nous.</p>
 +    aboutSign: Huaka Digital

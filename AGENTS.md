@@ -5,7 +5,7 @@ Este archivo guía a cualquier agente de IA (Claude Code, Cursor, Devin, etc.) q
 - **Fork**: `github.com/agentafter/eCorpus` (org donde vivirá el fork).
 - **Upstream eCorpus**: https://github.com/Holusion/eCorpus — Apache-2.0 — https://ecorpus.eu/en/doc/
 - **Upstream Voyager** (submódulo): eCorpus usa `source/voyager` como **submódulo git recursivo**, apuntando al fork de Holusion de DPO-Voyager (`https://github.com/Holusion/dpo-voyager.git`), que a su vez desciende de `https://github.com/Smithsonian/dpo-voyager` — también Apache-2.0, pero con `3RD_PARTY_LICENSES.txt` y `ATTRIBUTIONS.md` propios.
-- **Producción**: `patrimoniovirtual.huaka.digital`, servida vía Docker en un servidor Hetzner con CloudPanel (reverse proxy) y Cloudflare delante (proxied, SSL Full-strict).
+- **Producción**: `qullqa3d.com` (nombre **Qullqa 3D**; logo y organización: Huaka Digital), servida vía Docker en un servidor Hetzner con CloudPanel (reverse proxy) y Cloudflare delante (proxied, SSL Full-strict).
 - **Modo de trabajo del agente**: **en local** (clon del fork, con submódulos) y con acceso al servidor **solo por SSH con una llave restringida** (`huaka-agent`, sección 14.2). Las skills del proyecto están en `.claude/skills/`; las reglas de permisos de Claude Code en `.claude/settings.json`.
 
 **No** es un dato menor que haya dos códigos upstream distintos (eCorpus y Voyager) con licencias separadas: cualquier tarea de branding/tipografía/idioma puede tocar uno, otro, o ambos, y cada uno tiene su propia estrategia de sincronización.
@@ -342,7 +342,7 @@ Existe un entorno de staging en el **mismo servidor Hetzner** que producción, p
 
 | | Producción | Staging |
 |---|---|---|
-| Dominio | `patrimoniovirtual.huaka.digital` | `staging-patrimoniovirtual.huaka.digital` |
+| Dominio | `qullqa3d.com` | `staging-patrimoniovirtual.huaka.digital` |
 | Carpeta en el servidor | `~/ecorpus/` | `~/ecorpus-staging/` |
 | Nombre de proyecto Docker Compose | `eCorpus` | `eCorpus-staging` |
 | Puerto interno (`127.0.0.1:PUERTO:8000`) | `8000` | `8001` |
@@ -471,7 +471,7 @@ Comandos que requieren confirmación explícita antes de ejecutarse: `git push`,
                                     ghcr.io/agentafter/e-corpus:latest
                                                           │
                                                           ▼
-                              Despliegue en Hetzner (patrimoniovirtual.huaka.digital)
+                              Despliegue en Hetzner (qullqa3d.com)
 ```
 
 El objetivo **no** es un fork congelado para siempre, sino un despliegue distintivo que sigue pudiendo incorporar mejoras de eCorpus y de Voyager con el mínimo conflicto posible.
