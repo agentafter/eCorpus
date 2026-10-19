@@ -3,6 +3,7 @@ import express, { NextFunction, Request, Response, Router } from "express";
 import ShareLinks, { MAX_NAME_LENGTH, ShareLink } from "../utils/shareLinks.js";
 import { getHost, getUser, getVfs, policy, useTemplateProperties } from "../utils/locals.js";
 import { BadRequestError, NotFoundError } from "../utils/errors.js";
+import { sceneSeoFor } from "../utils/seo.js";
 import wrap from "../utils/wrapAsync.js";
 import handleGetDocument from "./scenes/scene/files/get/document.js";
 import handleGetFile from "./scenes/scene/files/get/file.js";
@@ -77,11 +78,21 @@ shareUiRouter.post("/escena/:scene/:id/revocar", policy({ access: "admin" }), wr
 }));
 
 shareUiRouter.get("/:token", noStore, resolveToken, wrap(async (req, res) => {
+  const host = getHost(req);
+  const scenePath = `/compartido/${req.params.token}/`;
+  //The preview of a link sent by WhatsApp or e-mail shows the piece (to whoever already has the link); its
+  //capture is read through the link too, since the scene is private. Never indexed
+  const seo = await sceneSeoFor(req, res, await getVfs(req).getScene(req.params.scene), {
+    filesUrl: new URL(scenePath, host).toString(),
+    url: new URL(`/ui/compartido/${req.params.token}`, host).toString(),
+    noindex: true,
+  });
   res.render("scene/explorer", {
     title: `${req.params.scene}: Explorer`,
     layout: "viewer",
     scene: req.params.scene,
-    scenePath: `/compartido/${req.params.token}/`,
+    scenePath,
+    seo,
     referrer: "",
   });
 }));

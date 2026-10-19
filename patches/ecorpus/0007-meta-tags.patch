@@ -1,0 +1,131 @@
+Huaka: metatags para buscadores y vistas previas de enlaces (descripción, Open Graph, Twitter, JSON-LD).
+
+El código es propio (utils/seo.ts, utils/templates/helpers/metaTags.ts, tests). Este parche solo los engancha:
+- partials/head.hbs: {{metaTags}} en lugar del og:image de upstream (vacío en la mayoría de las páginas).
+- helpers/index.ts: registra el helper.
+- routes/views/index.ts: la página de la escena y el visor pasan su `seo` (título, introducción y captura de la
+  escena); el título de la página de la escena deja de repetir "eCorpus"; el visor da la miniatura con URL absoluta
+  (upstream la daba relativa).
+- routes/index.ts: middleware useSeoDefaults en /ui (URL de la página e imagen del sitio) y la vitrina en el sitemap.
+- en.yml/fr.yml: textos huaka.meta. Se genera con 0001–0006 aplicados.
+
+Generado sobre eCorpus upstream d5fca779d6db75a4bdb766c7e8ce6848f6346955 (2026-10-19).
+
+diff --git a/source/server/routes/index.ts b/source/server/routes/index.ts
+--- a/source/server/routes/index.ts
++++ b/source/server/routes/index.ts
+@@ -16,6 +16,7 @@
+ 
+ import viewsRoutes from "./views/index.js";
+ import { shareFilesRouter, shareUiRouter } from "./shareLinks.js"; // Huaka
++import { useSeoDefaults } from "../utils/seo.js"; // Huaka
+ import adminRoutes from "./admin/index.js";
+ import authRoutes from "./auth/index.js";
+ import historyRoutes from "./history/index.js";
+@@ -153,7 +154,7 @@
+       res.write(`<?xml version="1.0" encoding="UTF-8"?>\n`);
+       res.write(`<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n`);
+ 
+-      for(const p of ["/ui/scenes/", "/ui/tags/"]){
++      for(const p of ["/ui/vitrina/", "/ui/scenes/", "/ui/tags/"]){ // Huaka: the public showcase
+         res.write(`  <url><loc>${xmlEscape(new URL(p, host).toString())}</loc></url>\n`);
+       }
+ 
+@@ -219,6 +220,7 @@
+   app.use("/dist", express.static(locals.config.get("dist_dir")));
+ 
+   app.use("/ui/compartido", shareUiRouter); // Huaka: secret links to a private scene
++  app.use("/ui", useSeoDefaults); // Huaka: page URL and link-preview image for the meta tags (utils/seo.ts)
+   app.use("/ui", viewsRoutes);
+ 
+   //Privilege-protected routes
+diff --git a/source/server/routes/views/index.ts b/source/server/routes/views/index.ts
+--- a/source/server/routes/views/index.ts
++++ b/source/server/routes/views/index.ts
+@@ -13,6 +13,7 @@
+ import { aggregateHistory } from "./historyAggregate.js";
+ import { renderShowcase } from "./showcase.js"; // Huaka
+ import { listShareLinks } from "../shareLinks.js"; // Huaka
++import { sceneSeoFor } from "../../utils/seo.js"; // Huaka
+ import { createLogger } from "../../utils/log/index.js";
+ 
+ 
+@@ -667,7 +668,8 @@
+   let onboarding: boolean = scene.mtime.valueOf() < scene.ctime.valueOf()+2000  && scene.access === "admin";
+   res.render("scene/scene", {
+     layout: "scene",
+-    title: `eCorpus: ${scene.name}`,
++    title: scene.name, // Huaka: the brand already follows it in <title>
++    seo: await sceneSeoFor(req, res, scene), // Huaka: description, Open Graph, JSON-LD
+     displayedTitle,
+     displayedIntro,
+     scene,
+@@ -719,7 +721,8 @@
+   const requester = getUser(req);
+   let vfs = getVfs(req);
+   const sceneData = await vfs.getScene(scene, requester?.uid);
+-  let thumb = sceneData.thumb ?? new URL(`/scenes/${encodeURIComponent(scene)}/scene-image-thumb.jpg`, host).toString();
++  //Huaka: sceneData.thumb is a file name; it gave a relative og:image
++  let thumb = new URL(`/scenes/${encodeURIComponent(scene)}/${encodeURIComponent(sceneData.thumb ?? "scene-image-thumb.jpg")}`, host).toString();
+   if (sceneData.type == "html") {
+     return res.redirect(302, `/scenes/${scene}/index.html`);
+   } else {
+@@ -740,6 +743,7 @@
+       layout: "viewer",
+       scene,
+       thumb: thumb,
++      seo: await sceneSeoFor(req, res, sceneData), // Huaka
+       referrer: referrer.toString(),
+       script
+     });
+diff --git a/source/server/templates/partials/head.hbs b/source/server/templates/partials/head.hbs
+--- a/source/server/templates/partials/head.hbs
++++ b/source/server/templates/partials/head.hbs
+@@ -1,9 +1,7 @@
+ <meta charset="utf-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+ <meta name="theme-color" content="#071922">
+-<meta property="og:image" content="{{thumb}}">
+-<meta property="og:image:width" content="320">
+-<meta property="og:image:height" content="320">
++{{metaTags}}
+ 
+ 
+ <!-- Apple "add to home screen" meta -->
+diff --git a/source/server/utils/templates/helpers/index.ts b/source/server/utils/templates/helpers/index.ts
+--- a/source/server/utils/templates/helpers/index.ts
++++ b/source/server/utils/templates/helpers/index.ts
+@@ -56,6 +56,7 @@
+ import { encodeURIComponentHelper, encodeURIHelper } from "./encoding.js";
+ import { userLevel, accessLevel } from "./levels.js";
+ import { pageTitle } from "./pageTitle.js"; // Huaka
++import { metaTags } from "./metaTags.js"; // Huaka
+ 
+ export { navLink } from "./navLink.js";
+ export { i18nHelper } from "./i18n.js";
+@@ -78,4 +79,5 @@
+   userLevel,
+   accessLevel,
+   pageTitle, // Huaka: translates route titles (patches/ecorpus/0003)
++  metaTags, // Huaka: description, Open Graph, JSON-LD (patches/ecorpus/0007)
+ };
+diff --git a/source/server/templates/locales/en.yml b/source/server/templates/locales/en.yml
+--- a/source/server/templates/locales/en.yml
++++ b/source/server/templates/locales/en.yml
+@@ -505,3 +505,6 @@
+     empty: There are no public pieces in the archive yet.
+   # Page titles, translated by the pageTitle helper (none needed in English)
+   pageTitles: {}
++  meta:
++    scene: "{{title}}: a cultural heritage piece in 3D, on {{brand}}."
++    sceneInCollection: "{{title}}, from the {{collection}} collection: a cultural heritage piece in 3D, on {{brand}}."
+diff --git a/source/server/templates/locales/fr.yml b/source/server/templates/locales/fr.yml
+--- a/source/server/templates/locales/fr.yml
++++ b/source/server/templates/locales/fr.yml
+@@ -520,3 +520,6 @@
+     writeUs: Écrivez-nous
+     empty: L'archive ne contient pas encore de pièce publique.
+   pageTitles: {}
++  meta:
++    scene: "{{title}} : pièce du patrimoine culturel en 3D, sur {{brand}}."
++    sceneInCollection: "{{title}}, de la collection {{collection}} : pièce du patrimoine culturel en 3D, sur {{brand}}."

@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
-import { getLocals, getVfs } from "../../utils/locals.js";
+import { getHost, getLocals, getVfs } from "../../utils/locals.js";
+import type { Seo } from "../../utils/seo.js";
 import { Scene } from "../../vfs/types.js";
 
 /**
@@ -181,9 +182,19 @@ export async function renderShowcase(req: Request, res: Response) {
     collections: collections.flatMap(c => c.scenes),
   });
 
+  //Link previews: a capture that stays the same between crawls (the hero is random), and one URL for /ui/ and /ui/vitrina/
+  const shareCard = [...featured.scenes, ...heroTagged.scenes, ...recent].find(c => c.image);
+  const host = getHost(req);
+  const seo: Seo = {
+    title: res.locals.brand || "eCorpus",
+    url: new URL("/ui/vitrina/", host).toString(),
+    ...(shareCard?.image ? { image: new URL(shareCard.image.medium, host).toString() } : {}),
+  };
+
   res.render("showcase", {
     layout: "showcase",
     title: "Showcase",
+    seo,
     hero,
     //JSON for a <script type="application/json">: "<" escaped so that no "</script>" can close it
     heroAlternatives: heroAlternatives.length ? JSON.stringify(heroAlternatives).replace(/</g, "\\u003c") : null,

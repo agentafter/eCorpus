@@ -510,6 +510,10 @@ huaka:
     aboutSign: Huaka Digital
     writeUs: Escríbanos
     empty: Todavía no hay piezas públicas en el archivo.
+  # Descripción de una escena sin introducción, para buscadores y vistas previas de enlaces (utils/seo.ts)
+  meta:
+    scene: "{{title}}: pieza del patrimonio cultural en 3D, en {{brand}}."
+    sceneInCollection: "{{title}}, de la colección {{collection}}: pieza del patrimonio cultural en 3D, en {{brand}}."
   # Títulos de pestaña: los traduce el helper pageTitle (utils/templates/helpers/pageTitle.ts).
   # Clave = título en inglés que pasa la ruta; {{name}}, {{id}} y {{type}} son partes variables.
   pageTitles:
@@ -538,7 +542,6 @@ huaka:
     "Tasks — Administration": Tareas — Administración
     "Standalone Story": Editor independiente
     "eCorpus: History of {{name}}": "Historial de {{name}}"
-    "eCorpus: {{name}}": "{{name}}"
     "Tasks — {{name}}": "Tareas — {{name}}"
     "Settings — {{name}}": "Configuración — {{name}}"
     "{{name}}: Explorer": "{{name}}: Visor"
