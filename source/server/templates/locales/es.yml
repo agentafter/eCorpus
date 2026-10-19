@@ -481,11 +481,11 @@ huaka:
     embed: Código para incrustar
     open: Abrir el enlace
     back: Volver a la configuración
-  # Vitrina pública (templates/showcase.hbs). Texto provisional en aboutLetter: lo revisa Huaka Digital.
+  # Vitrina pública (templates/showcase.hbs).
   showcase:
     nav: Vitrina
     dashboard: Mi panel
-    heroLead: Piezas del patrimonio cultural en 3D, abiertas a todos.
+    heroLead: Patrimonio cultural en 3D y metadatos. Acceso abierto.
     piece: Pieza
     collection: Colección
     updated: Actualizada
@@ -504,9 +504,10 @@ huaka:
     allCollections: Ver todas las colecciones
     aboutLabel: Sobre el proyecto
     aboutLetter: |
-      <p>Qullqa 3D reúne piezas del patrimonio cultural digitalizadas en tres dimensiones, para que cualquiera pueda verlas de cerca, desde cualquier lugar.</p>
-      <p>Cada modelo reproduce la forma y el color de la pieza real. En el visor se puede girar, acercar y leer las anotaciones de quienes la estudian.</p>
-      <p>El archivo crece con cada colección que se digitaliza. Si su institución custodia piezas que quiere compartir de esta forma, escríbanos.</p>
+      <p>Qullqa 3D es una iniciativa de Huaka Digital para el desarrollo de la ciencia abierta en arqueología desde el 3D.</p>
+      <p>Reúne piezas del patrimonio cultural digitalizadas en tres dimensiones. Cada modelo 3D se publica con sus metadatos y paradatos. Estos tres elementos forman lo que llamamos un <em>memory twin</em>: una copia digital exacta de la pieza con su información contextual.</p>
+      <p>En el visor se puede girar cada pieza, acercarse y leer las anotaciones de quienes la estudian.</p>
+      <p>Además de custodiar los modelos 3D de las instituciones, ofrecemos el servicio de digitalización. Si su institución quiere compartir sus piezas de esta forma, escríbanos.</p>
     aboutSign: Huaka Digital
     writeUs: Escríbanos
     empty: Todavía no hay piezas públicas en el archivo.
