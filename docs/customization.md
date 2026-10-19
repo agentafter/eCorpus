@@ -142,6 +142,7 @@ parche ya estaba aplicado. Se ejecuta en:
 | `voyager/0004-i18n-story-panels.patch` | `MainView.ts`, `TourMenu.ts`, `ChromeView.ts` | títulos de los paneles del editor y "No tours available." | `translatePanels` en `voyager-story.js` y `noToursText` en `voyager-explorer.js` |
 | `voyager/0005-i18n-task-mode.patch` | `TaskBar.ts` | etiqueta del modo del editor ("Edit" → "Edición") | `getUILocalizedString(…ins.mode.getOptionText())` en `voyager-story.js` |
 | `ecorpus/0005-showcase.patch` | `routes/views/index.ts`, `navbar.hbs`, `en.yml`, `fr.yml` (sobre 0003) | engancha la vitrina pública: `/ui/` sin sesión y `/ui/vitrina/` | `renderShowcase` en `dist/routes/views/index.js` y `/ui/vitrina/` en `navbar.hbs` |
+| `ecorpus/0006-share-links.patch` | `routes/index.ts`, `routes/views/index.ts`, `scene/settings.hbs`, `en.yml`, `fr.yml` (sobre 0003 y 0005) | engancha los enlaces privados a una escena | `shareFilesRouter` en `dist/routes/index.js` y `huakaShareLinks` en `settings.hbs` |
 
 Archivos propios que acompañan a esos parches: `utils/templates/helpers/pageTitle.ts` (+ test),
 `routes/auth/loginLinkLanguage.test.ts`, el bloque `huaka:` de `es.yml` (con `huaka.pageTitles`: título en
@@ -180,6 +181,22 @@ con acceso público de lectura), aunque quien la abra tenga sesión.
   aparece en la vitrina con su nombre sobre un fondo azul y no entra en el escenario de fondo. "Ver en 3D" abre el visor de la escena dentro de la portada.
 - Diseño trabajado con la skill `design-taste-frontend` (dirección "la página es el objeto": la ficha de inventario
   de cada pieza).
+
+### Enlaces privados (escenas no listadas)
+Para compartir una escena sin publicarla: dejarla **privada** (acceso público "ninguno") y crear un enlace en su
+página de configuración, sección **Enlaces privados** (solo administradores de la escena).
+- El enlace (`/ui/compartido/ecs_…`) abre el visor 3D sin cuenta; con `?embed=1` se incrusta en otro sitio (la página
+  de creación da el código del iframe). Al ser privada, la escena no aparece en la vitrina, la búsqueda, las
+  colecciones ni el sitemap.
+- Se muestra **una sola vez** al crearlo: solo se guarda su hash (como los tokens de la API). Si se pierde, se crea
+  otro y se revoca el anterior. No vence: dura hasta que se revoca, y deja de funcionar al instante.
+- Varios enlaces por escena, con nombre (uno por destinatario) y fecha de último uso.
+- Código propio: `utils/shareLinks.ts` (tabla `huaka_share_links`, creada por ese módulo si no existe, fuera de las
+  migraciones numeradas de upstream), `routes/shareLinks.ts`, `partials/huakaShareLinks.hbs`, `share/created.hbs` y
+  `routes/shareLinks.test.ts`. Solo lectura (GET), solo los archivos de esa escena, `Cache-Control: private,
+  no-store` (Cloudflare no guarda copias tras revocar) y `X-Robots-Tag: noindex`.
+- El token viaja en la URL: los registros del proxy (CloudPanel/nginx) y de Cloudflare la guardan. Quien tenga
+  acceso a esos registros puede abrir la escena; revocar el enlace lo corta.
 
 ### Copyright de las escenas
 Las escenas nuevas nacen con "(c) Huaka Digital, todos los derechos reservados" (`ecorpus/0002`). Para poner

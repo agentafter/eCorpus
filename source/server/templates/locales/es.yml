@@ -457,6 +457,30 @@ huaka:
   requestInProgress: solicitud en curso
   sceneTypeLabel: "Tipo de escena:"
   errorTitle: "Error {{code}}"
+  # Enlaces privados a una escena (routes/shareLinks.ts, partials/huakaShareLinks.hbs)
+  share:
+    title: Enlaces privados
+    lead: >
+      Un enlace privado abre esta escena en el visor 3D, sin cuenta, para quien lo tenga. También se puede
+      incrustar en otro sitio. La escena no aparece en la vitrina ni en la búsqueda. El enlace dura hasta que
+      se revoca.
+    publicWarning: Esta escena es pública, así que cualquiera puede verla y aparece en la vitrina. Para que solo se vea con un enlace, cambie el acceso público a «ninguno».
+    name: Nombre
+    created: Creado
+    lastUsed: Último uso
+    never: nunca
+    revoke: Revocar
+    none: Esta escena todavía no tiene enlaces privados.
+    newLink: Nuevo enlace
+    namePlaceholder: "Para quién es, por ejemplo: Museo de sitio"
+    create: Crear enlace
+    createdTitle: Enlace privado creado
+    createdFor: "Enlace «{{name}}» para la escena {{scene}}."
+    copyNow: Copie el enlace ahora. Por seguridad no se guarda y no se volverá a mostrar; si lo pierde, cree otro y revoque este.
+    link: Enlace
+    embed: Código para incrustar
+    open: Abrir el enlace
+    back: Volver a la configuración
   # Vitrina pública (templates/showcase.hbs). Texto provisional en aboutLetter: lo revisa Huaka Digital.
   showcase:
     nav: Vitrina
@@ -493,6 +517,7 @@ huaka:
     "Authorize": Autorizar
     "Home": Inicio
     "Showcase": Vitrina
+    "Share link — {{name}}": "Enlace privado — {{name}}"
     "eCorpus: Create new scene": Crear una escena
     "Tags": Colecciones
     "Search": Buscar
