@@ -1,3 +1,7 @@
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
 import request from "supertest";
 import User from "../../auth/User.js";
 import UserManager from "../../auth/UserManager.js";
@@ -8,6 +12,10 @@ import ShareLinks from "../../utils/shareLinks.js";
  * Huaka (patches/ecorpus/0007): description, Open Graph and JSON-LD of every page, for search engines and link
  * previews (WhatsApp, Facebook, LinkedIn…). Crawlers state no language: they must get the Spanish site.
  */
+//The site's description is the showcase tagline: read it from es.yml, so that rewording it doesn't break the test
+const thisDir = path.dirname(fileURLToPath(import.meta.url));
+const esTagline = /^ {4}heroLead: "?(.*?)"?$/m.exec(fs.readFileSync(path.join(thisDir, "../../templates/locales/es.yml"), "utf8"))![1];
+
 describe("Meta tags (utils/seo.ts, metaTags helper)", function () {
   let vfs: Vfs, userManager: UserManager, bob: User;
 
@@ -55,7 +63,7 @@ describe("Meta tags (utils/seo.ts, metaTags helper)", function () {
   it("serves Spanish to visitors and crawlers that state no language", async function () {
     const res = await request(this.server).get("/ui/vitrina/").set("Accept", "text/html").expect(200);
     expect(res.text).to.include(`<html lang="es">`);
-    expect(metaOf(res.text, "description")).to.equal("Piezas del patrimonio cultural en 3D, abiertas a todos.");
+    expect(metaOf(res.text, "description")).to.equal(esTagline);
     expect(metaOf(res.text, "og:locale")).to.equal("es_LA");
     //An explicit preference still wins
     const fr = await request(this.server).get("/ui/vitrina/").set("Accept", "text/html").set("Accept-Language", "fr").expect(200);
