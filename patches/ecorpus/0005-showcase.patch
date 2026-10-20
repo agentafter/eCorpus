@@ -68,14 +68,14 @@ diff --git a/source/server/templates/partials/navbar.hbs b/source/server/templat
 diff --git a/source/server/templates/locales/en.yml b/source/server/templates/locales/en.yml
 --- a/source/server/templates/locales/en.yml
 +++ b/source/server/templates/locales/en.yml
-@@ -452,5 +452,34 @@
+@@ -452,5 +452,35 @@
    requestInProgress: request in progress
    sceneTypeLabel: "Scene type:"
    errorTitle: "Error {{code}}"
 +  showcase:
 +    nav: Showcase
 +    dashboard: My dashboard
-+    heroLead: Cultural heritage in 3D and metadata. Open access.
++    heroLead: "Open science for archaeology: cultural heritage in 3D, metadata and paradata."
 +    piece: Piece
 +    collection: Collection
 +    updated: Updated
@@ -95,9 +95,10 @@ diff --git a/source/server/templates/locales/en.yml b/source/server/templates/lo
 +    aboutLabel: About the project
 +    aboutLetter: |
 +      <p>Qullqa 3D is an initiative of Huaka Digital to advance open science in archaeology through 3D.</p>
-+      <p>It brings together cultural heritage pieces digitized in three dimensions. Each 3D model is published with its metadata and paradata. Together, these three elements make up what we call a <em>memory twin</em>: an exact digital copy of the piece with its contextual information.</p>
-+      <p>In the viewer you can turn each piece, zoom in and read the annotations of those who study it.</p>
-+      <p>Beyond safekeeping institutions' 3D models, we also offer digitization services. If your institution would like to share its pieces this way, write to us.</p>
++      <p>This platform brings together cultural heritage pieces digitized in three dimensions. Each 3D model is published with its metadata and paradata. Together, these three elements make up what we call a <em>memory twin</em>: an exact digital copy of the piece with its contextual information.</p>
++      <p>In the viewer you can turn each piece, zoom in, read the specialists' annotations and consult all its information.</p>
++      <p>If your institution would like to publish its 3D models in open access, write to us.</p>
++      <p>We also offer a complete cultural heritage digitization service.</p>
 +    aboutSign: Huaka Digital
 +    writeUs: Write to us
 +    empty: There are no public pieces in the archive yet.
@@ -106,14 +107,14 @@ diff --git a/source/server/templates/locales/en.yml b/source/server/templates/lo
 diff --git a/source/server/templates/locales/fr.yml b/source/server/templates/locales/fr.yml
 --- a/source/server/templates/locales/fr.yml
 +++ b/source/server/templates/locales/fr.yml
-@@ -468,4 +468,33 @@
+@@ -468,4 +468,34 @@
    requestInProgress: requête en cours
    sceneTypeLabel: "Type de scène :"
    errorTitle: "Erreur {{code}}"
 +  showcase:
 +    nav: Vitrine
 +    dashboard: Mon tableau de bord
-+    heroLead: Patrimoine culturel en 3D et métadonnées. Accès ouvert.
++    heroLead: "Science ouverte pour l'archéologie : patrimoine culturel en 3D, métadonnées et paradonnées."
 +    piece: Pièce
 +    collection: Collection
 +    updated: Mise à jour
@@ -133,9 +134,10 @@ diff --git a/source/server/templates/locales/fr.yml b/source/server/templates/lo
 +    aboutLabel: À propos du projet
 +    aboutLetter: |
 +      <p>Qullqa 3D est une initiative de Huaka Digital pour le développement de la science ouverte en archéologie à partir de la 3D.</p>
-+      <p>Elle réunit des pièces du patrimoine culturel numérisées en trois dimensions. Chaque modèle 3D est publié avec ses métadonnées et ses paradonnées. Ces trois éléments forment ce que nous appelons un <em>memory twin</em> : une copie numérique exacte de la pièce, avec ses informations contextuelles.</p>
-+      <p>Dans la visionneuse, on peut tourner chaque pièce, s'en approcher et lire les annotations de ceux qui l'étudient.</p>
-+      <p>Outre la conservation des modèles 3D des institutions, nous proposons un service de numérisation. Si votre institution souhaite partager ses pièces ainsi, écrivez-nous.</p>
++      <p>Cette plateforme réunit des pièces du patrimoine culturel numérisées en trois dimensions. Chaque modèle 3D est publié avec ses métadonnées et ses paradonnées. Ces trois éléments forment ce que nous appelons un <em>memory twin</em> : une copie numérique exacte de la pièce, avec ses informations contextuelles.</p>
++      <p>Dans la visionneuse, on peut tourner chaque pièce, s'en approcher, lire les annotations des spécialistes et consulter toutes ses informations.</p>
++      <p>Si votre institution souhaite publier ses modèles 3D en accès ouvert, écrivez-nous.</p>
++      <p>Nous proposons également un service complet de numérisation du patrimoine culturel.</p>
 +    aboutSign: Huaka Digital
 +    writeUs: Écrivez-nous
 +    empty: L'archive ne contient pas encore de pièce publique.
