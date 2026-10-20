@@ -161,8 +161,9 @@ con acceso público de lectura), aunque quien la abra tenga sesión.
   `branding/css/showcase.css` y `branding/js/showcase.js`. Los dos últimos se sirven desde `branding/`
   (`ASSETS_DIR`): sin la carpeta montada la vitrina sale sin estilos, así que en producción hay que sincronizar
   `branding/` junto con la imagen.
-- Textos: `huaka.showcase` en `es.yml`, `en.yml` y `fr.yml`. La carta de "Sobre el proyecto" (`aboutLetter`) es
-  provisional.
+- Textos: `huaka.showcase` en `es.yml`, `en.yml` y `fr.yml`. El mensaje del proyecto (`heroLead` y la carta
+  "Sobre el proyecto", `aboutLetter`) habla de metadatos, paradatos y *memory twin*; el español lo validó Huaka
+  Digital y el inglés y el francés son su traducción.
 - **Destacadas:** las escenas públicas con la etiqueta `destacada` (se agrega en la página de la escena, como
   cualquier etiqueta).
 - **Portada:** una pieza al azar entre las que tienen la etiqueta `portada`; si ninguna la tiene, entre todas las

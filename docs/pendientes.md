@@ -24,8 +24,8 @@ cada una en el editor (panel Collection, campo Copyright): en staging, Kero; en 
 listado de escenas.
 
 ## Vitrina pública
-- **Texto de "Sobre el proyecto"** (`huaka.showcase.aboutLetter` en `es.yml`, `en.yml` vía `ecorpus/0005`, `fr.yml`):
-  es provisional; Huaka Digital debe escribir o validar el definitivo.
+- **Texto de "Sobre el proyecto" en inglés y francés** (`huaka.showcase.heroLead` y `aboutLetter`, en `en.yml` y
+  `fr.yml` vía `ecorpus/0005`): son traducción del español validado; falta que alguien los revise.
 - **Escenas destacadas y de portada:** etiquetar con `destacada` las que van en "Piezas destacadas" y con `portada`
   las que pueden salir en la portada (hoy ninguna: la portada elige al azar entre todas las públicas).
 - Todas las escenas públicas aparecen en "Recién digitalizadas" y en sus colecciones: lo que no deba mostrarse va
