@@ -1,0 +1,33 @@
+Huaka: el enlace «reportar un error» del pie va al contacto del despliegue (CONTACT_EMAIL), no a Holusion.
+
+- utils/locals.ts: contact_email en las propiedades comunes de las plantillas (useTemplateProperties), sin el
+  valor por defecto noreply@<host>, que no es una dirección a la que escribir. La vitrina lo toma de aquí.
+- partials/footer.hbs: el mailto usa contact_email; sin dirección configurada, el enlace no se muestra.
+No se puede con overlay: el pie es una plantilla del servidor y la dirección estaba escrita en ella.
+
+Generado sobre eCorpus upstream d5fca779d6db75a4bdb766c7e8ce6848f6346955 (2026-10-20), con 0001-0007 aplicados.
+
+diff --git a/source/server/utils/locals.ts b/source/server/utils/locals.ts
+--- a/source/server/utils/locals.ts
++++ b/source/server/utils/locals.ts
+@@ -550,6 +550,8 @@
+     location: req.originalUrl,
+     search,
+     brand: config.get("brand"),
++    //Huaka: the deployment's contact (footer "report a bug", showcase). The default noreply@<host> is not one
++    contact_email: /^noreply@/.test(config.get("contact_email")) ? null : config.get("contact_email"),
+     embeddable: isEmbeddable(req.originalUrl),
+     canonical: canonical(req).toString(),
+     root_url: canonical(req, "/").toString(),
+diff --git a/source/server/templates/partials/footer.hbs b/source/server/templates/partials/footer.hbs
+--- a/source/server/templates/partials/footer.hbs
++++ b/source/server/templates/partials/footer.hbs
+@@ -5,7 +5,7 @@
+       {{#if brand}}<span class="nav-text" style="font-weight: bold;">{{brand}}</span>{{/if}}
+       <span class="nav-text lg-only">{{{i18n "leads.poweredByECorpus" }}}</span>
+       <span class="nav-text"><a target="_blank" href="https://ecorpus.eu">{{i18n "nav.documentation"}}</a></span>
+-      <span class="nav-text"><a  target="_blank" href="mailto:contact@holusion.com">{{i18n "nav.reportBug"}}</a></span>
++      {{#if contact_email}}<span class="nav-text"><a  target="_blank" href="mailto:{{contact_email}}">{{i18n "nav.reportBug"}}</a></span>{{/if}}
+     </div>
+ 
+     <form method="GET" id="change-locale" class="nav-end" style="margin: auto 1rem;">
