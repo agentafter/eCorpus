@@ -42,6 +42,9 @@ RUN grep -qF "useSeoDefaults" /app/source/server/dist/routes/index.js \
   && grep -qF "{{metaTags}}" /app/source/server/templates/partials/head.hbs \
   && grep -qF '["es", "fr", "en"]' /app/source/server/dist/utils/templates/index.js \
   || { echo "ERROR: Huaka meta tags or Spanish default language missing from server build" >&2; exit 1; }
+RUN grep -qF "contact_email" /app/source/server/dist/utils/locals.js \
+  && grep -qF "mailto:{{contact_email}}" /app/source/server/templates/partials/footer.hbs \
+  || { echo "ERROR: Huaka footer contact missing from server build" >&2; exit 1; }
 # outputs files in /app/source/server/dist
 
 COPY source/voyager /app/source/voyager

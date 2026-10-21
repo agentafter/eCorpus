@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getHost, getLocals, getVfs } from "../../utils/locals.js";
+import { getHost, getVfs } from "../../utils/locals.js";
 import type { Seo } from "../../utils/seo.js";
 import { Scene } from "../../vfs/types.js";
 
@@ -203,7 +203,6 @@ export async function renderShowcase(req: Request, res: Response) {
     featured: featured.scenes,
     recent,
     collections,
-    //The default (noreply@<host>) is not an address to write to
-    contact_email: /^noreply@/.test(getLocals(req).config.get("contact_email")) ? null : getLocals(req).config.get("contact_email"),
+    //contact_email (the "Escríbanos" button) comes from the template properties (patches/ecorpus/0008)
   });
 }

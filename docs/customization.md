@@ -18,7 +18,7 @@ Carpeta `branding/` → montada como `/app/branding` (`ASSETS_DIR`) y servida en
 
 Los SVG salen de los originales de `branding-src/huaka/` cambiando solo el `viewBox` (recorte del margen vacío). Pendiente: los dibujos de fondo (`/dist/images/muse.webp` y `scroll.webp`, de Holusion, Apache-2.0) se reemplazarán igual, con la misma ruta en `branding/images/`.
 
-Nombre, colores y contacto (`BRAND`, `COLOR_PRIMARY`, `COLOR_SECONDARY`, `CONTACT_EMAIL`) los lee el compose de cada entorno con `env_file: ./branding/branding.env`, sin repetirlos en `environment:` (tendría prioridad):
+Nombre, colores y contacto (`BRAND`, `COLOR_PRIMARY`, `COLOR_SECONDARY`, `CONTACT_EMAIL`) los lee el compose de cada entorno con `env_file: ./branding/branding.env`, sin repetirlos en `environment:` (tendría prioridad). `CONTACT_EMAIL` es también el destino del enlace «reportar un error» del pie y del botón «Escríbanos» de la vitrina (`ecorpus/0008`); sin él, ninguno de los dos se muestra:
 
 | Entorno | Archivo en el repo | Cómo llega al servidor |
 |---|---|---|
@@ -144,6 +144,7 @@ parche ya estaba aplicado. Se ejecuta en:
 | `ecorpus/0005-showcase.patch` | `routes/views/index.ts`, `navbar.hbs`, `en.yml`, `fr.yml` (sobre 0003) | engancha la vitrina pública: `/ui/` sin sesión y `/ui/vitrina/` | `renderShowcase` en `dist/routes/views/index.js` y `/ui/vitrina/` en `navbar.hbs` |
 | `ecorpus/0006-share-links.patch` | `routes/index.ts`, `routes/views/index.ts`, `scene/settings.hbs`, `en.yml`, `fr.yml` (sobre 0003 y 0005) | engancha los enlaces privados a una escena | `shareFilesRouter` en `dist/routes/index.js` y `huakaShareLinks` en `settings.hbs` |
 | `ecorpus/0007-meta-tags.patch` | `head.hbs`, `helpers/index.ts`, `routes/views/index.ts`, `routes/index.ts`, `en.yml`, `fr.yml` (sobre 0001–0006) | metatags para buscadores y vistas previas de enlaces | `useSeoDefaults` en `dist/routes/index.js` y `{{metaTags}}` en `head.hbs` |
+| `ecorpus/0008-footer-contact.patch` | `utils/locals.ts`, `partials/footer.hbs` (sobre 0001 y 0004) | «reportar un error» del pie a `CONTACT_EMAIL` en vez de Holusion; `contact_email` en las propiedades de plantilla | `contact_email` en `dist/utils/locals.js` y `mailto:{{contact_email}}` en `footer.hbs` |
 
 Archivos propios que acompañan a esos parches: `utils/templates/helpers/pageTitle.ts` (+ test),
 `routes/auth/loginLinkLanguage.test.ts`, el bloque `huaka:` de `es.yml` (con `huaka.pageTitles`: título en
